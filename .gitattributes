@@ -1,0 +1,22 @@
+# Normalize line endings across platforms
+
+# Default: treat text files and store as LF in repo
+* text=auto
+
+# Force LF for source and config files (good for GitHub Actions and web assets)
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.py   text eol=lf
+*.js   text eol=lf
+*.ts   text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.csv  text eol=lf
+
+# Keep native CRLF for Windows scripts
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
