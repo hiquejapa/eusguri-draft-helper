@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draft Helper - UI Preview</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo">eus guri - draft helper</div>
+    <div class="header-actions">
+      <span class="header-note muted">UI prototipo - dados ficticios</span>
+      <span class="badge badge-alpha">versao alpha</span>
+      <button class="ghost-button" data-action="reset">limpar selecoes</button>
+    </div>
+  </header>
+
+  <main class="app-grid">
+    <section class="panel panel-team">
+      <h2 class="panel-title">Meu Time</h2>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Bans</h3>
+          <span class="card-subtitle">Prioridades da sua equipe</span>
+        </div>
+        <div class="card-body grid grid-2 ban-group" data-group="team">
+          <label class="field">
+            <span>Ban 1</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 2</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 3</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 4</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 5</span>
+            <select></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Composicao</h3>
+          <span class="card-subtitle">Selecione campeoes e marque os pontos fortes</span>
+        </div>
+        <div class="card-body">
+          <ul class="role-list">
+            <li>
+              <span class="role">Top</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Trundle</option>
+                  <option>Gnar</option>
+                  <option>Irelia</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Jungle</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Bard</option>
+                  <option>Sejuani</option>
+                  <option>Volibear</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Mid</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Azir</option>
+                  <option>Syndra</option>
+                  <option>Orianna</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Bot</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Aatrox</option>
+                  <option>Varus</option>
+                  <option>Jhin</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Suporte</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Corki</option>
+                  <option>Seraphine</option>
+                  <option>Lulu</option>
+                </select>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Tags da Composicao</h3>
+          <span class="card-subtitle">Resumo automatico da identidade do time</span>
+        </div>
+        <div class="card-body tag-cloud" id="team-tags"></div>
+      </div>
+
+      <div class="card card-scroll">
+        <div class="card-header">
+          <h3>Sinergias do Time</h3>
+          <span class="card-subtitle">Registre notas rapidas sobre combinacoes</span>
+        </div>
+        <div class="card-body">
+          <textarea placeholder="Adicione observacoes de sinergia..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-synergy">
+      <h2 class="panel-title">Sinergias</h2>
+      <div class="card card-scroll">
+        <div class="card-header">
+          <h3>Melhores opcoes para complementar seu time</h3>
+          <div class="card-controls">
+            <select class="compact">
+              <option>Todos os roles</option>
+              <option>Top</option>
+              <option>Jungle</option>
+              <option>Mid</option>
+              <option>Bot</option>
+              <option>Suporte</option>
+            </select>
+            <select class="compact">
+              <option>Patch atual</option>
+              <option>Patch -1</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="list synergies" id="synergy-list">
+            <li>
+              <div>
+                <strong>Sejuani + Azir</strong>
+                <p class="muted">Controle + Zona; rota mid/jungle</p>
+              </div>
+              <span class="pill pill-green">+6.5</span>
+            </li>
+            <li>
+              <div>
+                <strong>Trundle + Aatrox</strong>
+                <p class="muted">Frontline dupla com dano sustentado</p>
+              </div>
+              <span class="pill pill-orange">+4.1</span>
+            </li>
+            <li>
+              <div>
+                <strong>Corki + Bard</strong>
+                <p class="muted">Pick off global e setup de objetivo</p>
+              </div>
+              <span class="pill pill-blue">+3.4</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card card-scroll">
+        <div class="card-header">
+          <h3>Matchups</h3>
+          <div class="card-controls">
+            <select class="compact">
+              <option>Mostrar favoraveis</option>
+              <option>Mostrar desfavoraveis</option>
+            </select>
+            <select class="compact">
+              <option>Ultimos 30 dias</option>
+              <option>Ultimos 60 dias</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="list matchups" id="matchup-list">
+            <li>
+              <div>
+                <strong>Azir vs Orianna</strong>
+                <p class="muted">WR 58% (+3.2) - 120 jogos</p>
+              </div>
+              <span class="pill pill-green">Favoravel</span>
+            </li>
+            <li>
+              <div>
+                <strong>Trundle vs K'Sante</strong>
+                <p class="muted">WR 54% (+2.1) - 94 jogos</p>
+              </div>
+              <span class="pill pill-green">Favoravel</span>
+            </li>
+            <li>
+              <div>
+                <strong>Bard vs Blitzcrank</strong>
+                <p class="muted">WR 49% (-1.8) - 87 jogos</p>
+              </div>
+              <span class="pill pill-red">Desfavoravel</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-enemy">
+      <h2 class="panel-title">Time Inimigo</h2>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Bans</h3>
+          <span class="card-subtitle">Estimativas do adversario</span>
+        </div>
+        <div class="card-body grid grid-2 ban-group" data-group="enemy">
+          <label class="field">
+            <span>Ban 1</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 2</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 3</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 4</span>
+            <select></select>
+          </label>
+          <label class="field">
+            <span>Ban 5</span>
+            <select></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Composicao</h3>
+          <span class="card-subtitle">Provavel setup do time inimigo</span>
+        </div>
+        <div class="card-body">
+          <ul class="role-list">
+            <li>
+              <span class="role">Top</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Swain</option>
+                  <option>K'Sante</option>
+                  <option>Mordekaiser</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Jungle</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Wukong</option>
+                  <option>Jarvan IV</option>
+                  <option>Vi</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Mid</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>K'Sante</option>
+                  <option>Orianna</option>
+                  <option>Ahri</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Bot</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Alistar</option>
+                  <option>Aphelios</option>
+                  <option>Ziggs</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="role">Suporte</span>
+              <div class="role-select field field-inline">
+                <select>
+                  <option>Taliyah</option>
+                  <option>Lux</option>
+                  <option>Morgana</option>
+                </select>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Tags da Composicao</h3>
+          <span class="card-subtitle">Pontos a observar na equipe inimiga</span>
+        </div>
+        <div class="card-body tag-cloud" id="enemy-tags"></div>
+      </div>
+
+      <div class="card card-scroll">
+        <div class="card-header">
+          <h3>Possiveis proximos picks</h3>
+          <span class="card-subtitle">Sugestoes baseadas na leitura atual</span>
+        </div>
+        <div class="card-body">
+          <textarea placeholder="Liste campeoes provaveis..."></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="score">
+      <span>Score do Adversario</span>
+      <strong id="enemy-score">58</strong>
+    </div>
+    <div class="score">
+      <span>Score do Time</span>
+      <strong id="team-score">62</strong>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
