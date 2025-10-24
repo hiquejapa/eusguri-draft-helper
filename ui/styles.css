@@ -180,6 +180,20 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
+.ban-group .field {
+  align-items: flex-start;
+}
+
+.ban-group select {
+  width: 100%;
+  max-width: 150px;
+}
+
+.ban-rate {
+  font-size: 0.75rem;
+  color: var(--text-500);
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -245,6 +259,8 @@ textarea {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-direction: row;
+  flex-wrap: nowrap; /* manter na mesma linha quando possível */
 }
 
 /* Ícones de campeão ao lado dos selects e textos */
@@ -418,6 +434,10 @@ textarea {
 .pill-spike { background: rgba(164, 111, 249, 0.48) !important; color: #e7d7ff !important; border: 1px solid rgba(164,111,249,0.65) !important; }
 .pill-synergy { background: rgba(52, 196, 179, 0.48) !important; color: #b6fff5 !important; border: 1px solid rgba(52,196,179,0.65) !important; }
 .champ-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.role-select > .select-with-icon { width: auto; flex: 0 0 auto; }
+.role-select select { min-width: 180px; }
+.role-select .champ-tags { margin-top: 0; flex: 1 1 auto; gap: 0.35rem; }
+.role-select .champ-tags .pill { padding: 0.22rem 0.45rem; font-size: 0.72rem; }
 
 /* Densidade otimizada para 1080p */
 @media (max-height: 1080px) and (min-width: 1200px) {

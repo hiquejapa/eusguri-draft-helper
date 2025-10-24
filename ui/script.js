@@ -116,9 +116,9 @@ function refresh() {
   const enemyScope = document.querySelector(".panel-enemy");
   const teamTags = collectActiveTags(teamScope);
   const enemyTags = collectActiveTags(enemyScope);
-  renderTagCloud(teamTagsEl, teamTags);
-  renderTagCloud(enemyTagsEl, enemyTags);
-  sanitizeVisibleCounts();
+  renderTagCloudFixed(teamTagsEl, teamTags);
+  renderTagCloudFixed(enemyTagsEl, enemyTags);
+  sanitizeVisibleCounts2();
   updateScores(teamTags, enemyTags);
 }
 
@@ -221,7 +221,7 @@ function populateBanSelects() {
       ph.value = '';
       ph.disabled = true;
       ph.selected = true;
-      ph.textContent = 'Selecione um campeao';
+      ph.textContent = 'Selecione os Bans';
       sel.appendChild(ph);
       champions.forEach((name) => {
         const opt = document.createElement('option');
@@ -279,7 +279,7 @@ function refreshCompositionOptions() {
     const sameSide = isTeam ? teamPicks : enemyPicks;
     sameSide.forEach((n) => { if (n !== current) exclude.add(n); });
     const allowed = champions.filter((name) => !exclude.has(name) || name === current);
-    const ph = document.createElement('option'); ph.value=''; ph.disabled=true; ph.textContent='Selecione um campeao';
+    const ph = document.createElement('option'); ph.value=''; ph.disabled=true; ph.textContent='Selecione um Champion';
     const tmp = document.createElement('select'); tmp.appendChild(ph);
     allowed.forEach((n)=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; tmp.appendChild(o); });
     sel.innerHTML = tmp.innerHTML;
@@ -303,7 +303,7 @@ function refreshCompositionForBans() {
     ph.value = '';
     ph.disabled = true;
     ph.selected = !current || !allowed.includes(current);
-    ph.textContent = 'Selecione um campeao';
+    ph.textContent = 'Selecione um Champion';
     newSel.appendChild(ph);
     allowed.forEach((name) => {
       const o = document.createElement('option');
@@ -328,7 +328,7 @@ function populateChampionSelects() {
     sel.innerHTML = "";
     const placeholder = document.createElement("option");
     placeholder.value = "";
-    placeholder.textContent = "Selecione um campeao";
+    placeholder.textContent = "Selecione um Champion";
     placeholder.disabled = true;
     placeholder.selected = true;
     sel.appendChild(placeholder);
@@ -342,14 +342,16 @@ function populateChampionSelects() {
     sel.value = "";
   });
 
-  // Listener para atualizar badges e ativar pills relacionadas ao campeao
+  // Listener para atualizar badges e ativar pills relacionadas ao campeão
   document.querySelectorAll(".role-list li").forEach((item) => {
     const sel = item.querySelector(".role-select select");
     if (!sel) return;
-    if (!item.querySelector(".champ-tags")) {
+    // garante o holder das tags ao lado do select (dentro de .role-select)
+    const selectRow = item.querySelector(".role-select");
+    if (selectRow && !selectRow.querySelector(".champ-tags")) {
       const holder = document.createElement("div");
       holder.className = "champ-tags pill-row";
-      item.appendChild(holder);
+      selectRow.appendChild(holder);
     }
     sel.addEventListener("change", () => { applyChampionTagsToRow(item, sel.value); refreshCompositionOptions(); });
     if (sel.value) applyChampionTagsToRow(item, sel.value);
@@ -392,7 +394,7 @@ const TAG_MAP = new Map([
 
 function applyChampionTagsToRow(rowEl, championName) {
   const info = ChampionTags.byChampion.get(championName);
-  const holder = rowEl.querySelector(".champ-tags");
+  const holder = rowEl.querySelector(".role-select .champ-tags") || rowEl.querySelector(".champ-tags");
   holder.innerHTML = "";
   if (!info) return;
   const values = [
@@ -427,7 +429,7 @@ function sanitizeVisibleCounts() {
   document.querySelectorAll('.tag-cloud .pill, .champ-tags .pill').forEach((pill) => {
     const s = pill.textContent;
     const cleaned = s
-      .replace(/\u00D7/g, 'x') // × (times)
+      .replace(/\\u00D7/g, '×') // × (times)
       .replace(/Ã—/g, 'x')
       .replace(/[^\x20-\x7E]-(\d+)/g, ' x$1');
     if (s !== cleaned) pill.textContent = cleaned;
@@ -435,28 +437,100 @@ function sanitizeVisibleCounts() {
 }
 
 // -------- Ícones de Campeões --------
+const CHAMPION_ICON_ID_OVERRIDES = new Map([
+  ["Wukong", "MonkeyKing"], ["LeBlanc", "Leblanc"], ["Cho'Gath", "Chogath"], ["Vel'Koz", "Velkoz"],
+  ["Kha'Zix", "Khazix"], ["Kai'sa", "Kaisa"], ["Kai'Sa", "Kaisa"], ["Bel'Veth", "Belveth"],
+  ["K'Sante", "KSante"], ["Renata Glasc", "Renata"], ["Dr. Mundo", "DrMundo"], ["Jarvan IV", "JarvanIV"],
+  ["Lee Sin", "LeeSin"], ["Master Yi", "MasterYi"], ["Miss Fortune", "MissFortune"], ["Twisted Fate", "TwistedFate"],
+  ["Tahm Kench", "TahmKench"], ["Xin Zhao", "XinZhao"], ["Aurelion Sol", "AurelionSol"], ["Kog'Maw", "KogMaw"],
+  ["Nunu e Willump", "Nunu"], ["Nunu & Willump", "Nunu"], ["Nunu And Willump", "Nunu"]
+]);
+const CHAMPION_ICON_PLACEHOLDER_NAMES = new Set([
+  "Mel", "Ambessa", "Yunara", "Mel Medarda", "Ambessa Medarda"
+]);
+const LOCAL_CHAMPION_ICON_BASE = "../assets/champions";
+function placeholderIcon(name) {
+  const initial = (name || "").trim().charAt(0).toUpperCase() || "?";
+  const palette = [
+    { bg: "#25304a", fg: "#7aa0ff" },
+    { bg: "#2c3f33", fg: "#7ce2c4" },
+    { bg: "#3d2a4a", fg: "#d6a6ff" },
+    { bg: "#43311f", fg: "#f6c27a" },
+    { bg: "#3a1f2b", fg: "#ff94c2" },
+  ];
+  const idx = initial.charCodeAt(0) % palette.length;
+  const { bg, fg } = palette[idx];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="${bg}"/><text x="50%" y="50%" fill="${fg}" font-size="32" font-family="Segoe UI, Arial, sans-serif" text-anchor="middle" dominant-baseline="central">${initial}</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
 function championIdForIcon(name) {
   if (!name) return null;
-  const special = new Map([
-    ["Wukong", "MonkeyKing"], ["LeBlanc", "Leblanc"], ["Cho'Gath", "Chogath"], ["Vel'Koz", "Velkoz"],
-    ["Kha'Zix", "Khazix"], ["Kai'sa", "Kaisa"], ["Kai'Sa", "Kaisa"], ["Bel'Veth", "Belveth"],
-    ["K'Sante", "KSante"], ["Renata Glasc", "Renata"], ["Dr. Mundo", "DrMundo"], ["Jarvan IV", "JarvanIV"],
-    ["Lee Sin", "LeeSin"], ["Master Yi", "MasterYi"], ["Miss Fortune", "MissFortune"], ["Twisted Fate", "TwistedFate"],
-    ["Tahm Kench", "TahmKench"], ["Xin Zhao", "XinZhao"], ["Aurelion Sol", "AurelionSol"], ["Kog'Maw", "KogMaw"],
-  ]);
-  if (special.has(name)) return special.get(name);
-  const cleaned = name
+  const trimmed = name.trim();
+  if (CHAMPION_ICON_ID_OVERRIDES.has(trimmed)) return CHAMPION_ICON_ID_OVERRIDES.get(trimmed);
+  const cleaned = trimmed
     .normalize('NFD').replace(/\p{Diacritic}+/gu, '')
     .replace(/[^a-zA-Z0-9]/g, '')
     .replace(/^([a-z])/, (m) => m.toUpperCase());
   return cleaned;
 }
 
-function championIconUrl(name) {
+function championIconLocalUrl(name) {
+  const id = championIdForIcon(name);
+  if (!id) return '';
+  return `${LOCAL_CHAMPION_ICON_BASE}/${id}.png`;
+}
+
+function championIconCdnUrl(name) {
   const id = championIdForIcon(name);
   if (!id) return '';
   const ver = '14.20.1';
   return `https://ddragon.leagueoflegends.com/cdn/${ver}/img/champion/${id}.png`;
+}
+
+function setChampionIcon(img, name) {
+  if (!img) return false;
+  img.onerror = null;
+  delete img.dataset.iconAttempt;
+  if (!name) {
+    img.removeAttribute('src');
+    img.style.visibility = 'hidden';
+    return false;
+  }
+  const trimmed = name.trim();
+  const sources = [];
+  const local = championIconLocalUrl(trimmed);
+  if (local) sources.push(local);
+  if (!CHAMPION_ICON_PLACEHOLDER_NAMES.has(trimmed)) {
+    const cdn = championIconCdnUrl(trimmed);
+    if (cdn) sources.push(cdn);
+  }
+  sources.push(placeholderIcon(trimmed));
+  let attempt = 0;
+  const applySource = () => {
+    const src = sources[attempt];
+    if (!src) {
+      img.removeAttribute('src');
+      img.style.visibility = 'hidden';
+      img.onerror = null;
+      return;
+    }
+    img.dataset.iconAttempt = String(attempt);
+    img.src = src;
+    img.alt = trimmed;
+    img.style.visibility = 'visible';
+  };
+  img.onerror = () => {
+    attempt += 1;
+    if (attempt >= sources.length) {
+      img.onerror = null;
+      img.removeAttribute('src');
+      img.style.visibility = 'hidden';
+      return;
+    }
+    applySource();
+  };
+  applySource();
+  return true;
 }
 
 function ensureSelectIcon(sel) {
@@ -470,14 +544,13 @@ function ensureSelectIcon(sel) {
     sel.replaceWith(wrap); wrap.appendChild(imgWrap); wrap.appendChild(sel); icon = imgWrap;
   }
   const img = icon.querySelector('img');
-  const url = championIconUrl(sel.value);
-  if (sel.value && url) { img.src = url; img.alt = sel.value; icon.style.visibility = 'visible'; }
-  else { img.removeAttribute('src'); icon.style.visibility = 'hidden'; }
+  const hasIcon = setChampionIcon(img, sel.value);
+  icon.style.visibility = hasIcon ? 'visible' : 'hidden';
 }
 
 function createInlineChamp(name) {
   const span = document.createElement('span'); span.className = 'champ-inline';
-  const ic = document.createElement('span'); ic.className = 'champ-icon'; const img = document.createElement('img'); const url = championIconUrl(name); if (url) { img.src = url; img.alt = name; }
+  const ic = document.createElement('span'); ic.className = 'champ-icon'; const img = document.createElement('img'); setChampionIcon(img, name);
   ic.appendChild(img); const t = document.createElement('span'); t.textContent = name; span.appendChild(ic); span.appendChild(t); return span;
 }
 

@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Draft Helper - UI Preview</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="../assets/Icone.png">
 </head>
 <body>
   <header class="app-header">
-    <div class="logo">eus guri - draft helper</div>
+    <div class="logo">é us guri - draft helper</div>
     <div class="header-actions">
-      <span class="header-note muted">UI prototipo - dados ficticios</span>
-      <span class="badge badge-alpha">versao alpha</span>
-      <button class="ghost-button" data-action="reset">limpar selecoes</button>
+      <span class="header-note muted">UI protótipo - dados fictícios</span>
+      <span class="badge badge-alpha">versão alpha</span>
+      <button class="ghost-button" data-action="reset">limpar seleções</button>
     </div>
   </header>
 
@@ -23,36 +24,41 @@
       <div class="card">
         <div class="card-header">
           <h3>Bans</h3>
-          <span class="card-subtitle">Prioridades da sua equipe</span>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body grid grid-2 ban-group" data-group="team">
           <label class="field">
             <span>Ban 1</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 2</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 3</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 4</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 5</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
         </div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h3>Composicao</h3>
-          <span class="card-subtitle">Selecione campeoes e marque os pontos fortes</span>
+          <h3>Composição</h3>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body">
           <ul class="role-list">
@@ -112,8 +118,8 @@
 
       <div class="card">
         <div class="card-header">
-          <h3>Tags da Composicao</h3>
-          <span class="card-subtitle">Resumo automatico da identidade do time</span>
+          <h3>Tags da Composição</h3>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body tag-cloud" id="team-tags"></div>
       </div>
@@ -121,7 +127,7 @@
       <div class="card card-scroll">
         <div class="card-header">
           <h3>Sinergias do Time</h3>
-          <span class="card-subtitle">Registre notas rapidas sobre combinacoes</span>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body">
           <textarea placeholder="Adicione observacoes de sinergia..."></textarea>
@@ -133,19 +139,19 @@
       <h2 class="panel-title">Sinergias</h2>
       <div class="card card-scroll">
         <div class="card-header">
-          <h3>Melhores opcoes para complementar seu time</h3>
+          <h3>Melhores opções para complementar seu time</h3>
           <div class="card-controls">
             <select class="compact">
-              <option>Todos os roles</option>
-              <option>Top</option>
-              <option>Jungle</option>
-              <option>Mid</option>
-              <option>Bot</option>
+              <option>Todas as rotas</option>
+              <option>Topo</option>
+              <option>Selva</option>
+              <option>Meio</option>
+              <option>Atirador</option>
               <option>Suporte</option>
             </select>
             <select class="compact">
               <option>Patch atual</option>
-              <option>Patch -1</option>
+              <option>Patch anterior</option>
             </select>
           </div>
         </div>
@@ -181,12 +187,12 @@
           <h3>Matchups</h3>
           <div class="card-controls">
             <select class="compact">
-              <option>Mostrar favoraveis</option>
-              <option>Mostrar desfavoraveis</option>
+              <option>Mostrar favoráveis</option>
+              <option>Mostrar desfavoráveis</option>
             </select>
             <select class="compact">
-              <option>Ultimos 30 dias</option>
-              <option>Ultimos 60 dias</option>
+              <option>Últimos 30 dias</option>
+              <option>Últimos 60 dias</option>
             </select>
           </div>
         </div>
@@ -195,23 +201,23 @@
             <li>
               <div>
                 <strong>Azir vs Orianna</strong>
-                <p class="muted">WR 58% (+3.2) - 120 jogos</p>
+                <p class="muted">WR 58% (+3,2) - 120 jogos</p>
               </div>
               <span class="pill pill-green">Favoravel</span>
             </li>
             <li>
               <div>
                 <strong>Trundle vs K'Sante</strong>
-                <p class="muted">WR 54% (+2.1) - 94 jogos</p>
+                <p class="muted">WR 54% (+2,1) - 94 jogos</p>
               </div>
               <span class="pill pill-green">Favoravel</span>
             </li>
             <li>
               <div>
                 <strong>Bard vs Blitzcrank</strong>
-                <p class="muted">WR 49% (-1.8) - 87 jogos</p>
+                <p class="muted">WR 49% (-1,8) - 87 jogos</p>
               </div>
-              <span class="pill pill-red">Desfavoravel</span>
+              <span class="pill pill-red">Desfavorável</span>
             </li>
           </ul>
         </div>
@@ -224,36 +230,41 @@
       <div class="card">
         <div class="card-header">
           <h3>Bans</h3>
-          <span class="card-subtitle">Estimativas do adversario</span>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body grid grid-2 ban-group" data-group="enemy">
           <label class="field">
             <span>Ban 1</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 2</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 3</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 4</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
           <label class="field">
             <span>Ban 5</span>
             <select></select>
+            <span class="ban-rate muted">Ban Rate: --%</span>
           </label>
         </div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h3>Composicao</h3>
-          <span class="card-subtitle">Provavel setup do time inimigo</span>
+          <h3>Composição</h3>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body">
           <ul class="role-list">
@@ -313,19 +324,19 @@
 
       <div class="card">
         <div class="card-header">
-          <h3>Tags da Composicao</h3>
-          <span class="card-subtitle">Pontos a observar na equipe inimiga</span>
+          <h3>Tags da Composição</h3>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body tag-cloud" id="enemy-tags"></div>
       </div>
 
       <div class="card card-scroll">
         <div class="card-header">
-          <h3>Possiveis proximos picks</h3>
-          <span class="card-subtitle">Sugestoes baseadas na leitura atual</span>
+          <h3>Possíveis próximos picks</h3>
+          <span class="card-subtitle"></span>
         </div>
         <div class="card-body">
-          <textarea placeholder="Liste campeoes provaveis..."></textarea>
+          <textarea placeholder="Liste campeões prováveis..."></textarea>
         </div>
       </div>
     </section>
@@ -333,15 +344,16 @@
 
   <footer class="app-footer">
     <div class="score">
-      <span>Score do Adversario</span>
-      <strong id="enemy-score">58</strong>
-    </div>
-    <div class="score">
       <span>Score do Time</span>
       <strong id="team-score">62</strong>
     </div>
+    <div class="score">
+      <span>Score do Adversário</span>
+      <strong id="enemy-score">58</strong>
+    </div>
   </footer>
 
+  <script src="tagcloud.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
