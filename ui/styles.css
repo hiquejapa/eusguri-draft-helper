@@ -163,6 +163,62 @@ body {
   gap: 0.5rem;
 }
 
+.lane-filter,
+.matchup-filter-group {
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  background: rgba(44, 50, 72, 0.6);
+  border: 1px solid rgba(90, 98, 132, 0.4);
+  border-radius: 999px;
+  color: var(--text-300);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+/* Botões apenas com ícone (sem texto) */
+.filter-button:has(img:only-child) {
+  padding: 0.45rem;
+  min-width: 32px;
+  min-height: 32px;
+  justify-content: center;
+}
+
+.filter-button img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.filter-button.is-active img {
+  opacity: 1;
+}
+
+.filter-button.is-active {
+  background: rgba(58, 130, 247, 0.2);
+  border-color: rgba(58, 130, 247, 0.6);
+  color: var(--text-100);
+}
+
+.filter-button:not(.is-active):hover {
+  border-color: rgba(58, 130, 247, 0.4);
+}
+
+.filter-button:not(.is-active):hover img {
+  opacity: 0.8;
+}
+
 .card-body {
   padding: 1rem 1.25rem;
   display: flex;
@@ -253,6 +309,15 @@ textarea {
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   color: var(--text-500);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.role-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .role-select {
@@ -371,10 +436,36 @@ textarea {
   border: 1px solid rgba(58, 65, 93, 0.4);
 }
 
+.list li.empty {
+  justify-content: center;
+  align-items: center;
+  font-style: italic;
+  color: var(--text-500);
+}
+
 .list li strong {
   display: block;
   font-size: 0.95rem;
   margin-bottom: 0.25rem;
+}
+
+.list-section {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.list-section .list {
+  margin: 0;
+}
+
+.list-title {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-500);
 }
 
 .muted {

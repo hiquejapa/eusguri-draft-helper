@@ -11,8 +11,8 @@
   <header class="app-header">
     <div class="logo">é us guri - draft helper</div>
     <div class="header-actions">
-      <span class="header-note muted">UI protótipo - dados fictícios</span>
-      <span class="badge badge-alpha">versão alpha</span>
+      <span class="header-note muted">UI protótipo</span>
+      <span class="badge badge-alpha">versão beta</span>
       <button class="ghost-button" data-action="reset">limpar seleções</button>
     </div>
   </header>
@@ -63,7 +63,10 @@
         <div class="card-body">
           <ul class="role-list">
             <li>
-              <span class="role">Top</span>
+              <span class="role" data-role="TOP">
+                <img class="role-icon" src="../assets/roles/120px-Top_icon.png" alt="" aria-hidden="true">
+                Top
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Trundle</option>
@@ -73,7 +76,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Jungle</span>
+              <span class="role" data-role="JUNGLE">
+                <img class="role-icon" src="../assets/roles/120px-Jungle_icon.png" alt="" aria-hidden="true">
+                Jungle
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Bard</option>
@@ -83,7 +89,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Mid</span>
+              <span class="role" data-role="MIDDLE">
+                <img class="role-icon" src="../assets/roles/120px-Middle_icon.png" alt="" aria-hidden="true">
+                Mid
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Azir</option>
@@ -93,7 +102,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Bot</span>
+              <span class="role" data-role="BOTTOM">
+                <img class="role-icon" src="../assets/roles/120px-Bottom_icon.png" alt="" aria-hidden="true">
+                Bot
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Aatrox</option>
@@ -103,7 +115,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Suporte</span>
+              <span class="role" data-role="UTILITY">
+                <img class="role-icon" src="../assets/roles/120px-Support_icon.png" alt="" aria-hidden="true">
+                Suporte
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Corki</option>
@@ -126,13 +141,14 @@
 
       <div class="card card-scroll">
         <div class="card-header">
-          <h3>Sinergias do Time</h3>
+          <h3>Top Sinergias</h3>
           <span class="card-subtitle"></span>
         </div>
         <div class="card-body">
-          <textarea placeholder="Adicione observacoes de sinergia..."></textarea>
+          <ul class="list combos" id="combo-list"></ul>
         </div>
       </div>
+
     </section>
 
     <section class="panel panel-synergy">
@@ -140,86 +156,41 @@
       <div class="card card-scroll">
         <div class="card-header">
           <h3>Melhores opções para complementar seu time</h3>
-          <div class="card-controls">
-            <select class="compact">
-              <option>Todas as rotas</option>
-              <option>Topo</option>
-              <option>Selva</option>
-              <option>Meio</option>
-              <option>Atirador</option>
-              <option>Suporte</option>
-            </select>
-            <select class="compact">
-              <option>Patch atual</option>
-              <option>Patch anterior</option>
-            </select>
+          <div class="card-controls lane-filter" id="synergy-lane-filter">
+            <button type="button" class="filter-button is-active" data-lane-filter="ALL">Todos</button>
+            <button type="button" class="filter-button" data-lane-filter="TOP">
+              <img src="../assets/roles/120px-Top_icon.png" alt="Top" aria-hidden="true">
+            </button>
+            <button type="button" class="filter-button" data-lane-filter="JUNGLE">
+              <img src="../assets/roles/120px-Jungle_icon.png" alt="Jungle" aria-hidden="true">
+            </button>
+            <button type="button" class="filter-button" data-lane-filter="MIDDLE">
+              <img src="../assets/roles/120px-Middle_icon.png" alt="Mid" aria-hidden="true">
+            </button>
+            <button type="button" class="filter-button" data-lane-filter="BOTTOM">
+              <img src="../assets/roles/120px-Bottom_icon.png" alt="Bot" aria-hidden="true">
+            </button>
+            <button type="button" class="filter-button" data-lane-filter="UTILITY">
+              <img src="../assets/roles/120px-Support_icon.png" alt="Suporte" aria-hidden="true">
+            </button>
           </div>
         </div>
         <div class="card-body">
-          <ul class="list synergies" id="synergy-list">
-            <li>
-              <div>
-                <strong>Sejuani + Azir</strong>
-                <p class="muted">Controle + Zona; rota mid/jungle</p>
-              </div>
-              <span class="pill pill-green">+6.5</span>
-            </li>
-            <li>
-              <div>
-                <strong>Trundle + Aatrox</strong>
-                <p class="muted">Frontline dupla com dano sustentado</p>
-              </div>
-              <span class="pill pill-orange">+4.1</span>
-            </li>
-            <li>
-              <div>
-                <strong>Corki + Bard</strong>
-                <p class="muted">Pick off global e setup de objetivo</p>
-              </div>
-              <span class="pill pill-blue">+3.4</span>
-            </li>
-          </ul>
+          <ul class="list synergies" id="synergy-list"></ul>
         </div>
       </div>
 
       <div class="card card-scroll">
         <div class="card-header">
           <h3>Matchups</h3>
-          <div class="card-controls">
-            <select class="compact">
-              <option>Mostrar favoráveis</option>
-              <option>Mostrar desfavoráveis</option>
-            </select>
-            <select class="compact">
-              <option>Últimos 30 dias</option>
-              <option>Últimos 60 dias</option>
-            </select>
+          <div class="card-controls matchup-filter-group" id="matchup-visibility-filter">
+            <button type="button" class="filter-button is-active" data-matchup-filter="favorable">Favoráveis</button>
+            <button type="button" class="filter-button is-active" data-matchup-filter="even">Equilibrados</button>
+            <button type="button" class="filter-button is-active" data-matchup-filter="unfavorable">Desfavoráveis</button>
           </div>
         </div>
         <div class="card-body">
-          <ul class="list matchups" id="matchup-list">
-            <li>
-              <div>
-                <strong>Azir vs Orianna</strong>
-                <p class="muted">WR 58% (+3,2) - 120 jogos</p>
-              </div>
-              <span class="pill pill-green">Favoravel</span>
-            </li>
-            <li>
-              <div>
-                <strong>Trundle vs K'Sante</strong>
-                <p class="muted">WR 54% (+2,1) - 94 jogos</p>
-              </div>
-              <span class="pill pill-green">Favoravel</span>
-            </li>
-            <li>
-              <div>
-                <strong>Bard vs Blitzcrank</strong>
-                <p class="muted">WR 49% (-1,8) - 87 jogos</p>
-              </div>
-              <span class="pill pill-red">Desfavorável</span>
-            </li>
-          </ul>
+          <ul class="list matchups" id="matchup-list"></ul>
         </div>
       </div>
     </section>
@@ -269,7 +240,10 @@
         <div class="card-body">
           <ul class="role-list">
             <li>
-              <span class="role">Top</span>
+              <span class="role" data-role="TOP">
+                <img class="role-icon" src="../assets/roles/120px-Top_icon.png" alt="" aria-hidden="true">
+                Top
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Swain</option>
@@ -279,7 +253,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Jungle</span>
+              <span class="role" data-role="JUNGLE">
+                <img class="role-icon" src="../assets/roles/120px-Jungle_icon.png" alt="" aria-hidden="true">
+                Jungle
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Wukong</option>
@@ -289,7 +266,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Mid</span>
+              <span class="role" data-role="MIDDLE">
+                <img class="role-icon" src="../assets/roles/120px-Middle_icon.png" alt="" aria-hidden="true">
+                Mid
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>K'Sante</option>
@@ -299,7 +279,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Bot</span>
+              <span class="role" data-role="BOTTOM">
+                <img class="role-icon" src="../assets/roles/120px-Bottom_icon.png" alt="" aria-hidden="true">
+                Bot
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Alistar</option>
@@ -309,7 +292,10 @@
               </div>
             </li>
             <li>
-              <span class="role">Suporte</span>
+              <span class="role" data-role="UTILITY">
+                <img class="role-icon" src="../assets/roles/120px-Support_icon.png" alt="" aria-hidden="true">
+                Suporte
+              </span>
               <div class="role-select field field-inline">
                 <select>
                   <option>Taliyah</option>
@@ -332,11 +318,14 @@
 
       <div class="card card-scroll">
         <div class="card-header">
-          <h3>Possíveis próximos picks</h3>
+          <h3>Próximos Picks</h3>
           <span class="card-subtitle"></span>
         </div>
         <div class="card-body">
-          <textarea placeholder="Liste campeões prováveis..."></textarea>
+          <div class="list-section">
+            <h4 class="list-title">Duos e trios compatíveis</h4>
+            <ul class="list combos" id="enemy-combo-list"></ul>
+          </div>
         </div>
       </div>
     </section>
