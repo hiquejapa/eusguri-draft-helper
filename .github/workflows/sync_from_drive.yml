@@ -69,7 +69,7 @@ jobs:
                   continue
 
               request = service.files().get_media(fileId=file_id)
-              fh = io.FileIO(os.path.join("synced_output", name), 'wb')
+              fh = io.FileIO(os.path.join("data", name), 'wb')
               downloader = MediaIoBaseDownload(fh, request)
               done = False
               while done is False:
