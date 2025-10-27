@@ -5,6 +5,7 @@ const enemyScoreEl = document.getElementById("enemy-score");
 const resetBtn = document.querySelector('[data-action="reset"]');
 const synergyListEl = document.getElementById("synergy-list");
 const comboListEl = document.getElementById("combo-list");
+const selectedSynergyListEl = document.getElementById("selected-synergy-list");
 const matchupListEl = document.getElementById("matchup-list");
 const enemyComboListEl = document.getElementById("enemy-combo-list");
 const laneFilterButtons = document.querySelectorAll("[data-lane-filter]");
@@ -27,6 +28,7 @@ const ExternalStats = {
   synergies: new Map(),
   matchups: new Map(),
   combos: [],
+  bans: new Map(),
   loaded: false,
   errors: {
     synergies: false,
@@ -39,6 +41,8 @@ const ExternalStats = {
 
 const percentFormatter = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const integerFormatter = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+// Formatter específico para ban rates com duas casas decimais
+const banPercentFormatter = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const ROLE_LABELS = {
   TOP: "Topo",
@@ -53,6 +57,9 @@ const MATCHUP_LABELS = {
   even: "Equilibrado",
   unfavorable: "Desfavorável",
 };
+
+// Considerar como risco de ban quando a taxa for maior ou igual a este valor (em %)
+const BAN_RISK_THRESHOLD = 60;
 
 const ChampionNameIndex = new Map();
 const CHAMPION_NAME_OVERRIDES = new Map([
@@ -288,18 +295,300 @@ function renderTagCloud(container, tagItems) {
   });
 }
 
-function updateScores(teamTags, enemyTags) {
-  const baseTeam = 55;
-  const baseEnemy = 55;
-  // Use a contagem de tags Ãºnicas (slug) por lado
-  const uniqTeam = new Set(teamTags.map((t) => t.slug)).size;
-  const uniqEnemy = new Set(enemyTags.map((t) => t.slug)).size;
-  const teamScore = Math.round(baseTeam + uniqTeam * 1.5);
-  const enemyScore = Math.round(baseEnemy + uniqEnemy * 1.2);
-  teamScoreEl.textContent = teamScore.toString();
-  enemyScoreEl.textContent = enemyScore.toString();
-  teamScoreEl.classList.toggle("muted", teamScore <= enemyScore);
-  enemyScoreEl.classList.toggle("muted", enemyScore <= teamScore);
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+function applyScoreColor(el, score) {
+  if (!el) return;
+  const bucket = Math.round(clamp(score, 0, 100) / 10) * 10; // 0..100 in steps of 10
+  const hue = Math.round((bucket / 100) * 120); // 0 (red) -> 120 (green)
+  el.style.color = `hsl(${hue} 70% 60%)`;
+}
+
+// --- Score tooltip helpers ---
+let __scoreTooltipEl = null;
+function ensureScoreTooltip() {
+  if (__scoreTooltipEl) return __scoreTooltipEl;
+  const div = document.createElement('div');
+  div.id = 'score-tooltip';
+  div.style.display = 'none';
+  div.setAttribute('role', 'tooltip');
+  document.body.appendChild(div);
+  __scoreTooltipEl = div;
+  // hide on scroll/resize to avoid stale position
+  window.addEventListener('scroll', () => { if (__scoreTooltipEl) __scoreTooltipEl.style.display = 'none'; }, { passive: true });
+  window.addEventListener('resize', () => { if (__scoreTooltipEl) __scoreTooltipEl.style.display = 'none'; });
+  return __scoreTooltipEl;
+}
+
+function formatComponentsTooltip(components) {
+  if (!components) return '';
+  // Show value × weight -> contribution (points), plus a small visual bar per contribution
+  const WEIGHTS = { solo: 0.3, synergy: 0.3, matchup: 0.3, early: 0.1 };
+  const rows = [];
+  const mapLabel = { solo: 'Solo winrate', synergy: 'Sinergia', matchup: 'Matchup', early: 'Early' };
+  let totalContrib = 0;
+  ['solo', 'synergy', 'matchup', 'early'].forEach((k) => {
+    const val = typeof components[k] === 'number' ? components[k] : 50;
+    const w = WEIGHTS[k] || 0;
+    const contrib = (val * w) / 1; // points out of 100
+    totalContrib += contrib;
+    rows.push({ key: k, label: mapLabel[k], value: Math.round(val), weightPct: Math.round(w * 100), contrib: Math.round(contrib * 10) / 10 });
+  });
+
+  const html = [];
+  html.push('<div class="score-breakdown">');
+  rows.forEach((r) => {
+    html.push(`<div class="score-line"><div class="score-meta"><span class="label">${r.label}</span><span class="value">${r.value}%</span></div><div class="score-meta small">${r.weightPct}% × → ${r.contrib} pts</div><div class="bar"><div class="bar-inner" style="width:${clamp(r.contrib,0,100)}%"></div></div></div>`);
+  });
+  html.push(`<div class="line" style="margin-top:0.5rem;font-weight:700;">Total: ${Math.round(components.total)} pts</div>`);
+  html.push('</div>');
+  return html.join('');
+}
+
+function showScoreTooltip(el, components) {
+  const tip = ensureScoreTooltip();
+  tip.innerHTML = formatComponentsTooltip(components);
+  tip.style.display = 'block';
+  tip.style.opacity = '1';
+  // position centered below element
+  const rect = el.getBoundingClientRect();
+  // allow paint then measure
+  requestAnimationFrame(() => {
+    const tw = tip.offsetWidth;
+    const th = tip.offsetHeight;
+    let left = window.scrollX + rect.left + rect.width / 2 - tw / 2;
+    const minPad = 8;
+    if (left < minPad) left = minPad;
+    if (left + tw > window.scrollX + document.documentElement.clientWidth - minPad) left = window.scrollX + document.documentElement.clientWidth - tw - minPad;
+    // Prefer mostrar o tooltip acima do elemento; se não couber, mostrar abaixo
+    let topAbove = window.scrollY + rect.top - th - 8;
+    let topBelow = window.scrollY + rect.bottom + 8;
+    let top = topAbove;
+    const viewportTop = window.scrollY + minPad;
+    const viewportBottom = window.scrollY + document.documentElement.clientHeight - minPad;
+    if (topAbove < viewportTop) {
+      // não cabe acima, usar abaixo
+      top = topBelow;
+      // se abaixo também ultrapassar, ajustar para caber dentro da viewport
+      if (top + th > viewportBottom) top = Math.max(viewportTop, viewportBottom - th);
+    }
+    tip.style.left = `${Math.round(left)}px`;
+    tip.style.top = `${Math.round(top)}px`;
+  });
+}
+
+function hideScoreTooltip() {
+  const tip = ensureScoreTooltip();
+  tip.style.display = 'none';
+}
+
+function getScoreComponents(side) {
+  const teamEntries = getSidePickEntries('team');
+  const enemyEntries = getSidePickEntries('enemy');
+  const soloTeam = computeSoloWinrateComponent(teamEntries);
+  const soloEnemy = computeSoloWinrateComponent(enemyEntries);
+  const synergyTeam = computeSynergyComponent(teamEntries);
+  const synergyEnemy = computeSynergyComponent(enemyEntries);
+  const matchup = computeMatchupComponent(teamEntries, enemyEntries);
+  const early = computeEarlyComponentFromRows(matchup.rows);
+  const WEIGHTS = { solo: 0.3, synergy: 0.3, matchup: 0.3, early: 0.1 };
+  const teamTotal = clamp(Math.round(soloTeam * WEIGHTS.solo + synergyTeam * WEIGHTS.synergy + matchup.team * WEIGHTS.matchup + early.team * WEIGHTS.early), 0, 100);
+  const enemyTotal = clamp(Math.round(soloEnemy * WEIGHTS.solo + synergyEnemy * WEIGHTS.synergy + matchup.enemy * WEIGHTS.matchup + early.enemy * WEIGHTS.early), 0, 100);
+  if (side === 'team') return { solo: soloTeam, synergy: synergyTeam, matchup: matchup.team, early: early.team, total: teamTotal };
+  return { solo: soloEnemy, synergy: synergyEnemy, matchup: matchup.enemy, early: early.enemy, total: enemyTotal };
+}
+
+function bindScoreTooltipListeners() {
+  if (teamScoreEl && !teamScoreEl.dataset.tooltipBound) {
+    teamScoreEl.addEventListener('mouseenter', () => {
+      const comps = getScoreComponents('team');
+      showScoreTooltip(teamScoreEl, comps);
+    });
+    teamScoreEl.addEventListener('mouseleave', hideScoreTooltip);
+    teamScoreEl.dataset.tooltipBound = '1';
+  }
+  if (enemyScoreEl && !enemyScoreEl.dataset.tooltipBound) {
+    enemyScoreEl.addEventListener('mouseenter', () => {
+      const comps = getScoreComponents('enemy');
+      showScoreTooltip(enemyScoreEl, comps);
+    });
+    enemyScoreEl.addEventListener('mouseleave', hideScoreTooltip);
+    enemyScoreEl.dataset.tooltipBound = '1';
+  }
+}
+
+// bind tooltip listeners once
+try { bindScoreTooltipListeners(); } catch (e) { console.warn('[tooltip] bind failed', e); }
+
+function computeSynergyComponent(entries) {
+  const picks = entries.filter((e) => e && e.champion && e.role);
+  if (picks.length < 2) return 50; // neutro
+  let num = 0, den = 0;
+  for (let i = 0; i < picks.length; i++) {
+    for (let j = i + 1; j < picks.length; j++) {
+      const a = picks[i]; const b = picks[j];
+      const pair = getPairSynergy(a.champion, a.role, b.champion, b.role);
+      if (!pair) continue;
+      const w = safeNumber(pair.games) ?? 1;
+      const d = clamp(safeNumber(pair.delta) ?? 0, -10, 10); // limitar a +-10 p.p.
+      num += d * w; den += w;
+    }
+  }
+  if (den === 0) return 50;
+  const avgDelta = num / den; // -10..+10 esperado
+  const score = 50 + avgDelta * 5; // -10->0, 0->50, +10->100
+  return clamp(Math.round(score), 0, 100);
+}
+
+function computeSoloWinrateComponent(entries) {
+  const picks = entries.filter((e) => e && e.champion && e.role);
+  if (!picks.length) return 50;
+  let num = 0, den = 0;
+  for (const p of picks) {
+    const payload = getMatchupPayload(p.champion) || getSynergyPayload(p.champion);
+    let roleData = null;
+    if (payload && payload.roles && p.role && payload.roles[p.role]) roleData = payload.roles[p.role];
+    // try common fields
+    const win = safeNumber(roleData?.win_rate_weighted ?? roleData?.win_rate ?? payload?.win_rate_weighted ?? payload?.win_rate);
+    const games = safeNumber(roleData?.games_weighted ?? roleData?.games ?? payload?.games_weighted ?? payload?.games) ?? 1;
+    if (win === null) {
+      // no data, assume neutral
+      num += 50 * games; den += games; continue;
+    }
+    // if win is small (0..1), convert to percent
+    const winPct = win <= 1 ? win * 100 : win;
+    num += clamp(winPct, 0, 100) * games; den += games;
+  }
+  if (den === 0) return 50;
+  return clamp(Math.round(num / den), 0, 100);
+}
+
+function buildMatchupRowsForScore(teamEntries, enemyEntries) {
+  // Essencialmente uma versão de updateMatchupInsights sem filtros/limit, retornando linhas únicas ally vs enemy
+  const teamPicks = teamEntries.map((e) => e.champion);
+  const enemyPicks = enemyEntries.map((e) => e.champion);
+  if (!teamPicks.length || !enemyPicks.length) return [];
+
+  const buildRoleMap = (entries) => {
+    const map = new Map();
+    entries.forEach(({ champion, role }) => {
+      if (!role) return;
+      const raw = String(champion || "").trim();
+      if (!raw) return;
+      const resolved = resolveChampionName(raw);
+      const keys = [raw, resolved].filter(Boolean);
+      keys.forEach((key) => map.set(key.toLowerCase(), role));
+    });
+    return map;
+  };
+  const teamRoleMap = buildRoleMap(teamEntries);
+  const enemyRoleMap = buildRoleMap(enemyEntries);
+
+  const rows = [];
+  teamPicks.forEach((ally) => {
+    const allyDisplay = resolveChampionName(ally);
+    const allyKey = (allyDisplay || ally || "").toLowerCase();
+    const info = getMatchupPayload(ally);
+    if (!info || !info.roles) return;
+    Object.entries(info.roles).forEach(([allyRoleKey, roleData]) => {
+      const matchups = roleData.matchups || {};
+      Object.entries(matchups).forEach(([opponentRole, opponents]) => {
+        enemyPicks.forEach((enemy) => {
+          const enemyDisplay = resolveChampionName(enemy);
+          const enemyKey = (enemyDisplay || enemy || "").toLowerCase();
+          const stats = resolveOpponentStats(opponents, enemy);
+          if (!stats) return;
+          const delta = safeNumber(stats.matchup_delta);
+          const winRate = safeNumber(stats.counter_win_rate_weighted ?? stats.counter_win_rate);
+          const earlyWin = safeNumber(
+            stats.early_win_rate_weighted ?? stats.early_win_rate ?? (stats.early && (stats.early.win_rate_weighted ?? stats.early.win_rate))
+          );
+          const games = safeNumber(stats.games_weighted ?? stats.games);
+          if (delta === null && winRate === null) return;
+          const allyRoleResolved = stats.self_role || allyRoleKey || null;
+          const enemyRoleResolved = stats.opponent_role || opponentRole || null;
+          const allySelectionRole = teamRoleMap.get(allyKey);
+          const enemySelectionRole = enemyRoleMap.get(enemyKey);
+          const matchesSelection =
+            (!allySelectionRole || !allyRoleResolved || allySelectionRole === allyRoleResolved) &&
+            (!enemySelectionRole || !enemyRoleResolved || enemySelectionRole === enemyRoleResolved);
+          const absDelta = Math.abs(delta ?? 0);
+          rows.push({ ally: allyDisplay || ally, allyRole: allyRoleResolved || null, enemy: enemyDisplay || enemy, enemyRole: enemyRoleResolved || null, delta: delta ?? 0, winRate, earlyWin, games, absDelta, matchesSelection });
+        });
+      });
+    });
+  });
+
+  // Dedup similar ao usado na UI: escolher a melhor linha por par ally::enemy
+  const deduped = new Map();
+  rows.forEach((row) => {
+    const key = `${row.ally}::${row.enemy}`;
+    const existing = deduped.get(key);
+    if (!existing) { deduped.set(key, row); return; }
+    const existingScore = { matchesSelection: existing.matchesSelection ? 1 : 0, absDelta: existing.absDelta ?? Math.abs(existing.delta ?? 0), games: existing.games ?? 0 };
+    const candidateScore = { matchesSelection: row.matchesSelection ? 1 : 0, absDelta: row.absDelta ?? Math.abs(row.delta ?? 0), games: row.games ?? 0 };
+    const isBetter = candidateScore.matchesSelection > existingScore.matchesSelection || (candidateScore.matchesSelection === existingScore.matchesSelection && (candidateScore.absDelta > existingScore.absDelta || (candidateScore.absDelta === existingScore.absDelta && candidateScore.games > existingScore.games)));
+    if (isBetter) deduped.set(key, row);
+  });
+  return Array.from(deduped.values());
+}
+
+function computeMatchupComponent(teamEntries, enemyEntries) {
+  const rows = buildMatchupRowsForScore(teamEntries, enemyEntries);
+  if (!rows.length) return { team: 50, enemy: 50, rows: [] };
+  let wFav = 0, wUnf = 0;
+  let denom = 0;
+  rows.forEach((r) => {
+    const w = safeNumber(r.games) ?? 1;
+    if (r.delta > 2) { wFav += w; denom += w; }
+    else if (r.delta < -2) { wUnf += w; denom += w; }
+  });
+  if (denom === 0) return { team: 50, enemy: 50, rows };
+  const balance = (wFav - wUnf) / denom; // -1..+1
+  const teamScore = clamp(Math.round(50 + balance * 50), 0, 100);
+  const enemyScore = 100 - teamScore;
+  return { team: teamScore, enemy: enemyScore, rows };
+}
+
+function computeEarlyComponentFromRows(rows) {
+  if (!rows || !rows.length) return { team: 50, enemy: 50 };
+  let num = 0, den = 0;
+  rows.forEach((r) => {
+    if (typeof r.earlyWin !== 'number') return;
+    const w = safeNumber(r.games) ?? 1;
+    const adv = clamp(r.earlyWin - 50, -20, 20); // limitar a +-20 p.p.
+    num += adv * w; den += w;
+  });
+  if (den === 0) return { team: 50, enemy: 50 };
+  const avgAdv = num / den; // -20..+20
+  const teamScore = clamp(Math.round(50 + (avgAdv / 20) * 50), 0, 100);
+  const enemyScore = 100 - teamScore;
+  return { team: teamScore, enemy: enemyScore };
+}
+
+function updateScores(teamTagsIgnored, enemyTagsIgnored) {
+  // Calcula 0..100 com base em: sinergia dos escolhidos, saldo de matchups (ponderado), e early game
+  const teamEntries = getSidePickEntries('team');
+  const enemyEntries = getSidePickEntries('enemy');
+  const synergyTeam = computeSynergyComponent(teamEntries);
+  const synergyEnemy = computeSynergyComponent(enemyEntries);
+  const soloTeam = computeSoloWinrateComponent(teamEntries);
+  const soloEnemy = computeSoloWinrateComponent(enemyEntries);
+  const matchup = computeMatchupComponent(teamEntries, enemyEntries);
+  const early = computeEarlyComponentFromRows(matchup.rows);
+  // New weights requested: 0.3 solo winrate, 0.3 synergy, 0.3 matchup, 0.1 early
+  const WEIGHTS = { solo: 0.3, synergy: 0.3, matchup: 0.3, early: 0.1 };
+  const teamScore = clamp(Math.round(
+    soloTeam * WEIGHTS.solo + synergyTeam * WEIGHTS.synergy + matchup.team * WEIGHTS.matchup + early.team * WEIGHTS.early
+  ), 0, 100);
+  const enemyScore = clamp(Math.round(
+    soloEnemy * WEIGHTS.solo + synergyEnemy * WEIGHTS.synergy + matchup.enemy * WEIGHTS.matchup + early.enemy * WEIGHTS.early
+  ), 0, 100);
+  teamScoreEl.textContent = String(teamScore);
+  enemyScoreEl.textContent = String(enemyScore);
+  applyScoreColor(teamScoreEl, teamScore);
+  applyScoreColor(enemyScoreEl, enemyScore);
+
 }
 
 
@@ -348,8 +637,71 @@ function updateInsightPanels() {
   const enemyPicks = enemyEntries.map((entry) => entry.champion);
   updateSynergyRecommendations(teamEntries);
   updateComboHighlights(teamPicks, enemyPicks);
+  updateSelectedSynergyForTeam(teamEntries);
   updateMatchupInsights(teamEntries, enemyEntries);
   updateComboHighlights(teamPicks, enemyPicks, enemyComboListEl, { scope: "enemy" });
+}
+
+// Retorna o payload de sinergia entre dois campeões considerando as roles selecionadas
+function getPairSynergy(allyName, allyRole, partnerName, partnerRole) {
+  if (!allyName || !partnerName || !allyRole || !partnerRole) return null;
+  // Primeiro, tenta a direção ally -> partner
+  const infoA = getSynergyPayload(allyName);
+  let best = null;
+  if (infoA && infoA.roles && infoA.roles[allyRole]) {
+    const srs = infoA.roles[allyRole].sinergias || {};
+    const bucket = srs[partnerRole] || {};
+    const stats = resolveOpponentStats(bucket, partnerName);
+    if (stats && (stats.self_role ? stats.self_role === allyRole : true) && (stats.ally_role ? stats.ally_role === partnerRole : true)) {
+      const delta = safeNumber(stats.synergy_delta);
+      const wr = safeNumber(stats.duo_win_rate_weighted ?? stats.duo_win_rate);
+      const games = safeNumber(stats.games_weighted ?? stats.games);
+      if (delta !== null || wr !== null) {
+        best = { source: resolveChampionName(allyName) || allyName, partner: resolveChampionName(partnerName) || partnerName, allyRole, partnerRole, delta: delta ?? 0, winRate: wr, games };
+      }
+    }
+  }
+  // Se não encontrou, tenta a direção oposta partner -> ally
+  const infoB = getSynergyPayload(partnerName);
+  if (infoB && infoB.roles && infoB.roles[partnerRole]) {
+    const srs = infoB.roles[partnerRole].sinergias || {};
+    const bucket = srs[allyRole] || {};
+    const stats = resolveOpponentStats(bucket, allyName);
+    if (stats && (stats.self_role ? stats.self_role === partnerRole : true) && (stats.ally_role ? stats.ally_role === allyRole : true)) {
+      const delta = safeNumber(stats.synergy_delta);
+      const wr = safeNumber(stats.duo_win_rate_weighted ?? stats.duo_win_rate);
+      const games = safeNumber(stats.games_weighted ?? stats.games);
+      const candidate = { source: resolveChampionName(allyName) || allyName, partner: resolveChampionName(partnerName) || partnerName, allyRole, partnerRole, delta: delta ?? 0, winRate: wr, games };
+      if (!best) best = candidate; else {
+        // preferir maior número de jogos; em empate, maior |delta|
+        const bg = safeNumber(best.games) ?? 0; const cg = safeNumber(candidate.games) ?? 0;
+        if (cg > bg || (cg === bg && Math.abs(candidate.delta ?? 0) > Math.abs(best.delta ?? 0))) best = candidate;
+      }
+    }
+  }
+  return best;
+}
+
+function updateSelectedSynergyForTeam(teamEntries) {
+  if (!selectedSynergyListEl) return;
+  if (!ExternalStats.loaded) { renderListEmptyState(selectedSynergyListEl, "Carregando sinergias dos escolhidos..."); return; }
+  const picks = teamEntries.filter((e) => e && e.champion && e.role);
+  if (picks.length < 2) { renderListEmptyState(selectedSynergyListEl, "Selecione ao menos dois campeões para ver a sinergia entre eles."); return; }
+  const rows = [];
+  for (let i = 0; i < picks.length; i++) {
+    for (let j = i + 1; j < picks.length; j++) {
+      const a = picks[i]; const b = picks[j];
+      const rec = getPairSynergy(a.champion, a.role, b.champion, b.role);
+      if (rec) rows.push(rec);
+    }
+  }
+  if (!rows.length) { renderListEmptyState(selectedSynergyListEl, "Sem dados de sinergia relevantes entre os escolhidos."); return; }
+  rows.sort((x, y) => {
+    if ((y.delta ?? 0) !== (x.delta ?? 0)) return (y.delta ?? 0) - (x.delta ?? 0);
+    return (y.games ?? 0) - (x.games ?? 0);
+  });
+  selectedSynergyListEl.innerHTML = "";
+  rows.forEach((entry) => selectedSynergyListEl.appendChild(renderSynergyItem(entry)));
 }
 
 function getSynergyPayload(championName) {
@@ -396,6 +748,25 @@ function getMatchupPayload(championName) {
     if (!key) continue;
     const payload = ExternalStats.matchupsBySlug.get(key);
     if (payload) return payload;
+  }
+  return null;
+}
+
+function getBanRateForChampion(name) {
+  if (!name) return null;
+  // Try by display name, slug and resolved variants
+  const candidates = new Set();
+  const resolved = resolveChampionName(name);
+  if (resolved) candidates.add(String(resolved));
+  candidates.add(String(name));
+  const slug = championDataKey(name);
+  if (slug) candidates.add(slug);
+  // Normalize keys used when loading bans (we store lower-case keys and also display names)
+  for (const c of candidates) {
+    if (!c) continue;
+    const key1 = String(c).toLowerCase();
+    if (ExternalStats.bans && ExternalStats.bans.has(key1)) return ExternalStats.bans.get(key1);
+    if (ExternalStats.bans && ExternalStats.bans.has(c)) return ExternalStats.bans.get(c);
   }
   return null;
 }
@@ -681,6 +1052,9 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
           
           const delta = safeNumber(stats.matchup_delta);
           const winRate = safeNumber(stats.counter_win_rate_weighted ?? stats.counter_win_rate);
+          const earlyWin = safeNumber(
+            stats.early_win_rate_weighted ?? stats.early_win_rate ?? (stats.early && (stats.early.win_rate_weighted ?? stats.early.win_rate))
+          );
           const games = safeNumber(stats.games_weighted ?? stats.games);
           if (delta === null && winRate === null) return;
 
@@ -700,6 +1074,7 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
             enemyRole: enemyRoleResolved || null,
             delta: delta ?? 0,
             winRate,
+            earlyWin,
             games,
             absDelta,
             matchesSelection,
@@ -772,15 +1147,21 @@ function renderMatchupItem(row) {
   const li = document.createElement("li");
   const content = document.createElement("div");
   const title = document.createElement("strong");
-  const allyRoleLabel = row.allyRole && ROLE_LABELS[row.allyRole] ? ` (${ROLE_LABELS[row.allyRole]})` : "";
-  const enemyRoleLabel = row.enemyRole && ROLE_LABELS[row.enemyRole] ? ` (${ROLE_LABELS[row.enemyRole]})` : "";
-  title.textContent = `${row.ally}${allyRoleLabel} vs ${row.enemy}${enemyRoleLabel}`;
+  // Renderizar como tokens com ícone + (Lane) juntos para manter alinhamento
+  title.dataset.iconsDecorated = "1";
+  const allyLabel = row.allyRole && ROLE_LABELS[row.allyRole] ? ROLE_LABELS[row.allyRole] : null;
+  const enemyLabel = row.enemyRole && ROLE_LABELS[row.enemyRole] ? ROLE_LABELS[row.enemyRole] : null;
+  title.appendChild(createInlineChamp(row.ally, allyLabel));
+  title.appendChild(document.createTextNode(" vs "));
+  title.appendChild(createInlineChamp(row.enemy, enemyLabel));
   content.appendChild(title);
   const meta = document.createElement("p");
   meta.className = "muted";
   const bits = [];
   const formattedWR = formatPercent(row.winRate);
   if (formattedWR) bits.push(`WR ${formattedWR}`);
+  const formattedEarly = formatPercent(row.earlyWin);
+  if (formattedEarly) bits.push(`Early ${formattedEarly}`);
   const formattedGames = formatGames(row.games);
   if (formattedGames) bits.push(formattedGames);
   const formattedDelta = formatSigned(row.delta);
@@ -842,7 +1223,7 @@ resetBtn?.addEventListener("click", () => {
   refresh();
 });
 
-refresh();
+// initial refresh will run after data and helpers are loaded via loadChampionTags() and loadExternalStats()
 
 // --- IntegraÃ§Ã£o CSV de tags por campeÃ£o ---
 
@@ -961,6 +1342,7 @@ async function loadExternalStats() {
     ["synergies", "../data/synergies_high_elo.json"],
     ["matchups", "../data/matchups_high_elo.json"],
     ["combos", "../data/top_combos_high_elo.json"],
+    ["bans", "../data/bans_high_elo.json"],
   ];
 
   await Promise.all(sources.map(async ([key, url]) => {
@@ -1010,6 +1392,24 @@ async function loadExternalStats() {
         const duos = Array.isArray(data && data.duos) ? data.duos : [];
         const trios = Array.isArray(data && data.trios) ? data.trios : [];
         ExternalStats.combos = duos.concat(trios);
+      } else if (key === "bans") {
+        ExternalStats.bans = new Map();
+        if (data && typeof data === "object") {
+          // Some ban files wrap champions under a top-level `bans` key
+          const source = data.bans && typeof data.bans === 'object' ? data.bans : data;
+          Object.entries(source).forEach(([champ, payload]) => {
+            if (!payload) return;
+            // ban rate: prefer weighted when available
+            const rate = safeNumber(payload.ban_rate_weighted ?? payload.ban_rate ?? payload.banRate ?? payload.rate);
+            const slug = championDataKey(champ) || champ;
+            // store by lower-case slug and display name (resolved)
+            if (typeof slug === "string") ExternalStats.bans.set(String(slug).toLowerCase(), rate ?? null);
+            const resolved = resolveChampionName(champ);
+            if (resolved) ExternalStats.bans.set(String(resolved).toLowerCase(), rate ?? null);
+            // also store original key lower-case
+            ExternalStats.bans.set(String(champ).toLowerCase(), rate ?? null);
+          });
+        }
       }
     } catch (err) {
       ExternalStats.errors[key] = true;
@@ -1017,6 +1417,11 @@ async function loadExternalStats() {
     }
   }));
   ExternalStats.loaded = true;
+  try {
+    if (ExternalStats.bans && ExternalStats.bans.size) console.info(`[bans] total armazenado: ${ExternalStats.bans.size}`);
+  } catch (e) {}
+  // atualiza exibições de Ban Rate caso o usuário já tenha selecionado campeões
+  try { refreshBanDisplays(); } catch (e) { }
   updateInsightPanels();
 }
 
@@ -1044,10 +1449,34 @@ function populateBanSelects() {
         sel.appendChild(opt);
       });
       ensureSelectIcon(sel);
-      sel.addEventListener('change', () => { updateBanGroup(groupEl); ensureSelectIcon(sel); });
+      sel.addEventListener('change', () => { updateBanGroup(groupEl); ensureSelectIcon(sel); setBanRateForBanSelect(sel); });
+      // inicializa exibição caso já tenha valor
+      try { setBanRateForBanSelect(sel); } catch (e) { }
     });
     updateBanGroup(groupEl);
   });
+}
+
+function setBanRateForBanSelect(sel) {
+  if (!sel) return;
+  // procura o elemento .ban-rate irmão no label
+  const label = sel.closest('label.field');
+  if (!label) return;
+  let el = label.querySelector('.ban-rate');
+  if (!el) {
+    el = document.createElement('span');
+    el.className = 'ban-rate muted';
+    label.appendChild(el);
+  }
+  const val = sel.value || '';
+  if (!val) { el.textContent = 'Ban Rate: --%'; el.style.display = 'none'; return; }
+  const rate = getBanRateForChampion(val);
+  if (rate === null || rate === undefined) {
+    el.textContent = 'Ban Rate: --%';
+  } else {
+    el.textContent = `Ban Rate: ${banPercentFormatter.format(rate)}%`;
+  }
+  el.style.display = 'block';
 }
 
 function updateBanGroup(groupEl) {
@@ -1257,6 +1686,38 @@ function applyChampionTagsToRow(rowEl, championName) {
 
   // As tags do CSV jÃ¡ foram adicionadas acima e marcadas como is-active
   refresh();
+}
+
+function setBanRateDisplay(rowEl, championName) {
+  if (!rowEl) return;
+  // encontra ou cria elemento de exibição
+  let el = rowEl.querySelector('.ban-rate');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'ban-rate muted';
+    // colocar após as champ-tags dentro de .role-select
+    const selectRow = rowEl.querySelector('.role-select');
+    if (selectRow) selectRow.appendChild(el); else rowEl.appendChild(el);
+  }
+  if (!championName) { el.textContent = ''; el.style.display = 'none'; return; }
+  const rate = getBanRateForChampion(championName);
+  if (rate === null || rate === undefined) {
+    el.textContent = 'Ban Rate: --%';
+  } else {
+    el.textContent = `Ban Rate: ${banPercentFormatter.format(rate)}%`;
+  }
+  el.style.display = 'block';
+}
+
+function refreshBanDisplays() {
+  // Atualiza apenas os selects dentro de .ban-group (aba Bans)
+  document.querySelectorAll('.ban-group select').forEach((sel) => {
+    try {
+      setBanRateForBanSelect(sel);
+    } catch (e) {
+      // ignore per-select errors
+    }
+  });
 }
 
 // Inicia carregamento do CSV assim que a pÃ¡gina abrir
