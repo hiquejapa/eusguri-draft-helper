@@ -1,0 +1,90 @@
+name: Sync from Google Drive
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # roda todo começo de hora
+  workflow_dispatch:       # tu pode rodar manualmente pelo GitHub Actions
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # vamos setar manualmente depois
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
+
+      - name: Baixar arquivos do Google Drive
+        env:
+          GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: |
+          import json, os
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaIoBaseDownload
+          import io
+
+          # Lê credencial da service account do secret
+          creds_info = json.loads(os.environ["GDRIVE_SERVICE_ACCOUNT"])
+          creds = service_account.Credentials.from_service_account_info(
+              creds_info,
+              scopes=['https://www.googleapis.com/auth/drive.readonly']
+          )
+
+          service = build('drive', 'v3', credentials=creds)
+
+          folder_id = os.environ["GDRIVE_FOLDER_ID"]
+
+          # Lista arquivos dentro da pasta
+          results = service.files().list(
+              q=f"'{folder_id}' in parents and trashed = false",
+              fields="files(id, name, mimeType)"
+          ).execute()
+
+          files = results.get('files', [])
+
+          os.makedirs("synced_output", exist_ok=True)
+
+          for f in files:
+              file_id = f['id']
+              name = f['name']
+
+              # Ignora subpastas por simplicidade; dá pra expandir depois
+              if f["mimeType"] == "application/vnd.google-apps.folder":
+                  continue
+
+              request = service.files().get_media(fileId=file_id)
+              fh = io.FileIO(os.path.join("synced_output", name), 'wb')
+              downloader = MediaIoBaseDownload(fh, request)
+              done = False
+              while done is False:
+                  status, done = downloader.next_chunk()
+
+          print("Download completo. Arquivos salvos em synced_output/")
+
+        shell: python
+
+      - name: Configurar Git
+        run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git add synced_output
+          git commit -m "Sync automático do Google Drive" || echo "Nada novo para commitar"
+
+      - name: Push de volta pro repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
