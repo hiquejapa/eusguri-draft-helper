@@ -32,6 +32,7 @@ jobs:
         env:
           GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        shell: python
         run: |
           import json, os, io
           from pathlib import Path
