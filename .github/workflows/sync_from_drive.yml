@@ -11,12 +11,12 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          persist-credentials: false  # vamos setar manualmente depois
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -28,65 +28,92 @@ jobs:
           python -m pip install --upgrade pip
           pip install google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
 
-      - name: Baixar arquivos do Google Drive
+      - name: Download from Google Drive (to data/)
         env:
           GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
         run: |
-          import json, os
+          import json, os, io
+          from pathlib import Path
           from google.oauth2 import service_account
           from googleapiclient.discovery import build
           from googleapiclient.http import MediaIoBaseDownload
-          import io
 
-          # Lê credencial da service account do secret
           creds_info = json.loads(os.environ["GDRIVE_SERVICE_ACCOUNT"])
           creds = service_account.Credentials.from_service_account_info(
               creds_info,
               scopes=['https://www.googleapis.com/auth/drive.readonly']
           )
-
           service = build('drive', 'v3', credentials=creds)
 
-          folder_id = os.environ["GDRIVE_FOLDER_ID"]
+          ROOT_ID = os.environ["GDRIVE_FOLDER_ID"]
+          OUTDIR = Path("data")   # <-- destino novo
+          OUTDIR.mkdir(parents=True, exist_ok=True)
 
-          # Lista arquivos dentro da pasta
-          results = service.files().list(
-              q=f"'{folder_id}' in parents and trashed = false",
-              fields="files(id, name, mimeType)"
-          ).execute()
+          EXPORT_MAP = {
+              "application/vnd.google-apps.document": ("application/pdf", ".pdf"),
+              "application/vnd.google-apps.spreadsheet": ("text/csv", ".csv"),
+              "application/vnd.google-apps.presentation": ("application/pdf", ".pdf"),
+          }
 
-          files = results.get('files', [])
+          def list_children(folder_id):
+              page_token = None
+              while True:
+                  resp = service.files().list(
+                      q=f"'{folder_id}' in parents and trashed=false",
+                      fields="nextPageToken, files(id,name,mimeType)",
+                      pageToken=page_token
+                  ).execute()
+                  for f in resp.get('files', []):
+                      yield f
+                  page_token = resp.get('nextPageToken')
+                  if not page_token:
+                      break
 
-          os.makedirs("data", exist_ok=True)
-
-          for f in files:
-              file_id = f['id']
-              name = f['name']
-
-              # Ignora subpastas por simplicidade; dá pra expandir depois
-              if f["mimeType"] == "application/vnd.google-apps.folder":
-                  continue
-
-              request = service.files().get_media(fileId=file_id)
-              fh = io.FileIO(os.path.join("data", name), 'wb')
+          def download_file(file_obj, dest_path):
+              fid, name, mt = file_obj["id"], file_obj["name"], file_obj["mimeType"]
+              if mt in EXPORT_MAP:
+                  mime, ext = EXPORT_MAP[mt]
+                  dest = dest_path.with_suffix(ext)
+                  request = service.files().export_media(fileId=fid, mimeType=mime)
+              else:
+                  dest = dest_path
+                  request = service.files().get_media(fileId=fid)
+              fh = io.FileIO(dest, 'wb')
               downloader = MediaIoBaseDownload(fh, request)
               done = False
-              while done is False:
+              while not done:
                   status, done = downloader.next_chunk()
 
-          print("Download completo. Arquivos salvos em data/")
+          def recurse(folder_id, base_dir):
+              for f in list_children(folder_id):
+                  fid, name, mt = f["id"], f["name"], f["mimeType"]
+                  if mt == "application/vnd.google-apps.folder":
+                      subdir = base_dir / name
+                      subdir.mkdir(exist_ok=True)
+                      recurse(fid, subdir)
+                  else:
+                      download_file(f, base_dir / name)
 
-        shell: python
+          recurse(ROOT_ID, OUTDIR)
+          print("Download completo para data/")
 
-      - name: Configurar Git
+      - name: Remove pasta antiga synced_output (se existir)
+        run: |
+          if [ -d "synced_output" ]; then
+            git rm -r --cached synced_output || true
+            rm -rf synced_output
+          fi
+
+      - name: Commit changes (if any)
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
-          git commit -m "Sync automático do Google Drive" || echo "Nada novo para commitar"
+          git add -A
+          git commit -m "Sync Drive -> data/" || echo "Nada novo para commitar"
 
-      - name: Push de volta pro repo
+      - name: Push to target branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:main
