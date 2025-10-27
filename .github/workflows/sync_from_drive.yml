@@ -58,7 +58,7 @@ jobs:
 
           files = results.get('files', [])
 
-          os.makedirs("synced_output", exist_ok=True)
+          os.makedirs("data", exist_ok=True)
 
           for f in files:
               file_id = f['id']
@@ -75,7 +75,7 @@ jobs:
               while done is False:
                   status, done = downloader.next_chunk()
 
-          print("Download completo. Arquivos salvos em synced_output/")
+          print("Download completo. Arquivos salvos em data/")
 
         shell: python
 
@@ -83,7 +83,6 @@ jobs:
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
-          git add synced_output
           git commit -m "Sync automático do Google Drive" || echo "Nada novo para commitar"
 
       - name: Push de volta pro repo
