@@ -25,8 +25,9 @@ jobs:
 
       - name: Install requirements
         run: |
-          python -m pip install --upgrade pip
-          pip install google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
+          python -m pip install --upgrade pip setuptools wheel
+          pip install google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib packaging
+
 
       - name: Download from Google Drive (to data/)
         env:
