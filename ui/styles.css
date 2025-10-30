@@ -17,6 +17,19 @@
   --accent-teal: #34c4b3;
   --accent-sky: #51c2ff;
   --accent-gray: #606889;
+  --panel-height: 1800px;                 /* altura total da coluna */
+  --panel-team-card-height: 3000px;       /* padrão da coluna Meu Time */
+  --panel-team-bans-height: 205px;       /* card específico */
+  --panel-team-composition-height: 512px;
+  --panel-team-tags-height: 200px;
+  --panel-team-sinergias-height: 780px;
+  --synergy-primary-height: 800px;       /* “Sinergias” central */
+  --synergy-secondary-height: 898px;     /* “Matchups” central */
+  --panel-enemy-card-height: 3000px;      /* padrão da coluna Inimigo */
+  --panel-enemy-bans-height: 205px;
+  --panel-enemy-composition-height: 512px;
+  --panel-enemy-tags-height: 200px;
+  --panel-enemy-combos-height: 780px;
   font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-900);
   color: var(--text-100);
@@ -52,6 +65,122 @@ body {
 
 .header-actions { display: flex; align-items: center; gap: 0.75rem; }
 .header-note { font-size: 0.85rem; }
+
+/* Header control: min-synergy-games input styling (controls MIN_SYNERGY_GAMES) */
+#min-synergy-games {
+  width: 6ch; /* slightly larger to improve usability */
+  padding: 0.22rem 0.35rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(90,98,132,0.4);
+  background: transparent;
+  color: var(--text-100);
+  font-size: 0.9rem;
+}
+
+/* Remove number input spinners (WebKit + Firefox) and center the value */
+#min-synergy-games {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield;
+  text-align: center;
+}
+#min-synergy-games::-webkit-outer-spin-button,
+#min-synergy-games::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Simple CSS tooltip using data-tooltip placed on the wrapper label.
+   Inputs are replaced elements and don't reliably accept ::before/::after
+   in some browsers, so attach the tooltip to the label and use
+   :focus-within so keyboard focus shows it as well. */
+label[data-tooltip] {
+  position: relative; /* anchor for pseudo-element */
+}
+/* Tooltip below the control (styled to match the team score tooltip) */
+label[data-tooltip]::after,
+label[data-tooltip]::before {
+  transition: opacity 160ms ease, transform 160ms ease;
+  opacity: 0;
+  pointer-events: none;
+}
+label[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  top: calc(100% + 8px); /* place tooltip below the input */
+  background: linear-gradient(180deg, rgba(20,24,36,0.98), rgba(15,18,28,0.98));
+  color: var(--text-100);
+  font-size: 0.85rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  white-space: nowrap;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+  z-index: 9999;
+  max-width: 320px;
+}
+/* small arrow (triangle) pointing up toward the input */
+label[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  top: calc(100% + 2px);
+  border-width: 0 7px 7px 7px; /* triangle pointing up */
+  border-style: solid;
+  border-color: transparent transparent rgba(20,24,36,0.98) transparent;
+  z-index: 9999;
+}
+label[data-tooltip]:hover::after,
+label[data-tooltip]:focus-within::after,
+label[data-tooltip]:hover::before,
+label[data-tooltip]:focus-within::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* When JS floating tooltip is enabled, hide the CSS pseudo-element tooltip
+   to avoid duplicate tooltips. JS will add `.floating-tooltip-enabled` to body. */
+body.floating-tooltip-enabled label[data-tooltip]::after,
+body.floating-tooltip-enabled label[data-tooltip]::before {
+  display: none !important;
+}
+
+/* Floating tooltip appended to body (used when JS is available). This
+   provides robust positioning and prevents clipping at viewport edges. */
+.floating-tooltip {
+  position: absolute;
+  background: linear-gradient(180deg, rgba(20,24,36,0.98), rgba(15,18,28,0.98));
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.45rem;
+  color: var(--text-100);
+  font-size: 0.85rem;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+  z-index: 10000;
+  pointer-events: none;
+  max-width: 320px;
+  display: none;
+}
+.floating-tooltip .arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -7px;
+  border-width: 7px 7px 0 7px;
+  border-style: solid;
+  border-color: rgba(20,24,36,0.98) transparent transparent transparent;
+}
+.floating-tooltip.above .arrow {
+  bottom: -7px;
+  top: auto;
+  border-width: 0 7px 7px 7px;
+  border-color: transparent transparent rgba(20,24,36,0.98) transparent;
+}
+.floating-tooltip .content { display: block; }
 
 .app-footer {
   border-top: 1px solid var(--border);
@@ -106,17 +235,64 @@ body {
 .app-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  /* Use percentages so column widths are predictable: sides larger, middle smaller */
+  grid-template-columns: 35.5% 28% 35.5%;
+  grid-template-rows: 1fr;
   gap: 1.5rem;
   padding: 1.5rem 2rem 2.5rem;
+  overflow: hidden;
+  height: var(--panel-height);
+  max-height: var(--panel-height);
+  /* Allow children to manage their own overflow */
+  min-height: 0;
 }
 
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0;
   /* Important for nested flex scrolling: allow children to shrink */
   min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Prevent the Insights column from growing vertically; inner cards scroll */
+.panel-synergy {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Specific layout fixes for the Top Sinergias card inside the Meu Time panel.
+   Ensure the 'combos' list and the 'Sinergias dos escolhidos' section don't
+   overlap by giving each a flexible area and internal scrolling when needed. */
+.panel-team .card.card-scroll[data-panel="sinergias"] .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 0; /* allow children to shrink */
+}
+
+.panel-team .card.card-scroll[data-panel="sinergias"] .card-body > .list.combos {
+  /* top area: show combos, allow it to shrink/grow and scroll */
+  flex: 1 1 40%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.panel-team .card.card-scroll[data-panel="sinergias"] .card-body .list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1 1 60%;
+  min-height: 0;
+}
+
+.panel-team .card.card-scroll[data-panel="sinergias"] .card-body .list-section .list {
+  /* make the inner list scrollable without growing past the card */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .panel-title {
@@ -139,14 +315,110 @@ body {
 }
 
 .card-scroll {
-  flex: 1;
+  flex: 0 0 auto;
   overflow: hidden;
   min-height: 0;
 }
+.card.card-scroll {
+  height: var(--panel-scroll-height, auto);
+}
+.panel-team .card.card-scroll {
+  height: var(--panel-team-card-height, var(--panel-scroll-height, auto));
+}
+.panel-team .card.card-scroll[data-panel="bans"] {
+  height: var(--panel-team-bans-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+}
+.panel-team .card.card-scroll[data-panel="composition"] {
+  height: var(--panel-team-composition-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+}
+.panel-team .card.card-scroll[data-panel="tags"] {
+  height: var(--panel-team-tags-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+}
+.panel-team .card.card-scroll[data-panel="sinergias"] {
+  height: var(--panel-team-sinergias-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+}
+.panel-enemy .card.card-scroll {
+  height: var(--panel-enemy-card-height, var(--panel-scroll-height, auto));
+}
+.panel-enemy .card.card-scroll[data-panel="bans"] {
+  height: var(--panel-enemy-bans-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+}
+.panel-enemy .card.card-scroll[data-panel="composition"] {
+  height: var(--panel-enemy-composition-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+}
+.panel-enemy .card.card-scroll[data-panel="tags"] {
+  height: var(--panel-enemy-tags-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+}
+.panel-enemy .card.card-scroll[data-panel="combos"] {
+  height: var(--panel-enemy-combos-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+}
+.card.card-scroll .card-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.card.card-scroll .card-body > .list {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.panel-team .card.card-scroll .card-body,
+.panel-enemy .card.card-scroll .card-body {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-blue) rgba(44,50,72,0.6);
+}
+.panel-team .card.card-scroll .card-body::-webkit-scrollbar,
+.panel-enemy .card.card-scroll .card-body::-webkit-scrollbar {
+  width: 0.5rem;
+}
+.panel-team .card.card-scroll .card-body::-webkit-scrollbar-track,
+.panel-enemy .card.card-scroll .card-body::-webkit-scrollbar-track {
+  background: rgba(27,31,45,0.55);
+  border-radius: 999px;
+}
+.panel-team .card.card-scroll .card-body::-webkit-scrollbar-thumb,
+.panel-enemy .card.card-scroll .card-body::-webkit-scrollbar-thumb {
+  background: var(--accent-blue);
+  border-radius: 999px;
+}
 
-/* Nos painéis de Sinergias (coluna central), queremos dividir igualmente o espaço entre os dois cards scrolláveis */
+/* Nos paineis de Sinergias (coluna central) usamos medidas fixas para facilitar ajustes manuais */
 .panel-synergy .card-scroll {
-  flex: 1 1 0;
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.panel-synergy .card.card-scroll:first-of-type {
+  height: var(--synergy-primary-height);
+}
+.panel-synergy .card.card-scroll:last-of-type {
+  height: var(--synergy-secondary-height);
+}
+
+/* Ensure scroll happens inside the card body, not by growing the card */
+.panel-synergy .card.card-scroll {
+  min-height: 0;
+}
+.panel-synergy .card.card-scroll .card-body > .list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-blue) rgba(44,50,72,0.6);
+}
+.panel-synergy .card.card-scroll .card-body > .list::-webkit-scrollbar {
+  width: 0.5rem;
+}
+.panel-synergy .card.card-scroll .card-body > .list::-webkit-scrollbar-track {
+  background: rgba(27,31,45,0.55);
+  border-radius: 999px;
+}
+.panel-synergy .card.card-scroll .card-body > .list::-webkit-scrollbar-thumb {
+  background: var(--accent-blue);
+  border-radius: 999px;
 }
 
 .card-header {
@@ -189,7 +461,7 @@ body {
   border: 1px solid rgba(90, 98, 132, 0.4);
   border-radius: 999px;
   color: var(--text-300);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
@@ -249,13 +521,104 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
+.ban-group {
+  /* Use a 5-column implicit grid and place items in alternating columns
+     so the top row items sit in columns 1,3,5 and the bottom row items
+     sit between them (2 and 4). This visually centers the two bottom
+     bans between the three top bans. */
+  display: grid; /* ensure grid (overrides other utility classes if present) */
+  grid-auto-flow: row;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  align-items: start;
+  justify-items: stretch;
+  overflow: visible; /* allow children to overflow grid cells */
+}
+
+@media (max-width: 640px) {
+  .ban-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Specific override to ensure ban groups always render as a 3-column grid
+   in normal desktop layouts. Using higher-specificity selector and
+   !important to avoid accidental overrides by utility classes. */
+.card-body.ban-group,
+.card-body.grid.ban-group {
+  display: grid !important;
+  grid-auto-flow: row !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  align-items: start !important;
+  justify-items: stretch !important;
+}
+
+/* Allow horizontal overflow inside the bans card body so selects can
+   visually extend beyond their grid cell boundaries. Keep vertical
+   scrolling enabled. */
+.card.card-scroll[data-panel="bans"] .card-body {
+  overflow-x: visible !important;
+  overflow-y: auto !important;
+}
+
+/* Place items in alternating columns so top row uses 1,3,5 and bottom row 2,4 */
+.ban-group .field:nth-child(1) { grid-column: 1 !important; }
+.ban-group .field:nth-child(2) { grid-column: 3 !important; }
+.ban-group .field:nth-child(3) { grid-column: 5 !important; }
+.ban-group .field:nth-child(4) { grid-column: 2 !important; }
+.ban-group .field:nth-child(5) { grid-column: 4 !important; }
+
+@media (max-width: 640px) {
+  /* On small screens, fall back to 2 columns and natural flow */
+  .card-body.ban-group,
+  .card-body.grid.ban-group { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .ban-group .field:nth-child(1),
+  .ban-group .field:nth-child(2),
+  .ban-group .field:nth-child(3),
+  .ban-group .field:nth-child(4),
+  .ban-group .field:nth-child(5) {
+    grid-column: auto !important;
+    justify-self: stretch !important;
+  }
+}
+
 .ban-group .field {
   align-items: flex-start;
+  /* Center the field inside its grid column and allow it to be wider than
+     the column so the select can visually overflow the grid. */
+  justify-self: center;
+  width: 100%;
+  max-width: 130px; /* max width of the field (select will fit inside) */
+  transform: translateX(0);
+  transition: transform 120ms ease;
 }
 
 .ban-group select {
-  width: 100%;
-  max-width: 150px;
+  /* Make select wider than the column so it overflows across columns. */
+  width: 130px;
+  max-width: none;
+  position: relative; /* allow positional adjustments if needed */
+}
+
+@media (max-width: 960px) {
+  /* On narrower viewports revert selects to full width of their cell */
+  .ban-group .field { max-width: none; justify-self: stretch; }
+  .ban-group select { width: 100%; }
+  .card.card-scroll[data-panel="bans"] .card-body { overflow-x: auto !important; }
+  /* remove any visual overlap on small screens */
+  .ban-group .field { transform: none !important; }
+}
+
+/* Shift fields slightly left to emulate a negative gap (visual overlap)
+   This is safer than negative gap on grid; adjust value as needed */
+.ban-group .field:not(:first-child) {
+  transform: translateX(-30px);
+}
+
+@media (max-width: 640px) {
+  /* ensure no overlap on very small screens */
+  .ban-group .field:not(:first-child) { transform: none !important; }
 }
 
 .ban-rate {
@@ -342,29 +705,39 @@ textarea {
 }
 
 /* Ícones de campeão ao lado dos selects e textos */
-.champ-icon { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); flex: 0 0 28px; }
-.champ-icon img { width: 100%; height: 100%; display: block; }
-.select-with-icon { display: flex; align-items: center; gap: 0.5rem; }
-.field > .select-with-icon { width: 100%; }
-.champ-inline { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; vertical-align: middle; }
-.champ-inline .champ-icon { width: 28px; height: 28px; border: none; background: transparent; flex: 0 0 28px; }
-
 .champ-icon {
-  width: 28px;
-  height: 28px;
+  /* Champion icon sizing - edit these values to change icon size across the UI.
+     Keep the inner image rules (.champ-icon img { width:100%; height:100%; }) so
+     the actual <img> scales to the container. Typical alternate sizes: 24px, 32px.
+  */
+  box-sizing: content-box;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.15);
   background: rgba(255,255,255,0.05);
-  flex: 0 0 28px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.champ-icon img { width: 100%; height: 100%; display: block; }
-
+.champ-icon img {
+  width: 120%;
+  height: 120%;
+  display: block;
+  object-fit: cover;
+}
 .select-with-icon { display: flex; align-items: center; gap: 0.5rem; }
 .field > .select-with-icon { width: 100%; }
-
-.champ-inline { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
-.champ-inline .champ-icon { width: 28px; height: 28px; border: none; background: transparent; flex: 0 0 28px; }
+.champ-inline { display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; vertical-align: middle; }
+.champ-inline .champ-icon {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  flex: 0 0 auto;
+}
 
 .pill-row {
   display: flex;
@@ -439,6 +812,9 @@ textarea {
   gap: 0.75rem;
 }
 
+/* Garantir que a aba Sinergias tenha rolagem interna em vez de crescer */
+.panel-synergy .list.synergies { min-height: 0; }
+
 .list li {
   display: flex;
   justify-content: space-between;
@@ -447,6 +823,15 @@ textarea {
   border-radius: 0.6rem;
   background: rgba(27, 31, 45, 0.55);
   border: 1px solid rgba(58, 65, 93, 0.4);
+}
+.panel-synergy .list.synergies > li > .pill {
+  font-size: 1.2rem;
+  padding: 0.45rem 0.9rem;
+  width: 3.75rem;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .list li.empty {
@@ -524,8 +909,38 @@ textarea {
 #score-tooltip .score-meta.small { font-size: 0.75rem; color: var(--text-500); }
 #score-tooltip .score-line .label { font-weight: 600; color: var(--text-100); }
 #score-tooltip .score-line .value { min-width: 48px; text-align: right; }
-#score-tooltip .bar { width: 100%; height: 6px; background: rgba(255,255,255,0.04); border-radius: 99px; overflow: hidden; }
-#score-tooltip .bar-inner { height: 100%; background: linear-gradient(90deg,var(--accent-orange),var(--accent-green)); width: 0%; transition: width 160ms ease; }
+#score-tooltip .bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 99px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: inset 0 0 0 1px rgba(2, 6, 23, 0.35);
+}
+#score-tooltip .bar-inner {
+  height: 100%;
+  width: 0%;
+  transition: width 180ms ease, background 220ms ease, opacity 200ms ease;
+  border-radius: inherit;
+  position: relative;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
+  filter: saturate(120%);
+}
+#score-tooltip .bar-inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0));
+  opacity: 0.55;
+  pointer-events: none;
+}
+#score-tooltip .bar-inner.is-negative::after {
+  transform: scaleX(-1);
+}
 
 .compact {
   padding: 0.35rem 0.5rem;
@@ -544,9 +959,25 @@ textarea {
 @media (max-width: 960px) {
   .app-grid {
     grid-template-columns: 1fr;
+    height: auto;
+    max-height: none;
   }
   .panel {
     order: var(--order, 0);
+    height: auto;
+    overflow: visible;
+  }
+  .card.card-scroll {
+    height: auto;
+    max-height: none;
+  }
+  .panel-team .card.card-scroll,
+  .panel-enemy .card.card-scroll {
+    height: auto;
+  }
+  .panel-synergy .card.card-scroll:first-of-type,
+  .panel-synergy .card.card-scroll:last-of-type {
+    height: auto;
   }
   .panel-synergy {
     --order: 3;
