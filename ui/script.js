@@ -41,14 +41,15 @@ const ExternalStats = {
 
 const percentFormatter = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const integerFormatter = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+const decimalFormatter = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 // Formatter específico para ban rates com duas casas decimais
 const banPercentFormatter = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const ROLE_LABELS = {
-  TOP: "Topo",
-  JUNGLE: "Selva",
-  MIDDLE: "Meio",
-  BOTTOM: "Atirador",
+  TOP: "Top",
+  JUNGLE: "Jungle",
+  MIDDLE: "Mid",
+  BOTTOM: "Bot",
   UTILITY: "Suporte",
 };
 
@@ -60,6 +61,107 @@ const MATCHUP_LABELS = {
 
 // Considerar como risco de ban quando a taxa for maior ou igual a este valor (em %)
 const BAN_RISK_THRESHOLD = 60;
+
+// Configuráveis: mínimo de jogos para considerar uma sinergia e máximo de itens mostrados
+// - MIN_SYNERGY_GAMES: sinergias com número de jogos menor que este valor serão ignoradas
+// - MAX_SYNERGIES: controla quantas recomendações aparecem no painel de sinergias
+// Para aumentar ou diminuir o número de sinergias exibidas, altere `MAX_SYNERGIES` abaixo.
+// MIN_SYNERGY_GAMES is mutable and can be updated at runtime by the UI control (#min-synergy-games).
+let MIN_SYNERGY_GAMES = 20; // filtrar sinergias com amostra menor que este valor
+const MAX_SYNERGIES = 12; // número padrão de sinergias exibidas (substitui o literal 6)
+const MAX_MATCHUPS = MAX_SYNERGIES; // manter matchups alinhados à quantidade de sinergias
+
+// Mapa de pesos entre pares de roles usado quando o usuário 'trava' por lane
+const ROLE_WEIGHTS = {
+  TOP:   { TOP: 1.0, JUNGLE: 1.30, MIDDLE: 1.20, BOTTOM: 1.00, UTILITY: 1.00 },
+  JUNGLE:{ TOP: 1.30, JUNGLE: 1.0,  MIDDLE: 1.30, BOTTOM: 1.00, UTILITY: 1.30 },
+  MIDDLE:{ TOP: 1.20, JUNGLE: 1.30, MIDDLE: 1.0,  BOTTOM: 1.10, UTILITY: 1.10 },
+  BOTTOM:{ TOP: 1.00, JUNGLE: 1.00, MIDDLE: 1.10, BOTTOM: 1.0,  UTILITY: 1.30 },
+  UTILITY:{ TOP: 1.00, JUNGLE: 1.30, MIDDLE: 1.10, BOTTOM: 1.30, UTILITY: 1.0  },
+};
+
+function normalizeRoleKey(role) {
+  if (!role) return null;
+  const r = String(role).trim().toUpperCase();
+  // Accept common aliases
+  if (r === 'MID') return 'MIDDLE';
+  if (r === 'ADC') return 'BOTTOM';
+  if (r === 'SUPPORT') return 'UTILITY';
+  return r;
+}
+
+function getRoleWeight(aRole, bRole) {
+  const a = normalizeRoleKey(aRole);
+  const b = normalizeRoleKey(bRole);
+  if (!a || !b) return 1.0;
+  if (ROLE_WEIGHTS[a] && typeof ROLE_WEIGHTS[a][b] === 'number') return ROLE_WEIGHTS[a][b];
+  return 1.0;
+}
+
+// --- UI binding: allow runtime control of MIN_SYNERGY_GAMES via header input
+try {
+  const stored = window.localStorage ? window.localStorage.getItem('minSynergyGames') : null;
+  if (stored !== null && !Number.isNaN(Number(stored))) {
+    MIN_SYNERGY_GAMES = Math.max(1, Math.floor(Number(stored)));
+  }
+  const el = document.getElementById('min-synergy-games');
+  if (el) {
+    // initialize input value
+    el.value = String(MIN_SYNERGY_GAMES);
+    el.addEventListener('change', (e) => {
+      const v = Number(el.value);
+      if (Number.isNaN(v) || v < 1) { el.value = String(MIN_SYNERGY_GAMES); return; }
+      MIN_SYNERGY_GAMES = Math.max(1, Math.floor(v));
+      try { if (window.localStorage) window.localStorage.setItem('minSynergyGames', String(MIN_SYNERGY_GAMES)); } catch (e) {}
+      // refresh panels to apply new filter immediately
+      try { updateInsightPanels(); } catch (e) {}
+    });
+  }
+} catch (e) {
+  // ignore in environments without DOM/localStorage
+}
+
+// Cria apenas o ícone (sem texto) para uso em recomendações agregadas
+function createChampIconOnly(name) {
+  // Render same structure as createInlineChamp but without the text label.
+  const wrapper = document.createElement('span');
+  wrapper.className = 'champ-inline';
+  const ic = document.createElement('span');
+  ic.className = 'champ-icon';
+  const img = document.createElement('img');
+  // sizing is managed in CSS (.champ-inline .champ-icon img -> 28×28)
+  setChampionIcon(img, name);
+  ic.appendChild(img);
+  wrapper.appendChild(ic);
+  return wrapper;
+}
+
+// Retorna estatísticas gerais do campeão (games e winRate) independentemente de roles/sinergias
+function getChampionOverallStats(name) {
+  if (!name) return { games: null, winRate: null };
+  // Preferir payloads que armazenamos (synergy or matchup datasets)
+  const payload = getSynergyPayload(name) || getMatchupPayload(name) || null;
+  if (!payload) return { games: null, winRate: null };
+  const games = safeNumber(payload.games_weighted ?? payload.games ?? payload.occurrences_weighted ?? payload.occurrences) ?? null;
+  let win = safeNumber(payload.win_rate_weighted ?? payload.win_rate ?? payload.winrate ?? payload.win) ?? null;
+  if (win !== null && win <= 1) win = win * 100;
+  return { games, winRate: win };
+}
+
+// Retorna estatísticas do campeão para uma role específica (games e winRate em %)
+function getChampionRoleStats(name, role) {
+  if (!name || !role) return { games: null, winRate: null };
+  const payload = getMatchupPayload(name) || getSynergyPayload(name) || null;
+  if (!payload || !payload.roles) return { games: null, winRate: null };
+  const r = payload.roles[role] || payload.roles[normalizeRoleKey(role)];
+  if (!r) return { games: null, winRate: null };
+  // alguns arquivos usam solo_stats ou fields diretos
+  const solo = r.solo_stats || r.solo || r.stats || null;
+  const games = safeNumber(solo?.games_weighted ?? solo?.games ?? r.games_weighted ?? r.games) ?? null;
+  let win = safeNumber(solo?.win_rate_weighted ?? solo?.win_rate ?? r.win_rate_weighted ?? r.win_rate ?? payload.win_rate_weighted ?? payload.win_rate) ?? null;
+  if (win !== null && win <= 1) win = win * 100;
+  return { games, winRate: win };
+}
 
 const ChampionNameIndex = new Map();
 const CHAMPION_NAME_OVERRIDES = new Map([
@@ -297,11 +399,100 @@ function renderTagCloud(container, tagItems) {
 
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
+// Current visible delta range (used to map colors). Default is -10..+10.
+let CURRENT_DELTA_MIN = -10;
+let CURRENT_DELTA_MAX = 10;
+
+// Fixed visual mapping for delta color track (absolute mapping for the bar)
+// User-requested constants: min = -10, mid = 15, max = 40
+const DELTA_COLOR_MIN = -10;
+const DELTA_COLOR_MID = 15;
+const DELTA_COLOR_MAX = 40;
+
+function setCurrentDeltaRange(min, max) {
+  if (typeof min !== 'number' || !Number.isFinite(min) || typeof max !== 'number' || !Number.isFinite(max)) return;
+  if (min === max) { min = min - 1; max = max + 1; }
+  CURRENT_DELTA_MIN = min; CURRENT_DELTA_MAX = max;
+}
+
+function valueToT(v, min, max) {
+  if (typeof v !== 'number' || !Number.isFinite(v)) return 0.5;
+  if (min === max) return 0.5;
+  return clamp((v - min) / (max - min), 0, 1);
+}
+
+function valueToHue(v, min, max) {
+  // maps t (0..1) -> hue 0..120 (red..green)
+  const t = valueToT(v, min, max);
+  return Math.round(t * 120);
+}
+
+// Color interpolation helpers (three-stop: left=#ff0000, mid=#b0b000, right=#00ff00)
+function hexToRgb(hex) {
+  if (!hex) return null;
+  const h = String(hex).replace('#', '').trim();
+  if (h.length === 3) {
+    return [parseInt(h[0]+h[0],16), parseInt(h[1]+h[1],16), parseInt(h[2]+h[2],16)];
+  }
+  if (h.length === 6 || h.length === 8) {
+    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+  }
+  return null;
+}
+
+function rgbToHex(r,g,b) {
+  const toHex = (n) => (`0${Math.max(0,Math.min(255,Math.round(n))).toString(16)}`).slice(-2);
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function mixHexColors(hexA, hexB, t) {
+  const a = hexToRgb(hexA) || [0,0,0];
+  const b = hexToRgb(hexB) || [0,0,0];
+  return rgbToHex(
+    lerp(a[0], b[0], t),
+    lerp(a[1], b[1], t),
+    lerp(a[2], b[2], t)
+  );
+}
+
+function hexToRgba(hex, a) {
+  const rgb = hexToRgb(hex) || [0, 0, 0];
+  const alpha = typeof a === 'number' ? a : (typeof a === 'string' ? parseFloat(a) : NaN);
+  const finalA = Number.isFinite(alpha) ? alpha : 1;
+  return `rgba(${Math.round(rgb[0])}, ${Math.round(rgb[1])}, ${Math.round(rgb[2])}, ${finalA})`;
+}
+
+function valueToColor(v, min, max) {
+  // map v between min..max into t 0..1
+  const t = valueToT(v, min, max);
+  // three stops: left(0)=#ff0000, mid(0.5)=#b0b000, right(1)=#00ff00
+  const left = '#ff0000';
+  const mid = '#b0b000';
+  const right = '#00ff00';
+  if (t <= 0.5) {
+    const localT = t / 0.5; // 0..1 between left and mid
+    return mixHexColors(left, mid, localT);
+  }
+  const localT = (t - 0.5) / 0.5; // 0..1 between mid and right
+  return mixHexColors(mid, right, localT);
+}
+
+// Range where the score should feel neutral/ok.
+const SCORE_COLOR_MIN = 30;
+const SCORE_COLOR_MAX = 60;
+
+function scoreValueToColor(score) {
+  const safeScore = typeof score === 'number' && Number.isFinite(score) ? score : 50;
+  return valueToColor(safeScore, SCORE_COLOR_MIN, SCORE_COLOR_MAX);
+}
+
 function applyScoreColor(el, score) {
   if (!el) return;
-  const bucket = Math.round(clamp(score, 0, 100) / 10) * 10; // 0..100 in steps of 10
-  const hue = Math.round((bucket / 100) * 120); // 0 (red) -> 120 (green)
-  el.style.color = `hsl(${hue} 70% 60%)`;
+  // score expected 0..100 -> map to green/red
+  const color = scoreValueToColor(score);
+  el.style.color = color;
 }
 
 // --- Score tooltip helpers ---
@@ -328,19 +519,88 @@ function formatComponentsTooltip(components) {
   const mapLabel = { solo: 'Solo winrate', synergy: 'Sinergia', matchup: 'Matchup', early: 'Early' };
   let totalContrib = 0;
   ['solo', 'synergy', 'matchup', 'early'].forEach((k) => {
-    const val = typeof components[k] === 'number' ? components[k] : 50;
-    const w = WEIGHTS[k] || 0;
-    const contrib = (val * w) / 1; // points out of 100
-    totalContrib += contrib;
-    rows.push({ key: k, label: mapLabel[k], value: Math.round(val), weightPct: Math.round(w * 100), contrib: Math.round(contrib * 10) / 10 });
+    const rawValue = (typeof components[k] === 'number' && Number.isFinite(components[k])) ? components[k] : 50;
+    const weight = WEIGHTS[k] || 0;
+    const contribRaw = rawValue * weight;
+    totalContrib += contribRaw;
+    rows.push({
+      key: k,
+      label: mapLabel[k],
+      value: Math.round(rawValue),
+      rawValue,
+      weight,
+      weightPct: Math.round(weight * 100),
+      contrib: Math.round(contribRaw * 10) / 10,
+      contribRaw
+    });
   });
+  const totalScore = (typeof components.total === 'number' && Number.isFinite(components.total)) ? components.total : null;
+  const totalForBars = (totalScore && Math.abs(totalScore) > 0)
+    ? Math.abs(totalScore)
+    : (Math.abs(totalContrib) > 0 ? Math.abs(totalContrib) : 100);
 
   const html = [];
   html.push('<div class="score-breakdown">');
   rows.forEach((r) => {
-    html.push(`<div class="score-line"><div class="score-meta"><span class="label">${r.label}</span><span class="value">${r.value}%</span></div><div class="score-meta small">${r.weightPct}% × → ${r.contrib} pts</div><div class="bar"><div class="bar-inner" style="width:${clamp(r.contrib,0,100)}%"></div></div></div>`);
+    // map contribution magnitude for width; color follows the raw component score
+    const magnitude = typeof r.contribRaw === 'number' ? Math.max(Math.abs(r.contribRaw), 0) : 0;
+    const baseScore = typeof r.rawValue === 'number' ? clamp(r.rawValue, 0, 100) : 50;
+    const col = scoreValueToColor(baseScore);
+    // Use a solid color fill (no gradient) for the bar-inner
+    const pct = totalForBars > 0 ? clamp(Math.round((magnitude / totalForBars) * 100), 0, 100) : 0;
+    const scoreDetail = `${percentFormatter.format(r.rawValue)}%`;
+    const weightDetail = `${percentFormatter.format(r.weight * 100)}%`;
+    const weightDecimal = decimalFormatter.format(r.weight);
+    const contribDetail = decimalFormatter.format(r.contribRaw);
+    html.push(
+      `<div class="score-line"><div class="score-meta"><span class="label">${r.label}</span><span class="value">${r.value}%</span></div><div class="score-meta small">Valor ${scoreDetail} × Peso ${weightDetail} (${weightDecimal}) = ${contribDetail} pts</div><div class="bar"><div class="bar-inner" style="width:${pct}%;background:${col};"></div></div></div>`
+    );
   });
-  html.push(`<div class="line" style="margin-top:0.5rem;font-weight:700;">Total: ${Math.round(components.total)} pts</div>`);
+  const totalDisplay = decimalFormatter.format(totalScore ?? 0);
+  const roundedTotal = Math.round((totalScore ?? 0));
+  const contribSum = decimalFormatter.format(totalContrib);
+  html.push(`<div class="line" style="margin-top:0.5rem;font-weight:700;">Total calculado: ${totalDisplay} pts (arredondado ${roundedTotal})</div>`);
+  html.push(`<div class="line small muted">Soma contribuições: ${contribSum} pts</div>`);
+  html.push('</div>');
+  return html.join('');
+}
+
+function formatAggregateTooltip(details) {
+  if (!details) return '';
+  const rows = Array.isArray(details.contributions) ? details.contributions : [];
+  const html = [];
+  html.push('<div class="score-breakdown">');
+  // color the aggregate delta value relative to the current visible delta range
+  const aggVal = typeof details.aggDelta === 'number' ? details.aggDelta : (details.debug && typeof details.debug.simpleAvg === 'number' ? details.debug.simpleAvg : 0);
+  const aggColor = valueToColor(aggVal, CURRENT_DELTA_MIN, CURRENT_DELTA_MAX);
+  html.push(`<div class="line" style="margin-bottom:0.5rem;font-weight:700;">Cálculo agregado — Δ <span style="color:${aggColor}">${formatSigned(details.aggDelta)}</span></div>`);
+  rows.forEach((c) => {
+    const label = `${c.source || ''} ${ROLE_LABELS[normalizeRoleKey(c.allyRole)] || c.allyRole || ''}→${ROLE_LABELS[normalizeRoleKey(c.partnerRole)] || c.partnerRole || ''}`;
+    const contrib = typeof c.contribution === 'number' ? Math.round(c.contribution * 10) / 10 : 0;
+    const games = c.games || 0;
+    const win = typeof c.winRate === 'number' ? (c.winRate <= 1 ? c.winRate * 100 : c.winRate) : null;
+    html.push('<div class="score-line">');
+    html.push(`<div class="score-meta"><span class="label">${label}</span><span class="value">Δ ${formatSigned(c.delta)}</span></div>`);
+    html.push(`<div class="score-meta small">${formatGames(games) || (games+' jogos')} · peso×games ${(c.weight || 1).toFixed(2)} · contrib ${formatSigned(contrib)}</div>`);
+  // Render a simple solid-color bar proportional to the delta magnitude.
+  // No gradients: color is mapped from delta -> solid hex via valueToColor.
+  const delta = typeof c.delta === 'number' ? c.delta : 0;
+  const maxAbs = Math.max(Math.abs(CURRENT_DELTA_MIN), Math.abs(CURRENT_DELTA_MAX)) || 1;
+  const pct = clamp(Math.round((Math.abs(delta) / maxAbs) * 100), 0, 100);
+  const color = valueToColor(delta, CURRENT_DELTA_MIN, CURRENT_DELTA_MAX);
+  const barClasses = ['bar-inner', delta < 0 ? 'is-negative' : 'is-positive'].join(' ');
+  html.push(`<div class="bar"><div class="${barClasses}" style="width:${pct}%;background:${color};"></div></div>`);
+    html.push('</div>');
+  });
+  html.push(`<div class="line" style="margin-top:0.5rem;font-weight:700;">Total jogos: ${details.totalGames || 0}</div>`);
+  // Always show the weighted numerator/denominator calculation when available
+  const wNum = details.weightedDeltaTimesGames ?? details.debug?._weightedNumerator ?? 0;
+  const wDen = details.weightTimesGames ?? details.debug?._weightedDenominator ?? 0;
+  const agg = details.aggDelta ?? (wDen ? (wNum / wDen) : null);
+  html.push(`<div class="line small muted" style="margin-top:0.25rem;">Cálculo: (Σ Δ×games×peso) / (Σ games×peso) = ${Number(wNum).toFixed(2)} / ${Number(wDen).toFixed(2)} = ${agg !== null ? (Number(agg).toFixed(2)) : '--'}</div>`);
+  if (details.debug && typeof details.debug.simpleAvg === 'number') {
+    html.push(`<div class="line small muted">Média simples (Σ Δ / n): ${Number(details.debug.simpleAvg).toFixed(2)} (${details.debug.simpleCount} entradas)</div>`);
+  }
   html.push('</div>');
   return html.join('');
 }
@@ -420,22 +680,102 @@ function bindScoreTooltipListeners() {
 // bind tooltip listeners once
 try { bindScoreTooltipListeners(); } catch (e) { console.warn('[tooltip] bind failed', e); }
 
+// --- Floating tooltip for label[data-tooltip] (appended to document.body)
+let __floatingTooltipEl = null;
+function ensureFloatingTooltip() {
+  if (__floatingTooltipEl) return __floatingTooltipEl;
+  const d = document.createElement('div');
+  d.className = 'floating-tooltip';
+  d.style.display = 'none';
+  d.setAttribute('role', 'tooltip');
+  const arrow = document.createElement('div'); arrow.className = 'arrow';
+  const content = document.createElement('div'); content.className = 'content';
+  d.appendChild(arrow);
+  d.appendChild(content);
+  document.body.appendChild(d);
+  __floatingTooltipEl = d;
+  // hide on scroll/resize to avoid stale position
+  window.addEventListener('scroll', () => { if (__floatingTooltipEl) __floatingTooltipEl.style.display = 'none'; }, { passive: true });
+  window.addEventListener('resize', () => { if (__floatingTooltipEl) __floatingTooltipEl.style.display = 'none'; });
+  return __floatingTooltipEl;
+}
+
+function showFloatingTooltipForLabel(labelEl) {
+  if (!labelEl || !labelEl.dataset) return;
+  const text = labelEl.dataset.tooltip;
+  if (!text) return;
+  const tip = ensureFloatingTooltip();
+  tip.querySelector('.content').textContent = text;
+  tip.style.display = 'block';
+  tip.classList.remove('above');
+  // Position after paint to ensure measurements are correct
+  requestAnimationFrame(() => {
+    const rect = labelEl.getBoundingClientRect();
+    const tw = tip.offsetWidth; const th = tip.offsetHeight;
+    const minPad = 8;
+    // calculate left centered on label, then clamp to viewport
+    let left = window.scrollX + rect.left + rect.width / 2 - tw / 2;
+    const vwLeft = window.scrollX + minPad;
+    const vwRight = window.scrollX + document.documentElement.clientWidth - minPad;
+    left = clamp(left, vwLeft, Math.max(vwLeft, vwRight - tw));
+    // prefer below; if doesn't fit, place above
+    let top = window.scrollY + rect.bottom + 8;
+    const viewportBottom = window.scrollY + document.documentElement.clientHeight - minPad;
+    if (top + th > viewportBottom) {
+      top = window.scrollY + rect.top - th - 8;
+      tip.classList.add('above');
+    }
+    tip.style.left = `${Math.round(left)}px`;
+    tip.style.top = `${Math.round(top)}px`;
+    // position arrow centered relative to label but inside tooltip
+    const arrow = tip.querySelector('.arrow');
+    if (arrow) {
+      const desired = Math.round(rect.left + rect.width / 2 - left);
+      const arrowClamp = clamp(desired, 8, Math.max(8, tw - 8));
+      arrow.style.left = `${arrowClamp}px`;
+    }
+  });
+  document.body.classList.add('floating-tooltip-enabled');
+}
+
+function hideFloatingTooltip() { if (__floatingTooltipEl) __floatingTooltipEl.style.display = 'none'; }
+
+function bindFloatingTooltips() {
+  const labels = document.querySelectorAll('label[data-tooltip]');
+  if (!labels || !labels.length) return;
+  labels.forEach((label) => {
+    label.addEventListener('mouseenter', () => showFloatingTooltipForLabel(label));
+    label.addEventListener('mouseleave', hideFloatingTooltip);
+    label.addEventListener('focusin', () => showFloatingTooltipForLabel(label));
+    label.addEventListener('focusout', hideFloatingTooltip);
+  });
+}
+
+try { bindFloatingTooltips(); } catch (e) { console.warn('[floating-tooltip] init failed', e); }
+
 function computeSynergyComponent(entries) {
   const picks = entries.filter((e) => e && e.champion && e.role);
   if (picks.length < 2) return 50; // neutro
-  let num = 0, den = 0;
+  let weightedDelta = 0;
+  let weightSum = 0;
   for (let i = 0; i < picks.length; i++) {
     for (let j = i + 1; j < picks.length; j++) {
       const a = picks[i]; const b = picks[j];
       const pair = getPairSynergy(a.champion, a.role, b.champion, b.role);
       if (!pair) continue;
-      const w = safeNumber(pair.games) ?? 1;
-      const d = clamp(safeNumber(pair.delta) ?? 0, -10, 10); // limitar a +-10 p.p.
-      num += d * w; den += w;
+      const delta = clamp(safeNumber(pair.delta) ?? 0, -10, 10);
+      const games = safeNumber(pair.games) ?? 1;
+      const allyRole = pair.allyRole || a.role;
+      const partnerRole = pair.partnerRole || b.role;
+      const roleWeight = getRoleWeight(allyRole, partnerRole) || 1.0;
+      const pairWeight = Math.max(games * roleWeight, 0);
+      if (pairWeight <= 0) continue;
+      weightedDelta += delta * pairWeight;
+      weightSum += pairWeight;
     }
   }
-  if (den === 0) return 50;
-  const avgDelta = num / den; // -10..+10 esperado
+  if (weightSum === 0) return 50;
+  const avgDelta = weightedDelta / weightSum; // -10..+10 esperado
   const score = 50 + avgDelta * 5; // -10->0, 0->50, +10->100
   return clamp(Math.round(score), 0, 100);
 }
@@ -448,16 +788,32 @@ function computeSoloWinrateComponent(entries) {
     const payload = getMatchupPayload(p.champion) || getSynergyPayload(p.champion);
     let roleData = null;
     if (payload && payload.roles && p.role && payload.roles[p.role]) roleData = payload.roles[p.role];
-    // try common fields
-    const win = safeNumber(roleData?.win_rate_weighted ?? roleData?.win_rate ?? payload?.win_rate_weighted ?? payload?.win_rate);
-    const games = safeNumber(roleData?.games_weighted ?? roleData?.games ?? payload?.games_weighted ?? payload?.games) ?? 1;
-    if (win === null) {
-      // no data, assume neutral
-      num += 50 * games; den += games; continue;
+    const soloStats = roleData?.solo_stats;
+    let win = null;
+    let games = null;
+    if (soloStats) {
+      win = safeNumber(soloStats.win_rate);
+      games = safeNumber(soloStats.games);
     }
-    // if win is small (0..1), convert to percent
+    if (win === null) {
+      // fallback to previous fields (non-weighted preferred)
+      win = safeNumber(roleData?.win_rate ?? payload?.win_rate);
+      games = games ?? safeNumber(roleData?.games ?? payload?.games);
+    }
+    if (win === null) {
+      // last resort: allow weighted stats
+      win = safeNumber(roleData?.win_rate_weighted ?? payload?.win_rate_weighted);
+      games = games ?? safeNumber(roleData?.games_weighted ?? payload?.games_weighted);
+    }
+    const effectiveGames = Math.max(games ?? 1, 1);
+    if (win === null) {
+      num += 50 * effectiveGames;
+      den += effectiveGames;
+      continue;
+    }
     const winPct = win <= 1 ? win * 100 : win;
-    num += clamp(winPct, 0, 100) * games; den += games;
+    num += clamp(winPct, 0, 100) * effectiveGames;
+    den += effectiveGames;
   }
   if (den === 0) return 50;
   return clamp(Math.round(num / den), 0, 100);
@@ -530,7 +886,8 @@ function buildMatchupRowsForScore(teamEntries, enemyEntries) {
     const isBetter = candidateScore.matchesSelection > existingScore.matchesSelection || (candidateScore.matchesSelection === existingScore.matchesSelection && (candidateScore.absDelta > existingScore.absDelta || (candidateScore.absDelta === existingScore.absDelta && candidateScore.games > existingScore.games)));
     if (isBetter) deduped.set(key, row);
   });
-  return Array.from(deduped.values());
+  // Trava o conjunto para apenas as matchups que respeitam as lanes selecionadas
+  return Array.from(deduped.values()).filter((row) => row.matchesSelection);
 }
 
 function computeMatchupComponent(teamEntries, enemyEntries) {
@@ -614,11 +971,12 @@ function formatSigned(value) {
 }
 
 function getDeltaPillClass(delta) {
+  if (!Number.isFinite(delta)) return "pill pill-gray";
+  if (delta < 0) return "pill pill-red";
   if (delta >= 5) return "pill pill-green";
-  if (delta <= -5) return "pill pill-red";
   if (delta >= 2) return "pill pill-orange";
-  if (delta <= -2) return "pill pill-orange";
-  return "pill pill-blue";
+  if (delta > 0) return "pill pill-blue";
+  return "pill pill-gray";
 }
 
 function renderListEmptyState(listEl, message) {
@@ -825,9 +1183,56 @@ function updateSynergyRecommendations(teamEntries) {
       .map((entry) => resolveChampionName(entry.champion) || entry.champion)
       .filter(Boolean)
   );
+  const presentRoles = new Set(teamEntries.map((e) => e.role).filter(Boolean));
+  const ALL_ROLES = Object.keys(ROLE_LABELS);
+  const missingRoles = ALL_ROLES.filter((r) => !presentRoles.has(r));
+  // Se o time estiver completo (todas as roles preenchidas), mostrar as sinergias
+  // entre os campeões já selecionados no próprio painel principal.
+  if (presentRoles.size === ALL_ROLES.length) {
+    const pairs = [];
+    const picks = teamEntries.filter((e) => e && e.champion && e.role);
+    for (let i = 0; i < picks.length; i++) {
+      for (let j = i + 1; j < picks.length; j++) {
+        const a = picks[i]; const b = picks[j];
+        const rec = getPairSynergy(a.champion, a.role, b.champion, b.role);
+        if (!rec) continue;
+        // aplicar filtro mínimo de amostra
+        const games = safeNumber(rec.games);
+        if (games === null || games < MIN_SYNERGY_GAMES) continue;
+        pairs.push(rec);
+      }
+    }
+    if (!pairs.length) {
+      renderListEmptyState(synergyListEl, "Sem sinergias relevantes entre os escolhidos.");
+      return;
+    }
+    pairs.sort((x, y) => {
+      if ((y.delta ?? 0) !== (x.delta ?? 0)) return (y.delta ?? 0) - (x.delta ?? 0);
+      return (y.games ?? 0) - (x.games ?? 0);
+    });
+    const shown = pairs.slice(0, MAX_SYNERGIES);
+    synergyListEl.innerHTML = "";
+    shown.forEach((entry) => synergyListEl.appendChild(renderSynergyItem(entry)));
+    return;
+  }
   const aggregated = new Map();
   const activeLane = activeSynergyLane;
-  const laneMatches = (role) => activeLane === "ALL" || role === activeLane;
+  const laneLockActive = activeLane && activeLane !== 'ALL';
+  // If the user has already selected a champion in the active lane, show a
+  // single empty-state message instead of recommending other champions.
+  if (laneLockActive) {
+    const hasSelectedInLane = teamEntries.some((e) => e && e.role === activeLane && e.champion);
+    if (hasSelectedInLane) {
+      renderListEmptyState(synergyListEl, "Lane já selecionada");
+      return;
+    }
+  }
+  // Determine quais roles já estão preenchidas e quais ainda faltam
+  // (variables `ALL_ROLES`, `presentRoles`, `missingRoles` já foram calculadas
+  // mais acima para o caso de time completo)
+  // caso contrário respeitamos o filtro ativo (activeSynergyLane) mas daremos prioridade
+  // às sinergias cuja partnerRole está em `missingRoles`.
+  const laneMatches = (role) => (missingRoles.length === 0) ? true : (activeLane === "ALL" || role === activeLane);
   
   teamEntries.forEach(({ champion, role: assignedRole }) => {
     if (!assignedRole) return;
@@ -843,31 +1248,146 @@ function updateSynergyRecommendations(teamEntries) {
         const partnerResolved = resolveChampionName(partner) || partner;
         if (!stats || !partnerResolved || teamSet.has(partnerResolved)) return;
         if (stats.self_role && stats.self_role !== assignedRole) return;
-
         const delta = safeNumber(stats.synergy_delta);
-        if (delta === null) return;
-        const winRate = safeNumber(stats.duo_win_rate_weighted ?? stats.duo_win_rate);
+        // preferir campos ponderados quando disponíveis
         const games = safeNumber(stats.games_weighted ?? stats.games);
-        const existing = aggregated.get(partnerResolved);
-        const ref = {
-          partner: partnerResolved,
-          source: allyDisplay,
-          delta,
-          winRate,
-          games,
-          allyRole: stats.self_role || assignedRole,
-          partnerRole: stats.ally_role || partnerRole,
-        };
-        if (!existing || delta > existing.delta) {
-          aggregated.set(partnerResolved, ref);
+        if (delta === null) return;
+        // filtra amostras pequenas para evitar destacar sinergias pouco confiáveis
+        if (games === null || games < MIN_SYNERGY_GAMES) return;
+        const winRate = safeNumber(stats.duo_win_rate_weighted ?? stats.duo_win_rate);
+        const partnerRoleResolved = stats.ally_role || partnerRole;
+        const allyRoleResolved = stats.self_role || assignedRole;
+        const priority = missingRoles.length > 0 && missingRoles.includes(partnerRoleResolved);
+
+        if (laneLockActive) {
+          // Quando travado por lane: agregamos contribuições de todos os aliados
+          const weight = getRoleWeight(allyRoleResolved, partnerRoleResolved) || 1.0;
+          const wGames = (games || 0) * weight;
+          const existing = aggregated.get(partnerResolved);
+          if (!existing) {
+            aggregated.set(partnerResolved, {
+              partner: partnerResolved,
+              // mark as aggregate: source label will be rendered as team-level
+              source: 'Time',
+              aggregate: true,
+              partnerRole: partnerRoleResolved,
+              totalGames: games || 0,
+              weightedDeltaTimesGames: (delta || 0) * (games || 0) * weight,
+              weightTimesGames: wGames,
+              winRate: winRate,
+              priority,
+              // store per-ally contributions so we can show the breakdown tooltip
+              contributions: [{ source: allyDisplay, allyRole: allyRoleResolved, partnerRole: partnerRoleResolved, delta: delta || 0, games: games || 0, weight, contribution: (delta || 0) * (games || 0) * weight, winRate }],
+            });
+          } else {
+            existing.totalGames = (existing.totalGames || 0) + (games || 0);
+            existing.weightedDeltaTimesGames = (existing.weightedDeltaTimesGames || 0) + ((delta || 0) * (games || 0) * weight);
+            existing.weightTimesGames = (existing.weightTimesGames || 0) + wGames;
+            existing.winRate = existing.winRate || winRate;
+            // if any source marked priority, keep it true
+            existing.priority = existing.priority || priority;
+            // append contribution for tooltip breakdown
+            (existing.contributions = existing.contributions || []).push({ source: allyDisplay, allyRole: allyRoleResolved, partnerRole: partnerRoleResolved, delta: delta || 0, games: games || 0, weight, contribution: (delta || 0) * (games || 0) * weight, winRate });
+          }
+        } else {
+          // comportamento anterior: escolher a melhor entrada por partner
+          const existing = aggregated.get(partnerResolved);
+          const ref = {
+            partner: partnerResolved,
+            source: allyDisplay,
+            delta,
+            winRate,
+            games,
+            allyRole: allyRoleResolved,
+            partnerRole: partnerRoleResolved,
+            priority,
+          };
+          if (!existing) {
+            aggregated.set(partnerResolved, ref);
+          } else {
+            // Decidir se a nova entrada é preferível: prioridade > delta > games
+            const existingScore = { priority: existing.priority ? 1 : 0, delta: existing.delta ?? 0, games: existing.games ?? 0 };
+            const candidateScore = { priority: ref.priority ? 1 : 0, delta: ref.delta ?? 0, games: ref.games ?? 0 };
+            const isBetter = candidateScore.priority > existingScore.priority ||
+              (candidateScore.priority === existingScore.priority && (candidateScore.delta > existingScore.delta || (candidateScore.delta === existingScore.delta && candidateScore.games > existingScore.games)));
+            if (isBetter) aggregated.set(partnerResolved, ref);
+          }
         }
       });
     });
   });
-  
-  const suggestions = Array.from(aggregated.values()).sort((a, b) => b.delta - a.delta);
+  // Converter aggregates computados (especialmente se laneLockActive) em entries consistentes
+  const suggestions = Array.from(aggregated.values()).map((it) => {
+    if (laneLockActive) {
+      const wt = it.weightTimesGames || 0;
+      const aggDelta = wt > 0 ? (it.weightedDeltaTimesGames || 0) / wt : (it.totalGames ? 0 : 0);
+      // compute a simple (non-weighted) winRate across contributions when available
+      let simpleWin = null;
+      if (Array.isArray(it.contributions) && it.contributions.length) {
+        let swNum = 0; let swDen = 0;
+        it.contributions.forEach((c) => { if (typeof c.winRate === 'number' && typeof c.games === 'number') { swNum += c.winRate * c.games; swDen += c.games; } });
+        if (swDen > 0) simpleWin = swNum / swDen;
+      }
+      return {
+        partner: it.partner,
+        source: it.source,
+        delta: aggDelta,
+        winRate: typeof simpleWin === 'number' ? simpleWin : it.winRate,
+        games: it.totalGames || 0,
+        partnerRole: it.partnerRole,
+        priority: !!it.priority,
+        aggregate: true,
+        aggregateDetails: (function () {
+          const contributions = it.contributions || [];
+          const weightedDeltaTimesGames = it.weightedDeltaTimesGames || 0;
+          const weightTimesGames = it.weightTimesGames || 0;
+          const totalGames = it.totalGames || 0;
+          const agg = aggDelta;
+          // also provide a simple (unweighted) average for comparison and debugging
+          const simpleSum = contributions.reduce((s, c) => s + (typeof c.delta === 'number' ? c.delta : 0), 0);
+          const simpleCount = contributions.length || 0;
+          const simpleAvg = simpleCount > 0 ? (simpleSum / simpleCount) : null;
+          return {
+            contributions,
+            weightedDeltaTimesGames,
+            weightTimesGames,
+            totalGames,
+            aggDelta: agg,
+            // debug fields
+            debug: {
+              simpleSum,
+              simpleCount,
+              simpleAvg,
+              // human-friendly numbers for quick inspection
+              _weightedNumerator: weightedDeltaTimesGames,
+              _weightedDenominator: weightTimesGames,
+            }
+          };
+        })()
+      };
+    }
+    return it;
+  }).sort((a, b) => {
+    const pa = a.priority ? 1 : 0; const pb = b.priority ? 1 : 0;
+    if (pb !== pa) return pb - pa; // prioridade primeiro
+    if ((b.delta ?? 0) !== (a.delta ?? 0)) return (b.delta ?? 0) - (a.delta ?? 0);
+    return (b.games ?? 0) - (a.games ?? 0);
+  });
   const positives = suggestions.filter((item) => item.delta > 0);
-  const selected = (positives.length ? positives : suggestions).slice(0, 6);
+  const selected = (positives.length ? positives : suggestions).slice(0, MAX_SYNERGIES);
+  // Compute visible delta min/max from the selected suggestions (including aggregate contributions)
+  try {
+    let min = Infinity; let max = -Infinity;
+    selected.forEach((it) => {
+      const d = safeNumber(it.delta);
+      if (typeof d === 'number') { min = Math.min(min, d); max = Math.max(max, d); }
+      if (it && it.aggregate && it.aggregateDetails && Array.isArray(it.aggregateDetails.contributions)) {
+        it.aggregateDetails.contributions.forEach((c) => { if (typeof c.delta === 'number') { min = Math.min(min, c.delta); max = Math.max(max, c.delta); } });
+      }
+    });
+    if (!Number.isFinite(min) || !Number.isFinite(max)) { min = -10; max = 10; }
+    setCurrentDeltaRange(min, max);
+  } catch (e) { /* non-fatal */ }
   if (!selected.length) {
     const message = ExternalStats.synergies.size
       ? "Sem sinergias relevantes para esta composição."
@@ -886,25 +1406,86 @@ function renderSynergyItem(entry) {
   const content = document.createElement("div");
   const title = document.createElement("strong");
   title.dataset.iconsDecorated = "1";
-  title.appendChild(createInlineChamp(entry.source, ROLE_LABELS[entry.allyRole]));
-  title.appendChild(document.createTextNode(" + "));
-  title.appendChild(createInlineChamp(entry.partner, ROLE_LABELS[entry.partnerRole]));
+  // If this entry is an aggregate (team-level), render the icons of the already
+  // selected champions followed by the recommended champion icon/name.
+  if (entry.aggregate) {
+    const picks = getSidePickEntries('team').filter((p) => p && p.champion);
+    // render selected champions as icons only
+    picks.forEach((p, idx) => {
+      const icon = createChampIconOnly(p.champion);
+      title.appendChild(icon);
+      if (idx < picks.length - 1) {
+        // small separator between icons
+        const sep = document.createElement('span'); sep.className = 'inline-sep'; sep.textContent = ' ';
+        title.appendChild(sep);
+      }
+    });
+    // separator then recommended champion
+    title.appendChild(document.createTextNode(' + '));
+    title.appendChild(createInlineChamp(entry.partner, ROLE_LABELS[entry.partnerRole]));
+  } else {
+    title.appendChild(createInlineChamp(entry.source, ROLE_LABELS[entry.allyRole]));
+    title.appendChild(document.createTextNode(" + "));
+    title.appendChild(createInlineChamp(entry.partner, ROLE_LABELS[entry.partnerRole]));
+  }
   content.appendChild(title);
   const meta = document.createElement("p");
   meta.className = "muted";
   const bits = [];
-  const formattedWR = formatPercent(entry.winRate);
-  if (formattedWR) bits.push(`WR ${formattedWR}`);
-  const formattedGames = formatGames(entry.games);
-  if (formattedGames) bits.push(formattedGames);
+  // prepare formatted delta (used in badge) and meta components
   const formattedDelta = formatSigned(entry.delta);
-  if (formattedDelta) bits.push(`Δ ${formattedDelta}`);
+  // Quando uma lane está selecionada (filtro ativo), mostrar apenas jogos e WR
+  const laneFiltered = typeof activeSynergyLane !== 'undefined' && activeSynergyLane !== 'ALL';
+  const formattedGames = formatGames(entry.games);
+  let formattedWR = formatPercent(entry.winRate);
+  if (laneFiltered) {
+    // show champion's general games and WR in the selected lane (not partner-specific)
+    const roleStats = getChampionRoleStats(entry.partner, activeSynergyLane);
+    const roleGames = roleStats.games ?? entry.games;
+    const roleWR = typeof roleStats.winRate === 'number' ? roleStats.winRate : entry.winRate;
+    const formattedRoleGames = formatGames(roleGames);
+    const formattedRoleWR = formatPercent(roleWR);
+    if (formattedRoleGames) bits.push(formattedRoleGames);
+    if (formattedRoleWR) bits.push(`WR ${formattedRoleWR}`);
+    // não incluir delta no meta quando filtrado por lane
+  } else {
+    // comportamento padrão: jogos · WR · Δ
+    if (formattedGames) bits.push(formattedGames);
+    if (formattedWR) bits.push(`WR ${formattedWR}`);
+    if (formattedDelta) bits.push(`Δ ${formattedDelta}`);
+  }
   meta.textContent = bits.join(" · ") || "Amostra pequena";
   content.appendChild(meta);
   li.appendChild(content);
   const badge = document.createElement("span");
   badge.className = getDeltaPillClass(entry.delta);
   badge.textContent = formattedDelta ?? "--";
+  // If aggregate, attach tooltip to badge showing contribution breakdown
+  if (entry.aggregate && entry.aggregateDetails) {
+    const details = entry.aggregateDetails;
+    const tooltipHtml = formatAggregateTooltip(details);
+    const show = (e) => {
+      const tip = ensureScoreTooltip();
+      tip.innerHTML = tooltipHtml;
+      tip.style.display = 'block';
+      tip.style.opacity = '1';
+      const rect = badge.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        const tw = tip.offsetWidth; const th = tip.offsetHeight;
+        let left = window.scrollX + rect.left + rect.width / 2 - tw / 2; const minPad = 8;
+        if (left < minPad) left = minPad;
+        if (left + tw > window.scrollX + document.documentElement.clientWidth - minPad) left = window.scrollX + document.documentElement.clientWidth - tw - minPad;
+        let topAbove = window.scrollY + rect.top - th - 8; let topBelow = window.scrollY + rect.bottom + 8; let top = topAbove;
+        const viewportTop = window.scrollY + minPad; const viewportBottom = window.scrollY + document.documentElement.clientHeight - minPad;
+        if (topAbove < viewportTop) { top = topBelow; if (top + th > viewportBottom) top = Math.max(viewportTop, viewportBottom - th); }
+        tip.style.left = `${Math.round(left)}px`;
+        tip.style.top = `${Math.round(top)}px`;
+      });
+    };
+    const hide = () => { hideScoreTooltip(); };
+    badge.addEventListener('mouseenter', show);
+    badge.addEventListener('mouseleave', hide);
+  }
   li.appendChild(badge);
   return li;
 }
@@ -1031,6 +1612,45 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
   const teamRoleMap = buildRoleMap(teamEntries);
   const enemyRoleMap = buildRoleMap(enemyEntries);
 
+  const DEFAULT_ROLE_ORDER = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
+  const teamSelectedRoles = new Set(
+    teamEntries
+      .filter((entry) => entry && entry.champion && entry.role)
+      .map((entry) => normalizeRoleKey(entry.role))
+      .filter(Boolean)
+  );
+  const enemySelectedRoles = new Set(
+    enemyEntries
+      .filter((entry) => entry && entry.champion && entry.role)
+      .map((entry) => normalizeRoleKey(entry.role))
+      .filter(Boolean)
+  );
+  const getRoleIndex = (role) => {
+    const idx = DEFAULT_ROLE_ORDER.indexOf(role);
+    return idx >= 0 ? idx : DEFAULT_ROLE_ORDER.length;
+  };
+  const lanePriorityFor = (row) => {
+    const allySel = normalizeRoleKey(row.allySelectionRole);
+    const enemySel = normalizeRoleKey(row.enemySelectionRole);
+    if (allySel && enemySel && allySel === enemySel) {
+      return { tier: 0, order: getRoleIndex(allySel) };
+    }
+    const candidates = [
+      allySel,
+      enemySel,
+      normalizeRoleKey(row.allyRole),
+      normalizeRoleKey(row.enemyRole),
+    ].filter(Boolean);
+    const hasSelection = Boolean(allySel || enemySel);
+    const orderIndex = candidates.length
+      ? Math.min(...candidates.map(getRoleIndex))
+      : DEFAULT_ROLE_ORDER.length;
+    return {
+      tier: hasSelection ? 1 : 2,
+      order: orderIndex,
+    };
+  };
+
   const rows = [];
   teamPicks.forEach((ally) => {
     const allyDisplay = resolveChampionName(ally);
@@ -1078,6 +1698,8 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
             games,
             absDelta,
             matchesSelection,
+            allySelectionRole: allySelectionRole || null,
+            enemySelectionRole: enemySelectionRole || null,
           });
         });
       });
@@ -1121,9 +1743,16 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
   });
 
   const uniqueRows = Array.from(deduped.values());
-  
+
+  // Trava as matchups às lanes escolhidas
+  const laneLocked = uniqueRows.filter((row) => row.matchesSelection);
+  if (laneLocked.length === 0) {
+    renderListEmptyState(matchupListEl, "Sem matchups para as lanes selecionadas.");
+    return;
+  }
+
   // Filtra matchups com base na visibilidade
-  const filtered = uniqueRows.filter((row) => {
+  const filtered = laneLocked.filter((row) => {
     if (row.delta > 2 && !matchupVisibility.favorable) return false;
     if (row.delta < -2 && !matchupVisibility.unfavorable) return false;
     if (row.delta >= -2 && row.delta <= 2 && !matchupVisibility.even) return false;
@@ -1131,13 +1760,17 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
   });
   
   filtered.sort((a, b) => {
+    const laneA = lanePriorityFor(a);
+    const laneB = lanePriorityFor(b);
+    if (laneA.tier !== laneB.tier) return laneA.tier - laneB.tier;
+    if (laneA.order !== laneB.order) return laneA.order - laneB.order;
     const aValue = Math.abs(a.delta);
     const bValue = Math.abs(b.delta);
     if (bValue !== aValue) return bValue - aValue;
     return (b.games ?? 0) - (a.games ?? 0);
   });
   
-  const subset = filtered.slice(0, 8);
+  const subset = filtered.slice(0, MAX_MATCHUPS);
   matchupListEl.innerHTML = "";
   subset.forEach((row) => matchupListEl.appendChild(renderMatchupItem(row)));
   decorateChampionNames(matchupListEl);
@@ -1205,9 +1838,11 @@ resetBtn?.addEventListener("click", () => {
   document.querySelectorAll(".pill-row .pill.is-active").forEach((pill) => {
     pill.classList.remove("is-active");
   });
-  // Limpa bans
+  // Limpa bans e atualiza ícones/labels
   document.querySelectorAll('.ban-group select').forEach((s) => {
     if (s.options.length > 0) s.selectedIndex = 0;
+    try { ensureSelectIcon(s); } catch (e) { }
+    try { setBanRateForBanSelect(s); } catch (e) { }
   });
   document.querySelectorAll('.ban-group').forEach((g) => updateBanGroup(g));
   // Limpa seleções de campeões do time e inimigo
