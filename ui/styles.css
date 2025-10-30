@@ -19,16 +19,16 @@
   --accent-gray: #606889;
   --panel-height: 1800px;                 /* altura total da coluna */
   --panel-team-card-height: 3000px;       /* padrão da coluna Meu Time */
-  --panel-team-bans-height: 205px;       /* card específico */
-  --panel-team-composition-height: 512px;
-  --panel-team-tags-height: 200px;
+  --panel-team-bans-height: 220px;       /* card específico */
+  --panel-team-composition-height: 535px;
+  --panel-team-tags-height: 210px;
   --panel-team-sinergias-height: 780px;
-  --synergy-primary-height: 800px;       /* “Sinergias” central */
-  --synergy-secondary-height: 898px;     /* “Matchups” central */
+  --synergy-primary-height: 754px;       /* “Sinergias” central */
+  --synergy-secondary-height: 990px;     /* “Matchups” central */
   --panel-enemy-card-height: 3000px;      /* padrão da coluna Inimigo */
-  --panel-enemy-bans-height: 205px;
-  --panel-enemy-composition-height: 512px;
-  --panel-enemy-tags-height: 200px;
+  --panel-enemy-bans-height: 220px;
+  --panel-enemy-composition-height: 535px;
+  --panel-enemy-tags-height: 210px;
   --panel-enemy-combos-height: 780px;
   font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-900);
