@@ -13,6 +13,10 @@
     <div class="header-actions">
       <span class="header-note muted">UI protótipo</span>
       <span class="badge badge-alpha">versão beta</span>
+  <label style="display:inline-flex;align-items:center;gap:0.5rem;" data-tooltip="Amostra mínima: filtra sinergias com menos jogos.">
+    <span class="muted" style="font-size:0.85rem;">Min Games</span>
+  <input id="min-synergy-games" type="number" min="1" max="10000" step="1" value="20" aria-label="Amostra mínima (jogos) para considerar uma sinergia">
+  </label>
       <button class="ghost-button" data-action="reset">limpar seleções</button>
     </div>
   </header>
@@ -21,7 +25,7 @@
     <section class="panel panel-team">
       <h2 class="panel-title">Meu Time</h2>
 
-      <div class="card">
+      <div class="card card-scroll" data-panel="bans">
         <div class="card-header">
           <h3>Bans</h3>
           <span class="card-subtitle"></span>
@@ -55,7 +59,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card card-scroll" data-panel="composition">
         <div class="card-header">
           <h3>Composição</h3>
           <span class="card-subtitle"></span>
@@ -131,7 +135,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card card-scroll" data-panel="tags">
         <div class="card-header">
           <h3>Tags da Composição</h3>
           <span class="card-subtitle"></span>
@@ -139,7 +143,7 @@
         <div class="card-body tag-cloud" id="team-tags"></div>
       </div>
 
-      <div class="card card-scroll">
+      <div class="card card-scroll" data-panel="sinergias">
         <div class="card-header">
           <h3>Top Sinergias</h3>
           <span class="card-subtitle"></span>
@@ -202,7 +206,7 @@
     <section class="panel panel-enemy">
       <h2 class="panel-title">Time Inimigo</h2>
 
-      <div class="card">
+      <div class="card card-scroll" data-panel="bans">
         <div class="card-header">
           <h3>Bans</h3>
           <span class="card-subtitle"></span>
@@ -236,7 +240,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card card-scroll" data-panel="composition">
         <div class="card-header">
           <h3>Composição</h3>
           <span class="card-subtitle"></span>
@@ -312,7 +316,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card card-scroll" data-panel="tags">
         <div class="card-header">
           <h3>Tags da Composição</h3>
           <span class="card-subtitle"></span>
@@ -320,7 +324,7 @@
         <div class="card-body tag-cloud" id="enemy-tags"></div>
       </div>
 
-      <div class="card card-scroll">
+      <div class="card card-scroll" data-panel="combos">
         <div class="card-header">
           <h3>Próximos Picks</h3>
           <span class="card-subtitle"></span>
