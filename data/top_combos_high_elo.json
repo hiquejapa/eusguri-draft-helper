@@ -11,9 +11,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 2221,
-      "occurrences_weighted": 3158.0,
-      "win_rate_weighted": 49.6833
+      "occurrences": 2315,
+      "occurrences_weighted": 3315.0,
+      "win_rate_weighted": 49.8039
     },
     {
       "champions": [
@@ -26,9 +26,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 901,
-      "occurrences_weighted": 1352.0,
-      "win_rate_weighted": 49.4083
+      "occurrences": 932,
+      "occurrences_weighted": 1397.0,
+      "win_rate_weighted": 49.1768
     },
     {
       "champions": [
@@ -41,9 +41,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 829,
-      "occurrences_weighted": 1200.0,
-      "win_rate_weighted": 44.8333
+      "occurrences": 856,
+      "occurrences_weighted": 1245.0,
+      "win_rate_weighted": 44.8193
     },
     {
       "champions": [
@@ -56,9 +56,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 736,
-      "occurrences_weighted": 1046.0,
-      "win_rate_weighted": 50.0956
+      "occurrences": 765,
+      "occurrences_weighted": 1096.0,
+      "win_rate_weighted": 50.4562
     },
     {
       "champions": [
@@ -71,9 +71,9 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 686,
-      "occurrences_weighted": 996.0,
-      "win_rate_weighted": 47.5904
+      "occurrences": 708,
+      "occurrences_weighted": 1027.0,
+      "win_rate_weighted": 47.3223
     },
     {
       "champions": [
@@ -86,9 +86,9 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 634,
-      "occurrences_weighted": 947.0,
-      "win_rate_weighted": 50.0528
+      "occurrences": 655,
+      "occurrences_weighted": 982.0,
+      "win_rate_weighted": 49.8982
     },
     {
       "champions": [
@@ -101,9 +101,9 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 638,
-      "occurrences_weighted": 888.0,
-      "win_rate_weighted": 47.973
+      "occurrences": 673,
+      "occurrences_weighted": 941.0,
+      "win_rate_weighted": 47.7152
     },
     {
       "champions": [
@@ -116,9 +116,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 624,
-      "occurrences_weighted": 882.0,
-      "win_rate_weighted": 50.4535
+      "occurrences": 649,
+      "occurrences_weighted": 923.0,
+      "win_rate_weighted": 50.7042
     },
     {
       "champions": [
@@ -131,9 +131,9 @@
           "role": "BOTTOM"
         }
       ],
-      "occurrences": 614,
-      "occurrences_weighted": 839.0,
-      "win_rate_weighted": 47.6758
+      "occurrences": 633,
+      "occurrences_weighted": 870.0,
+      "win_rate_weighted": 48.1609
     },
     {
       "champions": [
@@ -146,9 +146,9 @@
           "role": "BOTTOM"
         }
       ],
-      "occurrences": 526,
-      "occurrences_weighted": 787.0,
-      "win_rate_weighted": 47.2681
+      "occurrences": 540,
+      "occurrences_weighted": 810.0,
+      "win_rate_weighted": 46.9136
     },
     {
       "champions": [
@@ -161,9 +161,9 @@
           "role": "BOTTOM"
         }
       ],
-      "occurrences": 524,
-      "occurrences_weighted": 782.0,
-      "win_rate_weighted": 48.977
+      "occurrences": 537,
+      "occurrences_weighted": 805.0,
+      "win_rate_weighted": 49.3168
     },
     {
       "champions": [
@@ -176,9 +176,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 512,
-      "occurrences_weighted": 768.0,
-      "win_rate_weighted": 52.7344
+      "occurrences": 530,
+      "occurrences_weighted": 799.0,
+      "win_rate_weighted": 52.4406
     },
     {
       "champions": [
@@ -191,9 +191,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 575,
-      "occurrences_weighted": 765.0,
-      "win_rate_weighted": 49.0196
+      "occurrences": 590,
+      "occurrences_weighted": 784.0,
+      "win_rate_weighted": 49.3622
     },
     {
       "champions": [
@@ -206,9 +206,24 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 526,
-      "occurrences_weighted": 757.0,
-      "win_rate_weighted": 51.5192
+      "occurrences": 540,
+      "occurrences_weighted": 781.0,
+      "win_rate_weighted": 50.8323
+    },
+    {
+      "champions": [
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 514,
+      "occurrences_weighted": 753.0,
+      "win_rate_weighted": 50.5976
     },
     {
       "champions": [
@@ -221,24 +236,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 497,
-      "occurrences_weighted": 707.0,
-      "win_rate_weighted": 54.0311
-    },
-    {
-      "champions": [
-        {
-          "name": "Kaisa",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 486,
-      "occurrences_weighted": 707.0,
-      "win_rate_weighted": 51.0608
+      "occurrences": 512,
+      "occurrences_weighted": 729.0,
+      "win_rate_weighted": 54.0466
     },
     {
       "champions": [
@@ -251,24 +251,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 465,
-      "occurrences_weighted": 662.0,
-      "win_rate_weighted": 51.0574
-    },
-    {
-      "champions": [
-        {
-          "name": "Kaisa",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Neeko",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 418,
-      "occurrences_weighted": 650.0,
-      "win_rate_weighted": 51.3846
+      "occurrences": 483,
+      "occurrences_weighted": 687.0,
+      "win_rate_weighted": 50.9461
     },
     {
       "champions": [
@@ -281,9 +266,9 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 448,
-      "occurrences_weighted": 649.0,
-      "win_rate_weighted": 48.228
+      "occurrences": 468,
+      "occurrences_weighted": 681.0,
+      "win_rate_weighted": 48.8987
     },
     {
       "champions": [
@@ -296,9 +281,39 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 419,
-      "occurrences_weighted": 642.0,
-      "win_rate_weighted": 54.8287
+      "occurrences": 437,
+      "occurrences_weighted": 672.0,
+      "win_rate_weighted": 54.1667
+    },
+    {
+      "champions": [
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Neeko",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 429,
+      "occurrences_weighted": 669.0,
+      "win_rate_weighted": 50.9716
+    },
+    {
+      "champions": [
+        {
+          "name": "Ambessa",
+          "role": "TOP"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 434,
+      "occurrences_weighted": 635.0,
+      "win_rate_weighted": 53.3858
     },
     {
       "champions": [
@@ -311,24 +326,24 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 419,
-      "occurrences_weighted": 609.0,
-      "win_rate_weighted": 46.3054
+      "occurrences": 434,
+      "occurrences_weighted": 633.0,
+      "win_rate_weighted": 46.2875
     },
     {
       "champions": [
         {
-          "name": "Ashe",
+          "name": "Kaisa",
           "role": "BOTTOM"
         },
         {
-          "name": "Milio",
+          "name": "Karma",
           "role": "UTILITY"
         }
       ],
-      "occurrences": 422,
-      "occurrences_weighted": 608.0,
-      "win_rate_weighted": 51.4803
+      "occurrences": 428,
+      "occurrences_weighted": 627.0,
+      "win_rate_weighted": 47.8469
     },
     {
       "champions": [
@@ -341,24 +356,24 @@
           "role": "BOTTOM"
         }
       ],
-      "occurrences": 417,
-      "occurrences_weighted": 607.0,
-      "win_rate_weighted": 50.9061
+      "occurrences": 430,
+      "occurrences_weighted": 626.0,
+      "win_rate_weighted": 50.639
     },
     {
       "champions": [
         {
-          "name": "Ambessa",
-          "role": "TOP"
+          "name": "Ashe",
+          "role": "BOTTOM"
         },
         {
-          "name": "Nami",
+          "name": "Milio",
           "role": "UTILITY"
         }
       ],
-      "occurrences": 415,
-      "occurrences_weighted": 606.0,
-      "win_rate_weighted": 52.3102
+      "occurrences": 433,
+      "occurrences_weighted": 624.0,
+      "win_rate_weighted": 50.9615
     },
     {
       "champions": [
@@ -371,84 +386,9 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 430,
-      "occurrences_weighted": 604.0,
-      "win_rate_weighted": 47.6821
-    },
-    {
-      "champions": [
-        {
-          "name": "Kaisa",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Karma",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 409,
-      "occurrences_weighted": 596.0,
-      "win_rate_weighted": 48.4899
-    },
-    {
-      "champions": [
-        {
-          "name": "Ezreal",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Sona",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 419,
-      "occurrences_weighted": 593.0,
-      "win_rate_weighted": 50.5902
-    },
-    {
-      "champions": [
-        {
-          "name": "Ezreal",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Sylas",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 404,
-      "occurrences_weighted": 589.0,
-      "win_rate_weighted": 43.8031
-    },
-    {
-      "champions": [
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Yasuo",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 414,
-      "occurrences_weighted": 588.0,
-      "win_rate_weighted": 50.5102
-    },
-    {
-      "champions": [
-        {
-          "name": "Kaisa",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Rakan",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 411,
-      "occurrences_weighted": 587.0,
-      "win_rate_weighted": 45.8262
+      "occurrences": 441,
+      "occurrences_weighted": 618.0,
+      "win_rate_weighted": 47.8964
     },
     {
       "champions": [
@@ -461,9 +401,84 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 412,
-      "occurrences_weighted": 586.0,
-      "win_rate_weighted": 46.2457
+      "occurrences": 433,
+      "occurrences_weighted": 617.0,
+      "win_rate_weighted": 47.0016
+    },
+    {
+      "champions": [
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        },
+        {
+          "name": "Yasuo",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 429,
+      "occurrences_weighted": 612.0,
+      "win_rate_weighted": 51.1438
+    },
+    {
+      "champions": [
+        {
+          "name": "Ezreal",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Sylas",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 417,
+      "occurrences_weighted": 611.0,
+      "win_rate_weighted": 44.5172
+    },
+    {
+      "champions": [
+        {
+          "name": "Ezreal",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Sona",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 429,
+      "occurrences_weighted": 609.0,
+      "win_rate_weighted": 50.9031
+    },
+    {
+      "champions": [
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Rakan",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 423,
+      "occurrences_weighted": 604.0,
+      "win_rate_weighted": 46.1921
+    },
+    {
+      "champions": [
+        {
+          "name": "Jax",
+          "role": "TOP"
+        },
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        }
+      ],
+      "occurrences": 429,
+      "occurrences_weighted": 602.0,
+      "win_rate_weighted": 50.4983
     },
     {
       "champions": [
@@ -476,9 +491,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 406,
-      "occurrences_weighted": 577.0,
-      "win_rate_weighted": 48.3536
+      "occurrences": 421,
+      "occurrences_weighted": 602.0,
+      "win_rate_weighted": 49.1694
     },
     {
       "champions": [
@@ -489,41 +504,11 @@
         {
           "name": "Sona",
           "role": "UTILITY"
-        }
-      ],
-      "occurrences": 399,
-      "occurrences_weighted": 577.0,
-      "win_rate_weighted": 48.1802
-    },
-    {
-      "champions": [
-        {
-          "name": "Jax",
-          "role": "TOP"
-        },
-        {
-          "name": "Kaisa",
-          "role": "BOTTOM"
         }
       ],
       "occurrences": 412,
-      "occurrences_weighted": 576.0,
-      "win_rate_weighted": 50.6944
-    },
-    {
-      "champions": [
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Sona",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 385,
-      "occurrences_weighted": 575.0,
-      "win_rate_weighted": 55.4783
+      "occurrences_weighted": 600.0,
+      "win_rate_weighted": 48.3333
     },
     {
       "champions": [
@@ -536,24 +521,9 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 405,
-      "occurrences_weighted": 560.0,
-      "win_rate_weighted": 49.4643
-    },
-    {
-      "champions": [
-        {
-          "name": "Sona",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Sylas",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 410,
-      "occurrences_weighted": 558.0,
-      "win_rate_weighted": 48.9247
+      "occurrences": 425,
+      "occurrences_weighted": 591.0,
+      "win_rate_weighted": 48.731
     },
     {
       "champions": [
@@ -566,54 +536,24 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 398,
-      "occurrences_weighted": 558.0,
-      "win_rate_weighted": 56.0932
+      "occurrences": 417,
+      "occurrences_weighted": 589.0,
+      "win_rate_weighted": 56.3667
     },
     {
       "champions": [
         {
-          "name": "Karma",
-          "role": "UTILITY"
-        },
-        {
-          "name": "LeeSin",
-          "role": "JUNGLE"
-        }
-      ],
-      "occurrences": 377,
-      "occurrences_weighted": 558.0,
-      "win_rate_weighted": 49.8208
-    },
-    {
-      "champions": [
-        {
-          "name": "Bard",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Ezreal",
-          "role": "BOTTOM"
-        }
-      ],
-      "occurrences": 371,
-      "occurrences_weighted": 555.0,
-      "win_rate_weighted": 51.8919
-    },
-    {
-      "champions": [
-        {
-          "name": "Kaisa",
+          "name": "Lucian",
           "role": "BOTTOM"
         },
         {
-          "name": "Talon",
-          "role": "JUNGLE"
+          "name": "Sona",
+          "role": "UTILITY"
         }
       ],
-      "occurrences": 365,
-      "occurrences_weighted": 555.0,
-      "win_rate_weighted": 50.4505
+      "occurrences": 394,
+      "occurrences_weighted": 589.0,
+      "win_rate_weighted": 55.6876
     },
     {
       "champions": [
@@ -626,54 +566,24 @@
           "role": "BOTTOM"
         }
       ],
-      "occurrences": 376,
-      "occurrences_weighted": 554.0,
-      "win_rate_weighted": 48.3755
+      "occurrences": 391,
+      "occurrences_weighted": 580.0,
+      "win_rate_weighted": 48.1034
     },
     {
       "champions": [
         {
-          "name": "Diana",
-          "role": "JUNGLE"
-        },
-        {
-          "name": "Yasuo",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 372,
-      "occurrences_weighted": 548.0,
-      "win_rate_weighted": 49.0876
-    },
-    {
-      "champions": [
-        {
-          "name": "Ekko",
-          "role": "JUNGLE"
-        },
-        {
-          "name": "Nami",
+          "name": "Bard",
           "role": "UTILITY"
-        }
-      ],
-      "occurrences": 361,
-      "occurrences_weighted": 548.0,
-      "win_rate_weighted": 48.9051
-    },
-    {
-      "champions": [
-        {
-          "name": "Kaisa",
-          "role": "BOTTOM"
         },
         {
-          "name": "Ryze",
-          "role": "MIDDLE"
+          "name": "Ezreal",
+          "role": "BOTTOM"
         }
       ],
-      "occurrences": 352,
-      "occurrences_weighted": 544.0,
-      "win_rate_weighted": 49.0809
+      "occurrences": 385,
+      "occurrences_weighted": 580.0,
+      "win_rate_weighted": 51.3793
     },
     {
       "champions": [
@@ -686,9 +596,54 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 381,
-      "occurrences_weighted": 542.0,
-      "win_rate_weighted": 51.2915
+      "occurrences": 402,
+      "occurrences_weighted": 576.0,
+      "win_rate_weighted": 50.6944
+    },
+    {
+      "champions": [
+        {
+          "name": "Sona",
+          "role": "UTILITY"
+        },
+        {
+          "name": "Sylas",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 418,
+      "occurrences_weighted": 572.0,
+      "win_rate_weighted": 48.951
+    },
+    {
+      "champions": [
+        {
+          "name": "Diana",
+          "role": "JUNGLE"
+        },
+        {
+          "name": "Yasuo",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 386,
+      "occurrences_weighted": 570.0,
+      "win_rate_weighted": 49.8246
+    },
+    {
+      "champions": [
+        {
+          "name": "Karma",
+          "role": "UTILITY"
+        },
+        {
+          "name": "LeeSin",
+          "role": "JUNGLE"
+        }
+      ],
+      "occurrences": 383,
+      "occurrences_weighted": 567.0,
+      "win_rate_weighted": 50.0882
     },
     {
       "champions": [
@@ -697,28 +652,43 @@
           "role": "BOTTOM"
         },
         {
-          "name": "Rengar",
+          "name": "Talon",
           "role": "JUNGLE"
         }
       ],
       "occurrences": 372,
-      "occurrences_weighted": 531.0,
-      "win_rate_weighted": 52.7307
+      "occurrences_weighted": 566.0,
+      "win_rate_weighted": 50.53
     },
     {
       "champions": [
         {
-          "name": "Ambessa",
-          "role": "TOP"
+          "name": "Ekko",
+          "role": "JUNGLE"
         },
         {
-          "name": "Sylas",
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 369,
+      "occurrences_weighted": 561.0,
+      "win_rate_weighted": 49.0196
+    },
+    {
+      "champions": [
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Ryze",
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 366,
-      "occurrences_weighted": 531.0,
-      "win_rate_weighted": 48.3992
+      "occurrences": 360,
+      "occurrences_weighted": 559.0,
+      "win_rate_weighted": 48.4794
     },
     {
       "champions": [
@@ -731,9 +701,39 @@
           "role": "BOTTOM"
         }
       ],
-      "occurrences": 348,
-      "occurrences_weighted": 528.0,
-      "win_rate_weighted": 49.6212
+      "occurrences": 366,
+      "occurrences_weighted": 558.0,
+      "win_rate_weighted": 48.9247
+    },
+    {
+      "champions": [
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Rengar",
+          "role": "JUNGLE"
+        }
+      ],
+      "occurrences": 385,
+      "occurrences_weighted": 549.0,
+      "win_rate_weighted": 52.0947
+    },
+    {
+      "champions": [
+        {
+          "name": "Ambessa",
+          "role": "TOP"
+        },
+        {
+          "name": "Sylas",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 376,
+      "occurrences_weighted": 545.0,
+      "win_rate_weighted": 48.6239
     },
     {
       "champions": [
@@ -746,9 +746,9 @@
           "role": "BOTTOM"
         }
       ],
-      "occurrences": 340,
-      "occurrences_weighted": 524.0,
-      "win_rate_weighted": 49.6183
+      "occurrences": 349,
+      "occurrences_weighted": 539.0,
+      "win_rate_weighted": 49.7217
     }
   ],
   "trios": [
@@ -767,9 +767,9 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 190,
-      "occurrences_weighted": 270.0,
-      "win_rate_weighted": 46.2963
+      "occurrences": 199,
+      "occurrences_weighted": 284.0,
+      "win_rate_weighted": 46.4789
     },
     {
       "champions": [
@@ -786,9 +786,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 135,
-      "occurrences_weighted": 204.0,
-      "win_rate_weighted": 49.5098
+      "occurrences": 139,
+      "occurrences_weighted": 211.0,
+      "win_rate_weighted": 49.2891
     },
     {
       "champions": [
@@ -805,28 +805,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 118,
-      "occurrences_weighted": 174.0,
-      "win_rate_weighted": 52.8736
-    },
-    {
-      "champions": [
-        {
-          "name": "Ekko",
-          "role": "JUNGLE"
-        },
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 106,
-      "occurrences_weighted": 163.0,
-      "win_rate_weighted": 49.6933
+      "occurrences": 120,
+      "occurrences_weighted": 176.0,
+      "win_rate_weighted": 52.8409
     },
     {
       "champions": [
@@ -843,9 +824,28 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 104,
-      "occurrences_weighted": 156.0,
-      "win_rate_weighted": 42.9487
+      "occurrences": 110,
+      "occurrences_weighted": 168.0,
+      "win_rate_weighted": 42.2619
+    },
+    {
+      "champions": [
+        {
+          "name": "Ekko",
+          "role": "JUNGLE"
+        },
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 108,
+      "occurrences_weighted": 166.0,
+      "win_rate_weighted": 50.0
     },
     {
       "champions": [
@@ -862,9 +862,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 104,
-      "occurrences_weighted": 153.0,
-      "win_rate_weighted": 49.0196
+      "occurrences": 109,
+      "occurrences_weighted": 162.0,
+      "win_rate_weighted": 51.2346
     },
     {
       "champions": [
@@ -881,28 +881,9 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 98,
-      "occurrences_weighted": 143.0,
-      "win_rate_weighted": 49.6503
-    },
-    {
-      "champions": [
-        {
-          "name": "Aatrox",
-          "role": "TOP"
-        },
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 102,
-      "occurrences_weighted": 142.0,
-      "win_rate_weighted": 55.6338
+      "occurrences": 105,
+      "occurrences_weighted": 155.0,
+      "win_rate_weighted": 49.6774
     },
     {
       "champions": [
@@ -919,12 +900,16 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 96,
-      "occurrences_weighted": 142.0,
-      "win_rate_weighted": 39.4366
+      "occurrences": 99,
+      "occurrences_weighted": 146.0,
+      "win_rate_weighted": 39.726
     },
     {
       "champions": [
+        {
+          "name": "Aatrox",
+          "role": "TOP"
+        },
         {
           "name": "Lucian",
           "role": "BOTTOM"
@@ -932,15 +917,11 @@
         {
           "name": "Nami",
           "role": "UTILITY"
-        },
-        {
-          "name": "Vladimir",
-          "role": "MIDDLE"
         }
       ],
-      "occurrences": 94,
-      "occurrences_weighted": 137.0,
-      "win_rate_weighted": 53.2847
+      "occurrences": 104,
+      "occurrences_weighted": 145.0,
+      "win_rate_weighted": 55.8621
     },
     {
       "champions": [
@@ -957,9 +938,28 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 103,
-      "occurrences_weighted": 135.0,
-      "win_rate_weighted": 53.3333
+      "occurrences": 105,
+      "occurrences_weighted": 139.0,
+      "win_rate_weighted": 51.7986
+    },
+    {
+      "champions": [
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        },
+        {
+          "name": "Vladimir",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 95,
+      "occurrences_weighted": 138.0,
+      "win_rate_weighted": 52.8986
     },
     {
       "champions": [
@@ -976,8 +976,8 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 84,
-      "occurrences_weighted": 128.0,
+      "occurrences": 86,
+      "occurrences_weighted": 132.0,
       "win_rate_weighted": 50.0
     },
     {
@@ -995,28 +995,9 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 94,
-      "occurrences_weighted": 127.0,
-      "win_rate_weighted": 51.1811
-    },
-    {
-      "champions": [
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Ryze",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 90,
-      "occurrences_weighted": 127.0,
-      "win_rate_weighted": 53.5433
+      "occurrences": 95,
+      "occurrences_weighted": 129.0,
+      "win_rate_weighted": 51.938
     },
     {
       "champions": [
@@ -1033,9 +1014,28 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 89,
-      "occurrences_weighted": 123.0,
-      "win_rate_weighted": 39.0244
+      "occurrences": 92,
+      "occurrences_weighted": 128.0,
+      "win_rate_weighted": 40.625
+    },
+    {
+      "champions": [
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        },
+        {
+          "name": "Ryze",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 91,
+      "occurrences_weighted": 128.0,
+      "win_rate_weighted": 53.125
     },
     {
       "champions": [
@@ -1052,9 +1052,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 89,
-      "occurrences_weighted": 123.0,
-      "win_rate_weighted": 49.5935
+      "occurrences": 91,
+      "occurrences_weighted": 125.0,
+      "win_rate_weighted": 50.4
     },
     {
       "champions": [
@@ -1071,28 +1071,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 83,
-      "occurrences_weighted": 120.0,
-      "win_rate_weighted": 47.5
-    },
-    {
-      "champions": [
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Orianna",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 85,
-      "occurrences_weighted": 118.0,
-      "win_rate_weighted": 50.0
+      "occurrences": 86,
+      "occurrences_weighted": 125.0,
+      "win_rate_weighted": 47.2
     },
     {
       "champions": [
@@ -1109,9 +1090,28 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 77,
-      "occurrences_weighted": 112.0,
-      "win_rate_weighted": 58.0357
+      "occurrences": 83,
+      "occurrences_weighted": 124.0,
+      "win_rate_weighted": 55.6452
+    },
+    {
+      "champions": [
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        },
+        {
+          "name": "Orianna",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 87,
+      "occurrences_weighted": 121.0,
+      "win_rate_weighted": 51.2397
     },
     {
       "champions": [
@@ -1128,9 +1128,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 77,
-      "occurrences_weighted": 110.0,
-      "win_rate_weighted": 57.2727
+      "occurrences": 81,
+      "occurrences_weighted": 118.0,
+      "win_rate_weighted": 58.4746
     },
     {
       "champions": [
@@ -1147,9 +1147,9 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 74,
-      "occurrences_weighted": 109.0,
-      "win_rate_weighted": 65.1376
+      "occurrences": 77,
+      "occurrences_weighted": 115.0,
+      "win_rate_weighted": 65.2174
     },
     {
       "champions": [
@@ -1166,66 +1166,9 @@
           "role": "TOP"
         }
       ],
-      "occurrences": 76,
-      "occurrences_weighted": 108.0,
-      "win_rate_weighted": 56.4815
-    },
-    {
-      "champions": [
-        {
-          "name": "Ambessa",
-          "role": "TOP"
-        },
-        {
-          "name": "Kaisa",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nautilus",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 63,
-      "occurrences_weighted": 97.0,
-      "win_rate_weighted": 46.3918
-    },
-    {
-      "champions": [
-        {
-          "name": "Darius",
-          "role": "TOP"
-        },
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 66,
-      "occurrences_weighted": 95.0,
-      "win_rate_weighted": 41.0526
-    },
-    {
-      "champions": [
-        {
-          "name": "Ezreal",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Karma",
-          "role": "UTILITY"
-        },
-        {
-          "name": "LeeSin",
-          "role": "JUNGLE"
-        }
-      ],
-      "occurrences": 59,
-      "occurrences_weighted": 95.0,
-      "win_rate_weighted": 48.4211
+      "occurrences": 79,
+      "occurrences_weighted": 112.0,
+      "win_rate_weighted": 57.1429
     },
     {
       "champions": [
@@ -1242,15 +1185,15 @@
           "role": "TOP"
         }
       ],
-      "occurrences": 68,
-      "occurrences_weighted": 94.0,
-      "win_rate_weighted": 50.0
+      "occurrences": 72,
+      "occurrences_weighted": 101.0,
+      "win_rate_weighted": 50.495
     },
     {
       "champions": [
         {
-          "name": "Kassadin",
-          "role": "MIDDLE"
+          "name": "Darius",
+          "role": "TOP"
         },
         {
           "name": "Lucian",
@@ -1261,9 +1204,28 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 68,
-      "occurrences_weighted": 93.0,
-      "win_rate_weighted": 47.3118
+      "occurrences": 70,
+      "occurrences_weighted": 101.0,
+      "win_rate_weighted": 42.5743
+    },
+    {
+      "champions": [
+        {
+          "name": "Ambessa",
+          "role": "TOP"
+        },
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nautilus",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 65,
+      "occurrences_weighted": 100.0,
+      "win_rate_weighted": 46.0
     },
     {
       "champions": [
@@ -1280,9 +1242,47 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 66,
-      "occurrences_weighted": 93.0,
-      "win_rate_weighted": 54.8387
+      "occurrences": 70,
+      "occurrences_weighted": 99.0,
+      "win_rate_weighted": 54.5455
+    },
+    {
+      "champions": [
+        {
+          "name": "Kassadin",
+          "role": "MIDDLE"
+        },
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 70,
+      "occurrences_weighted": 97.0,
+      "win_rate_weighted": 47.4227
+    },
+    {
+      "champions": [
+        {
+          "name": "Ezreal",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Karma",
+          "role": "UTILITY"
+        },
+        {
+          "name": "LeeSin",
+          "role": "JUNGLE"
+        }
+      ],
+      "occurrences": 60,
+      "occurrences_weighted": 97.0,
+      "win_rate_weighted": 47.4227
     },
     {
       "champions": [
@@ -1299,28 +1299,9 @@
           "role": "TOP"
         }
       ],
-      "occurrences": 61,
-      "occurrences_weighted": 92.0,
-      "win_rate_weighted": 52.1739
-    },
-    {
-      "champions": [
-        {
-          "name": "Fiora",
-          "role": "TOP"
-        },
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 62,
-      "occurrences_weighted": 91.0,
-      "win_rate_weighted": 42.8571
+      "occurrences": 63,
+      "occurrences_weighted": 96.0,
+      "win_rate_weighted": 52.0833
     },
     {
       "champions": [
@@ -1337,31 +1318,16 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 62,
-      "occurrences_weighted": 90.0,
-      "win_rate_weighted": 53.3333
+      "occurrences": 64,
+      "occurrences_weighted": 94.0,
+      "win_rate_weighted": 55.3191
     },
     {
       "champions": [
         {
-          "name": "Jinx",
-          "role": "BOTTOM"
+          "name": "Fiora",
+          "role": "TOP"
         },
-        {
-          "name": "Lulu",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Sylas",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 60,
-      "occurrences_weighted": 89.0,
-      "win_rate_weighted": 64.0449
-    },
-    {
-      "champions": [
         {
           "name": "Lucian",
           "role": "BOTTOM"
@@ -1369,15 +1335,11 @@
         {
           "name": "Nami",
           "role": "UTILITY"
-        },
-        {
-          "name": "XinZhao",
-          "role": "JUNGLE"
         }
       ],
-      "occurrences": 59,
-      "occurrences_weighted": 89.0,
-      "win_rate_weighted": 53.9326
+      "occurrences": 63,
+      "occurrences_weighted": 93.0,
+      "win_rate_weighted": 41.9355
     },
     {
       "champions": [
@@ -1394,9 +1356,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 66,
-      "occurrences_weighted": 88.0,
-      "win_rate_weighted": 52.2727
+      "occurrences": 68,
+      "occurrences_weighted": 92.0,
+      "win_rate_weighted": 52.1739
     },
     {
       "champions": [
@@ -1413,9 +1375,47 @@
           "role": "UTILITY"
         }
       ],
+      "occurrences": 63,
+      "occurrences_weighted": 92.0,
+      "win_rate_weighted": 59.7826
+    },
+    {
+      "champions": [
+        {
+          "name": "Jinx",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Lulu",
+          "role": "UTILITY"
+        },
+        {
+          "name": "Sylas",
+          "role": "MIDDLE"
+        }
+      ],
       "occurrences": 61,
-      "occurrences_weighted": 88.0,
-      "win_rate_weighted": 62.5
+      "occurrences_weighted": 91.0,
+      "win_rate_weighted": 64.8352
+    },
+    {
+      "champions": [
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        },
+        {
+          "name": "XinZhao",
+          "role": "JUNGLE"
+        }
+      ],
+      "occurrences": 60,
+      "occurrences_weighted": 90.0,
+      "win_rate_weighted": 54.4444
     },
     {
       "champions": [
@@ -1432,28 +1432,9 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 61,
-      "occurrences_weighted": 87.0,
-      "win_rate_weighted": 48.2759
-    },
-    {
-      "champions": [
-        {
-          "name": "KSante",
-          "role": "TOP"
-        },
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 56,
-      "occurrences_weighted": 83.0,
-      "win_rate_weighted": 36.1446
+      "occurrences": 62,
+      "occurrences_weighted": 89.0,
+      "win_rate_weighted": 47.191
     },
     {
       "champions": [
@@ -1470,9 +1451,28 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 55,
-      "occurrences_weighted": 82.0,
-      "win_rate_weighted": 35.3659
+      "occurrences": 58,
+      "occurrences_weighted": 87.0,
+      "win_rate_weighted": 37.931
+    },
+    {
+      "champions": [
+        {
+          "name": "KSante",
+          "role": "TOP"
+        },
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 57,
+      "occurrences_weighted": 83.0,
+      "win_rate_weighted": 36.1446
     },
     {
       "champions": [
@@ -1490,8 +1490,8 @@
         }
       ],
       "occurrences": 59,
-      "occurrences_weighted": 81.0,
-      "win_rate_weighted": 56.7901
+      "occurrences_weighted": 80.0,
+      "win_rate_weighted": 56.25
     },
     {
       "champions": [
@@ -1508,34 +1508,15 @@
           "role": "JUNGLE"
         }
       ],
-      "occurrences": 56,
-      "occurrences_weighted": 77.0,
-      "win_rate_weighted": 53.2468
+      "occurrences": 58,
+      "occurrences_weighted": 80.0,
+      "win_rate_weighted": 51.25
     },
     {
       "champions": [
         {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Taliyah",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 56,
-      "occurrences_weighted": 76.0,
-      "win_rate_weighted": 55.2632
-    },
-    {
-      "champions": [
-        {
-          "name": "Gwen",
-          "role": "TOP"
+          "name": "Graves",
+          "role": "JUNGLE"
         },
         {
           "name": "Lucian",
@@ -1546,9 +1527,9 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 54,
-      "occurrences_weighted": 75.0,
-      "win_rate_weighted": 49.3333
+      "occurrences": 49,
+      "occurrences_weighted": 80.0,
+      "win_rate_weighted": 41.25
     },
     {
       "champions": [
@@ -1565,28 +1546,28 @@
           "role": "MIDDLE"
         }
       ],
-      "occurrences": 53,
-      "occurrences_weighted": 75.0,
-      "win_rate_weighted": 37.3333
+      "occurrences": 56,
+      "occurrences_weighted": 79.0,
+      "win_rate_weighted": 36.7089
     },
     {
       "champions": [
         {
-          "name": "Kaisa",
+          "name": "Lucian",
           "role": "BOTTOM"
         },
         {
-          "name": "LeeSin",
-          "role": "JUNGLE"
+          "name": "Nami",
+          "role": "UTILITY"
         },
         {
-          "name": "Nautilus",
-          "role": "UTILITY"
+          "name": "Taliyah",
+          "role": "MIDDLE"
         }
       ],
-      "occurrences": 48,
-      "occurrences_weighted": 75.0,
-      "win_rate_weighted": 42.6667
+      "occurrences": 58,
+      "occurrences_weighted": 78.0,
+      "win_rate_weighted": 55.1282
     },
     {
       "champions": [
@@ -1603,9 +1584,104 @@
           "role": "UTILITY"
         }
       ],
-      "occurrences": 53,
+      "occurrences": 55,
+      "occurrences_weighted": 78.0,
+      "win_rate_weighted": 44.8718
+    },
+    {
+      "champions": [
+        {
+          "name": "Gwen",
+          "role": "TOP"
+        },
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 55,
+      "occurrences_weighted": 77.0,
+      "win_rate_weighted": 50.6494
+    },
+    {
+      "champions": [
+        {
+          "name": "Kaisa",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "LeeSin",
+          "role": "JUNGLE"
+        },
+        {
+          "name": "Nautilus",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 50,
+      "occurrences_weighted": 77.0,
+      "win_rate_weighted": 42.8571
+    },
+    {
+      "champions": [
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Milio",
+          "role": "UTILITY"
+        },
+        {
+          "name": "Sylas",
+          "role": "MIDDLE"
+        }
+      ],
+      "occurrences": 51,
+      "occurrences_weighted": 76.0,
+      "win_rate_weighted": 46.0526
+    },
+    {
+      "champions": [
+        {
+          "name": "Gnar",
+          "role": "TOP"
+        },
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 56,
+      "occurrences_weighted": 75.0,
+      "win_rate_weighted": 49.3333
+    },
+    {
+      "champions": [
+        {
+          "name": "Gragas",
+          "role": "TOP"
+        },
+        {
+          "name": "Lucian",
+          "role": "BOTTOM"
+        },
+        {
+          "name": "Nami",
+          "role": "UTILITY"
+        }
+      ],
+      "occurrences": 51,
       "occurrences_weighted": 74.0,
-      "win_rate_weighted": 44.5946
+      "win_rate_weighted": 45.9459
     },
     {
       "champions": [
@@ -1625,88 +1701,12 @@
       "occurrences": 50,
       "occurrences_weighted": 74.0,
       "win_rate_weighted": 36.4865
-    },
-    {
-      "champions": [
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Milio",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Sylas",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 50,
-      "occurrences_weighted": 74.0,
-      "win_rate_weighted": 47.2973
-    },
-    {
-      "champions": [
-        {
-          "name": "Gnar",
-          "role": "TOP"
-        },
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 54,
-      "occurrences_weighted": 72.0,
-      "win_rate_weighted": 48.6111
-    },
-    {
-      "champions": [
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        },
-        {
-          "name": "Qiyana",
-          "role": "MIDDLE"
-        }
-      ],
-      "occurrences": 52,
-      "occurrences_weighted": 72.0,
-      "win_rate_weighted": 45.8333
-    },
-    {
-      "champions": [
-        {
-          "name": "Gragas",
-          "role": "TOP"
-        },
-        {
-          "name": "Lucian",
-          "role": "BOTTOM"
-        },
-        {
-          "name": "Nami",
-          "role": "UTILITY"
-        }
-      ],
-      "occurrences": 50,
-      "occurrences_weighted": 72.0,
-      "win_rate_weighted": 47.2222
     }
   ],
   "_metadata": {
-    "recent_window_start": "2025-10-04T12:57:32.532000+00:00",
-    "previous_window_start": "2025-09-04T12:57:32.532000+00:00",
-    "latest_match_timestamp": "2025-11-03T12:57:32.532000+00:00",
+    "recent_window_start": "2025-10-04T17:23:43.093000+00:00",
+    "previous_window_start": "2025-09-04T17:23:43.093000+00:00",
+    "latest_match_timestamp": "2025-11-03T17:23:43.093000+00:00",
     "weights": {
       "recent_days": 30,
       "recent_weight": 2.0,
