@@ -8,10 +8,13 @@ const comboListEl = document.getElementById("combo-list");
 const selectedSynergyListEl = document.getElementById("selected-synergy-list");
 const matchupListEl = document.getElementById("matchup-list");
 const enemyComboListEl = document.getElementById("enemy-combo-list");
-const laneFilterButtons = document.querySelectorAll("[data-lane-filter]");
+const enemySelectedSynergyListEl = document.getElementById("enemy-selected-synergy-list");
+const recommendationsListEl = document.getElementById("recommendations-list");
+const laneFilterButtons = document.querySelectorAll("#synergy-lane-filter [data-lane-filter]");
 const matchupFilterButtons = document.querySelectorAll("[data-matchup-filter]");
 
 let activeSynergyLane = "ALL";
+let activeRecommendationsLane = "ALL";
 const matchupVisibility = {
   favorable: true,
   even: true,
@@ -59,25 +62,33 @@ const MATCHUP_LABELS = {
   unfavorable: "Desfavorável",
 };
 
-// Considerar como risco de ban quando a taxa for maior ou igual a este valor (em %)
-const BAN_RISK_THRESHOLD = 60;
-
 // Configuráveis: mínimo de jogos para considerar uma sinergia e máximo de itens mostrados
 // - MIN_SYNERGY_GAMES: sinergias com número de jogos menor que este valor serão ignoradas
+// - MIN_MATCHUP_GAMES: matchups com número de jogos menor que este valor serão ignoradas (apenas em recomendações)
 // - MAX_SYNERGIES: controla quantas recomendações aparecem no painel de sinergias
 // Para aumentar ou diminuir o número de sinergias exibidas, altere `MAX_SYNERGIES` abaixo.
 // MIN_SYNERGY_GAMES is mutable and can be updated at runtime by the UI control (#min-synergy-games).
-let MIN_SYNERGY_GAMES = 20; // filtrar sinergias com amostra menor que este valor
+let MIN_SYNERGY_GAMES = 50; // filtrar sinergias com amostra menor que este valor
+const MIN_MATCHUP_GAMES = 20; // filtrar matchups com amostra menor que este valor (apenas em recomendações)
 const MAX_SYNERGIES = 12; // número padrão de sinergias exibidas (substitui o literal 6)
 const MAX_MATCHUPS = MAX_SYNERGIES; // manter matchups alinhados à quantidade de sinergias
 
-// Mapa de pesos entre pares de roles usado quando o usuário 'trava' por lane
+// Mapa de pesos entre pares de roles usado quando o usuário 'trava' por lane (para sinergias)
 const ROLE_WEIGHTS = {
-  TOP:   { TOP: 1.0, JUNGLE: 1.30, MIDDLE: 1.20, BOTTOM: 1.00, UTILITY: 1.00 },
-  JUNGLE:{ TOP: 1.30, JUNGLE: 1.0,  MIDDLE: 1.30, BOTTOM: 1.00, UTILITY: 1.30 },
-  MIDDLE:{ TOP: 1.20, JUNGLE: 1.30, MIDDLE: 1.0,  BOTTOM: 1.10, UTILITY: 1.10 },
-  BOTTOM:{ TOP: 1.00, JUNGLE: 1.00, MIDDLE: 1.10, BOTTOM: 1.0,  UTILITY: 1.30 },
-  UTILITY:{ TOP: 1.00, JUNGLE: 1.30, MIDDLE: 1.10, BOTTOM: 1.30, UTILITY: 1.0  },
+  TOP:   { TOP: 1.00, JUNGLE: 1.30, MIDDLE: 1.20, BOTTOM: 1.00, UTILITY: 1.00 },
+  JUNGLE:{ TOP: 1.30, JUNGLE: 1.00,  MIDDLE: 1.30, BOTTOM: 1.00, UTILITY: 1.30 },
+  MIDDLE:{ TOP: 1.20, JUNGLE: 1.30, MIDDLE: 1.00,  BOTTOM: 1.10, UTILITY: 1.10 },
+  BOTTOM:{ TOP: 1.00, JUNGLE: 1.00, MIDDLE: 1.10, BOTTOM: 1.00,  UTILITY: 1.30 },
+  UTILITY:{ TOP: 1.00, JUNGLE: 1.30, MIDDLE: 1.10, BOTTOM: 1.30, UTILITY: 1.00 },
+};
+
+// Mapa de pesos entre pares de roles para matchups (peso maior para same-role)
+const ROLE_WEIGHTS_MATCHUP = {
+  TOP:   { TOP: 2.00, JUNGLE: 1.30, MIDDLE: 1.20, BOTTOM: 1.00, UTILITY: 1.00 },
+  JUNGLE:{ TOP: 1.30, JUNGLE: 2.00,  MIDDLE: 1.30, BOTTOM: 1.00, UTILITY: 1.30 },
+  MIDDLE:{ TOP: 1.20, JUNGLE: 1.30, MIDDLE: 2.00,  BOTTOM: 1.10, UTILITY: 1.10 },
+  BOTTOM:{ TOP: 1.00, JUNGLE: 1.00, MIDDLE: 1.10, BOTTOM: 2.00,  UTILITY: 1.50 },
+  UTILITY:{ TOP: 1.00, JUNGLE: 1.30, MIDDLE: 1.10, BOTTOM: 1.50, UTILITY: 2.00 },
 };
 
 function normalizeRoleKey(role) {
@@ -95,6 +106,16 @@ function getRoleWeight(aRole, bRole) {
   const b = normalizeRoleKey(bRole);
   if (!a || !b) return 1.0;
   if (ROLE_WEIGHTS[a] && typeof ROLE_WEIGHTS[a][b] === 'number') return ROLE_WEIGHTS[a][b];
+  return 1.0;
+}
+
+function getMatchupRoleWeight(championRole, enemyRole) {
+  const champRole = normalizeRoleKey(championRole);
+  const oppRole = normalizeRoleKey(enemyRole);
+  if (!champRole || !oppRole) return 1.0;
+  if (ROLE_WEIGHTS_MATCHUP[champRole] && typeof ROLE_WEIGHTS_MATCHUP[champRole][oppRole] === 'number') {
+    return ROLE_WEIGHTS_MATCHUP[champRole][oppRole];
+  }
   return 1.0;
 }
 
@@ -149,16 +170,25 @@ function getChampionOverallStats(name) {
 }
 
 // Retorna estatísticas do campeão para uma role específica (games e winRate em %)
+// Usa valores simples (não ponderados) de solo_stats quando disponível
 function getChampionRoleStats(name, role) {
   if (!name || !role) return { games: null, winRate: null };
   const payload = getMatchupPayload(name) || getSynergyPayload(name) || null;
   if (!payload || !payload.roles) return { games: null, winRate: null };
   const r = payload.roles[role] || payload.roles[normalizeRoleKey(role)];
   if (!r) return { games: null, winRate: null };
-  // alguns arquivos usam solo_stats ou fields diretos
+  // Priorizar solo_stats com valores simples (não ponderados)
   const solo = r.solo_stats || r.solo || r.stats || null;
-  const games = safeNumber(solo?.games_weighted ?? solo?.games ?? r.games_weighted ?? r.games) ?? null;
-  let win = safeNumber(solo?.win_rate_weighted ?? solo?.win_rate ?? r.win_rate_weighted ?? r.win_rate ?? payload.win_rate_weighted ?? payload.win_rate) ?? null;
+  if (solo) {
+    // Usar valores simples de solo_stats (não ponderados)
+    const games = safeNumber(solo.games) ?? null;
+    let win = safeNumber(solo.win_rate) ?? null;
+    if (win !== null && win <= 1) win = win * 100;
+    return { games, winRate: win };
+  }
+  // Fallback para valores diretos do role (se solo_stats não existir)
+  const games = safeNumber(r.games) ?? null;
+  let win = safeNumber(r.win_rate ?? payload.win_rate) ?? null;
   if (win !== null && win <= 1) win = win * 100;
   return { games, winRate: win };
 }
@@ -294,6 +324,18 @@ laneFilterButtons.forEach((button) => {
   });
 });
 
+// Bind recommendations lane filter buttons
+const recommendationsLaneFilterButtons = document.querySelectorAll("#recommendations-lane-filter [data-lane-filter]");
+recommendationsLaneFilterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const lane = button.dataset.laneFilter || "ALL";
+    if (lane === activeRecommendationsLane) return;
+    activeRecommendationsLane = lane;
+    recommendationsLaneFilterButtons.forEach((btn) => btn.classList.toggle("is-active", btn === button));
+    updateInsightPanels();
+  });
+});
+
 matchupFilterButtons.forEach((button) => {
   const key = button.dataset.matchupFilter;
   if (!key) return;
@@ -325,8 +367,15 @@ function collectActiveTags(scope) {
   return items;
 }
 
+/**
+ * Renderiza o Tag Cloud com contagem ×N agrupada por categoria
+ * Nota: tagcloud.js tem uma versão similar (renderTagCloudFixed) que não é usada
+ * @param {HTMLElement} container - Container onde renderizar
+ * @param {Array} tagItems - Array de objetos {category, slug, text}
+ */
 function renderTagCloud(container, tagItems) {
   container.innerHTML = "";
+  
   if (!tagItems.length) {
     const emptyState = document.createElement("span");
     emptyState.className = "muted";
@@ -335,66 +384,76 @@ function renderTagCloud(container, tagItems) {
     return;
   }
 
-  // Dedup por slug dentro de cada categoria e agrupar por cor
+  // Agrupa tags por categoria e conta ocorrências
   const groups = {
     gameplay: new Map(),
     spike: new Map(),
     synergy: new Map(),
     other: new Map(),
   };
-  for (const t of tagItems) {
-    const bucket = groups[t.category] || groups.other;
-    if (!bucket.has(t.slug)) bucket.set(t.slug, { text: t.text, count: 0 });
-    bucket.get(t.slug).count++;
-  }
+  
+  tagItems.forEach((tag) => {
+    const bucket = groups[tag.category] || groups.other;
+    if (!bucket.has(tag.slug)) {
+      bucket.set(tag.slug, { text: tag.text, count: 0 });
+    }
+    bucket.get(tag.slug).count++;
+  });
 
-  const order = ["gameplay", "spike", "synergy", "other"];
-  const colorClass = {
+  const CATEGORY_ORDER = ["gameplay", "spike", "synergy", "other"];
+  const CATEGORY_CLASSES = {
     gameplay: "pill-gameplay",
     spike: "pill-spike",
     synergy: "pill-synergy",
     other: "",
   };
 
-  order.forEach((cat) => {
+  CATEGORY_ORDER.forEach((cat) => {
     const bucket = groups[cat];
     if (!bucket || bucket.size === 0) return;
+    
     const groupEl = document.createElement("div");
     groupEl.className = "tag-group";
-
     const entries = Array.from(bucket.entries());
 
     if (cat === "gameplay") {
       // Distribuir em exatamente 2 linhas visuais
       const mid = Math.ceil(entries.length / 2) || 1;
       const rows = [entries.slice(0, mid), entries.slice(mid)];
+      
       rows.forEach((row) => {
         const rowEl = document.createElement("div");
         rowEl.className = "tag-row";
         row.forEach(([slug, val]) => {
-          const pill = document.createElement("span");
-          pill.className = `pill is-active ${colorClass[cat]}`.trim();
-          pill.dataset.tag = slug;
-          const count = val.count > 1 ? ` Ã—${val.count}` : "";
-          pill.textContent = `${val.text}${count}`;
-          pill.title = `${val.text} (${val.count} ocorrÃªncia${val.count > 1 ? 's' : ''})`;
+          const pill = createTagPill(slug, val.text, val.count, CATEGORY_CLASSES[cat]);
           rowEl.appendChild(pill);
         });
         groupEl.appendChild(rowEl);
       });
     } else {
       entries.forEach(([slug, val]) => {
-        const pill = document.createElement("span");
-        pill.className = `pill is-active ${colorClass[cat]}`.trim();
-        pill.dataset.tag = slug;
-        const count = val.count > 1 ? ` Ã—${val.count}` : "";
-        pill.textContent = `${val.text}${count}`;
-        pill.title = `${val.text} (${val.count} ocorrÃªncia${val.count > 1 ? 's' : ''})`;
+        const pill = createTagPill(slug, val.text, val.count, CATEGORY_CLASSES[cat]);
         groupEl.appendChild(pill);
       });
     }
+    
     container.appendChild(groupEl);
   });
+}
+
+/**
+ * Cria um elemento pill para tag
+ */
+function createTagPill(slug, text, count, categoryClass) {
+  const formatCount = (c) => (c > 1 ? ` ×${c}` : "");
+  const formatTitle = (t, c) => `${t} (${c} ocorrência${c > 1 ? 's' : ''})`;
+  
+  const pill = document.createElement("span");
+  pill.className = `pill is-active ${categoryClass}`.trim();
+  pill.dataset.tag = slug;
+  pill.textContent = `${text}${formatCount(count)}`;
+  pill.title = formatTitle(text, count);
+  return pill;
 }
 
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
@@ -570,24 +629,25 @@ function formatAggregateTooltip(details) {
   const rows = Array.isArray(details.contributions) ? details.contributions : [];
   const html = [];
   html.push('<div class="score-breakdown">');
-  // color the aggregate delta value relative to the current visible delta range
+  // color the aggregate delta value using the same color scheme as pills
   const aggVal = typeof details.aggDelta === 'number' ? details.aggDelta : (details.debug && typeof details.debug.simpleAvg === 'number' ? details.debug.simpleAvg : 0);
-  const aggColor = valueToColor(aggVal, CURRENT_DELTA_MIN, CURRENT_DELTA_MAX);
+  const aggColor = getDeltaColor(aggVal);
   html.push(`<div class="line" style="margin-bottom:0.5rem;font-weight:700;">Cálculo agregado — Δ <span style="color:${aggColor}">${formatSigned(details.aggDelta)}</span></div>`);
   rows.forEach((c) => {
     const label = `${c.source || ''} ${ROLE_LABELS[normalizeRoleKey(c.allyRole)] || c.allyRole || ''}→${ROLE_LABELS[normalizeRoleKey(c.partnerRole)] || c.partnerRole || ''}`;
     const contrib = typeof c.contribution === 'number' ? Math.round(c.contribution * 10) / 10 : 0;
     const games = c.games || 0;
     const win = typeof c.winRate === 'number' ? (c.winRate <= 1 ? c.winRate * 100 : c.winRate) : null;
+    const delta = typeof c.delta === 'number' ? c.delta : 0;
+    const deltaColor = getDeltaColor(delta);
     html.push('<div class="score-line">');
-    html.push(`<div class="score-meta"><span class="label">${label}</span><span class="value">Δ ${formatSigned(c.delta)}</span></div>`);
+    html.push(`<div class="score-meta"><span class="label">${label}</span><span class="value" style="color:${deltaColor}">Δ ${formatSigned(c.delta)}</span></div>`);
     html.push(`<div class="score-meta small">${formatGames(games) || (games+' jogos')} · peso×games ${(c.weight || 1).toFixed(2)} · contrib ${formatSigned(contrib)}</div>`);
   // Render a simple solid-color bar proportional to the delta magnitude.
-  // No gradients: color is mapped from delta -> solid hex via valueToColor.
-  const delta = typeof c.delta === 'number' ? c.delta : 0;
+  // Color matches the pill colors: Green (>5), Blue (0-5), Red (<0)
   const maxAbs = Math.max(Math.abs(CURRENT_DELTA_MIN), Math.abs(CURRENT_DELTA_MAX)) || 1;
   const pct = clamp(Math.round((Math.abs(delta) / maxAbs) * 100), 0, 100);
-  const color = valueToColor(delta, CURRENT_DELTA_MIN, CURRENT_DELTA_MAX);
+  const color = deltaColor;
   const barClasses = ['bar-inner', delta < 0 ? 'is-negative' : 'is-positive'].join(' ');
   html.push(`<div class="bar"><div class="${barClasses}" style="width:${pct}%;background:${color};"></div></div>`);
     html.push('</div>');
@@ -601,6 +661,95 @@ function formatAggregateTooltip(details) {
   if (details.debug && typeof details.debug.simpleAvg === 'number') {
     html.push(`<div class="line small muted">Média simples (Σ Δ / n): ${Number(details.debug.simpleAvg).toFixed(2)} (${details.debug.simpleCount} entradas)</div>`);
   }
+  html.push('</div>');
+  return html.join('');
+}
+
+function formatRecommendationTooltip(rec) {
+  if (!rec) return '';
+  const html = [];
+  html.push('<div class="score-breakdown">');
+  
+  const combinedScore = typeof rec.combinedScore === 'number' ? rec.combinedScore : 0;
+  const combinedColor = getDeltaColor(combinedScore);
+  html.push(`<div class="line" style="margin-bottom:0.5rem;font-weight:700;">Score combinado — Δ <span style="color:${combinedColor}">${formatSigned(combinedScore)}</span></div>`);
+  html.push(`<div class="line small" style="margin-bottom:0.5rem;">50% Sinergia + 50% Matchup</div>`);
+  
+  // Synergy contributions
+  if (rec.synergyContributions && rec.synergyContributions.length > 0) {
+    html.push('<div class="score-line" style="margin-top:0.5rem;"><div class="label" style="font-weight:600;">Sinergias com o time:</div></div>');
+    rec.synergyContributions.forEach((c) => {
+      const label = `${c.source || ''} ${ROLE_LABELS[normalizeRoleKey(c.allyRole)] || c.allyRole || ''}→${ROLE_LABELS[normalizeRoleKey(c.partnerRole)] || c.partnerRole || ''}`;
+      const delta = typeof c.delta === 'number' ? c.delta : 0;
+      const deltaColor = getDeltaColor(delta);
+      html.push('<div class="score-line">');
+      html.push(`<div class="score-meta"><span class="label">${label}</span><span class="value" style="color:${deltaColor}">Δ ${formatSigned(c.delta)}</span></div>`);
+      html.push(`<div class="score-meta small">${formatGames(c.games) || (c.games+' jogos')} · peso ${(c.weight || 1).toFixed(2)}</div>`);
+      const maxAbs = Math.max(Math.abs(CURRENT_DELTA_MIN), Math.abs(CURRENT_DELTA_MAX)) || 1;
+      const pct = clamp(Math.round((Math.abs(delta) / maxAbs) * 100), 0, 100);
+      const color = deltaColor;
+      const barClasses = ['bar-inner', delta < 0 ? 'is-negative' : 'is-positive'].join(' ');
+      html.push(`<div class="bar"><div class="${barClasses}" style="width:${pct}%;background:${color};"></div></div>`);
+      html.push('</div>');
+    });
+    const synergyAvgColor = getDeltaColor(rec.synergyDelta);
+    html.push(`<div class="line small" style="margin-top:0.25rem;">Média ponderada sinergia: <span style="color:${synergyAvgColor}">${formatSigned(rec.synergyDelta)}</span></div>`);
+  }
+  
+  // Matchup contributions
+  if (rec.matchupContributions && rec.matchupContributions.length > 0) {
+    html.push('<div class="score-line" style="margin-top:0.5rem;"><div class="label" style="font-weight:600;">Matchups vs inimigos:</div></div>');
+    rec.matchupContributions.forEach((c) => {
+      const label = `vs ${c.enemy || ''} (${ROLE_LABELS[normalizeRoleKey(c.enemyRole)] || c.enemyRole || ''})`;
+      const delta = typeof c.delta === 'number' ? c.delta : 0;
+      const deltaColor = getDeltaColor(delta);
+      html.push('<div class="score-line">');
+      html.push(`<div class="score-meta"><span class="label">${label}</span><span class="value" style="color:${deltaColor}">Δ ${formatSigned(c.delta)}</span></div>`);
+      html.push(`<div class="score-meta small">${formatGames(c.games) || (c.games+' jogos')} · peso ${(c.weight || 1).toFixed(2)}</div>`);
+      const maxAbs = Math.max(Math.abs(CURRENT_DELTA_MIN), Math.abs(CURRENT_DELTA_MAX)) || 1;
+      const pct = clamp(Math.round((Math.abs(delta) / maxAbs) * 100), 0, 100);
+      const color = deltaColor;
+      const barClasses = ['bar-inner', delta < 0 ? 'is-negative' : 'is-positive'].join(' ');
+      html.push(`<div class="bar"><div class="${barClasses}" style="width:${pct}%;background:${color};"></div></div>`);
+      html.push('</div>');
+    });
+    const matchupAvgColor = getDeltaColor(rec.matchupDelta);
+    html.push(`<div class="line small" style="margin-top:0.25rem;">Média ponderada matchup: <span style="color:${matchupAvgColor}">${formatSigned(rec.matchupDelta)}</span></div>`);
+  }
+  
+  html.push('</div>');
+  return html.join('');
+}
+
+function formatMatchupTooltip(row) {
+  if (!row) return '';
+  const html = [];
+  html.push('<div class="score-breakdown">');
+  
+  const delta = typeof row.delta === 'number' ? row.delta : 0;
+  const deltaColor = getDeltaColor(delta);
+  html.push(`<div class="line" style="margin-bottom:0.5rem;font-weight:700;">Matchup — Δ <span style="color:${deltaColor}">${formatSigned(delta)}</span></div>`);
+  
+  const label = `${row.ally || ''} (${ROLE_LABELS[normalizeRoleKey(row.allyRole)] || row.allyRole || ''}) vs ${row.enemy || ''} (${ROLE_LABELS[normalizeRoleKey(row.enemyRole)] || row.enemyRole || ''})`;
+  html.push(`<div class="line" style="margin-bottom:0.5rem;">${label}</div>`);
+  
+  const formattedWR = formatPercent(row.winRate);
+  const formattedEarly = formatPercent(row.earlyWin);
+  const formattedGames = formatGames(row.games);
+  
+  html.push('<div class="score-line">');
+  if (formattedWR) html.push(`<div class="score-meta"><span class="label">Win Rate</span><span class="value">${formattedWR}</span></div>`);
+  if (formattedEarly) html.push(`<div class="score-meta"><span class="label">Early Win Rate</span><span class="value">${formattedEarly}</span></div>`);
+  if (formattedGames) html.push(`<div class="score-meta"><span class="label">Jogos</span><span class="value">${formattedGames}</span></div>`);
+  
+  // Visual bar for delta
+  const maxAbs = Math.max(Math.abs(CURRENT_DELTA_MIN), Math.abs(CURRENT_DELTA_MAX)) || 1;
+  const pct = clamp(Math.round((Math.abs(delta) / maxAbs) * 100), 0, 100);
+  const color = deltaColor;
+  const barClasses = ['bar-inner', delta < 0 ? 'is-negative' : 'is-positive'].join(' ');
+  html.push(`<div class="bar" style="margin-top:0.5rem;"><div class="${barClasses}" style="width:${pct}%;background:${color};"></div></div>`);
+  html.push('</div>');
+  
   html.push('</div>');
   return html.join('');
 }
@@ -972,11 +1121,17 @@ function formatSigned(value) {
 
 function getDeltaPillClass(delta) {
   if (!Number.isFinite(delta)) return "pill pill-gray";
-  if (delta < 0) return "pill pill-red";
-  if (delta >= 5) return "pill pill-green";
-  if (delta >= 2) return "pill pill-orange";
-  if (delta > 0) return "pill pill-blue";
-  return "pill pill-gray";
+  if (delta > 5) return "pill pill-green";  // Favorable (>5)
+  if (delta >= 0) return "pill pill-blue";  // Balanced (0-5)
+  return "pill pill-red";  // Unfavorable (<0)
+}
+
+function getDeltaColor(delta) {
+  // Returns color matching the pill colors: Green (>5), Blue (0-5), Red (<0)
+  if (!Number.isFinite(delta)) return "#c5cadf"; // gray
+  if (delta > 5) return "#5ae5a6";  // green
+  if (delta >= 0) return "#78a9ff";  // blue
+  return "#ff8e92";  // red
 }
 
 function renderListEmptyState(listEl, message) {
@@ -993,11 +1148,271 @@ function updateInsightPanels() {
   const enemyEntries = getSidePickEntries("enemy");
   const teamPicks = teamEntries.map((entry) => entry.champion);
   const enemyPicks = enemyEntries.map((entry) => entry.champion);
+  updateRecommendations(teamEntries, enemyEntries);
   updateSynergyRecommendations(teamEntries);
   updateComboHighlights(teamPicks, enemyPicks);
   updateSelectedSynergyForTeam(teamEntries);
+  updateSelectedSynergyForEnemy(enemyEntries);
   updateMatchupInsights(teamEntries, enemyEntries);
   updateComboHighlights(teamPicks, enemyPicks, enemyComboListEl, { scope: "enemy" });
+}
+
+/**
+ * Calcula o score de matchup entre um campeão e um oponente
+ * @param {string} championName - Nome do campeão
+ * @param {string} championRole - Role do campeão
+ * @param {string} enemyName - Nome do oponente
+ * @param {string} enemyRole - Role do oponente
+ * @returns {number|null} - Matchup delta ou null se não encontrado
+ */
+function getMatchupDelta(championName, championRole, enemyName, enemyRole) {
+  if (!championName || !enemyName || !championRole || !enemyRole) return null;
+  const info = getMatchupPayload(championName);
+  if (!info || !info.roles) return null;
+  const roleData = info.roles[championRole];
+  if (!roleData || !roleData.matchups) return null;
+  const opponents = roleData.matchups[enemyRole];
+  if (!opponents) return null;
+  const stats = resolveOpponentStats(opponents, enemyName);
+  if (!stats) return null;
+  return safeNumber(stats.matchup_delta);
+}
+
+/**
+ * Atualiza o painel de recomendações com base em sinergia + matchup (50-50)
+ */
+function updateRecommendations(teamEntries, enemyEntries) {
+  if (!recommendationsListEl) return;
+  if (!ExternalStats.loaded) {
+    renderListEmptyState(recommendationsListEl, "Carregando dados...");
+    return;
+  }
+  
+  const teamSet = new Set(
+    teamEntries
+      .map((entry) => resolveChampionName(entry.champion) || entry.champion)
+      .filter(Boolean)
+  );
+  const enemySet = new Set(
+    enemyEntries
+      .map((entry) => resolveChampionName(entry.champion) || entry.champion)
+      .filter(Boolean)
+  );
+  const banned = new Set(Array.from(getGlobalBans()).map((b) => resolveChampionName(b) || b));
+  
+  // Se não há time selecionado, não mostrar recomendações
+  if (!teamEntries.length) {
+    renderListEmptyState(recommendationsListEl, "Selecione campeões do seu time para ver recomendações.");
+    return;
+  }
+  
+  const presentRoles = new Set(teamEntries.map((e) => e.role).filter(Boolean));
+  const ALL_ROLES = Object.keys(ROLE_LABELS);
+  let missingRoles = ALL_ROLES.filter((r) => !presentRoles.has(r));
+  
+  // Aplicar filtro de lane se ativo
+  if (activeRecommendationsLane && activeRecommendationsLane !== "ALL") {
+    // Se a lane já está selecionada, não mostrar recomendações
+    if (presentRoles.has(activeRecommendationsLane)) {
+      renderListEmptyState(recommendationsListEl, "Lane já selecionada");
+      return;
+    }
+    // Filtrar apenas para a lane selecionada
+    missingRoles = [activeRecommendationsLane];
+  }
+  
+  // Se todas as roles estão preenchidas, não mostrar recomendações
+  if (missingRoles.length === 0) {
+    renderListEmptyState(recommendationsListEl, "Time completo.");
+    return;
+  }
+  
+  // Obter lista de todos os campeões disponíveis
+  let allChampions = Array.from(ChampionTags.byChampion.keys());
+  if (!allChampions.length && Array.isArray(FALLBACK_CHAMPION_LIST)) {
+    allChampions = [...FALLBACK_CHAMPION_LIST];
+  }
+  
+  const recommendations = [];
+  
+  // Para cada role faltante, calcular scores para todos os campeões
+  missingRoles.forEach((targetRole) => {
+    allChampions.forEach((championName) => {
+      const resolved = resolveChampionName(championName) || championName;
+      
+      // Pular se já está no time ou banido
+      if (teamSet.has(resolved) || banned.has(resolved)) return;
+      
+      // Calcular score de sinergia (com ROLE_WEIGHTS)
+      let synergyScore = 0;
+      let synergyWeight = 0;
+      const synergyContributions = [];
+      
+      teamEntries.forEach(({ champion, role: allyRole }) => {
+        if (!champion || !allyRole) return;
+        
+        const synergy = getPairSynergy(champion, allyRole, championName, targetRole);
+        if (synergy && synergy.delta !== null) {
+          const games = safeNumber(synergy.games) || 0;
+          // Aplicar filtro MIN_SYNERGY_GAMES
+          if (games < MIN_SYNERGY_GAMES) return;
+          
+          const weight = getRoleWeight(allyRole, targetRole) || 1.0;
+          const contribution = (synergy.delta || 0) * games * weight;
+          synergyScore += contribution;
+          synergyWeight += games * weight;
+          
+          synergyContributions.push({
+            source: resolveChampionName(champion) || champion,
+            allyRole: allyRole,
+            partnerRole: targetRole,
+            delta: synergy.delta,
+            games: games,
+            weight: weight,
+            contribution: contribution / (games * weight), // normalized contribution per weighted game
+          });
+        }
+      });
+      
+      const avgSynergyDelta = synergyWeight > 0 ? synergyScore / synergyWeight : 0;
+      
+      // Calcular score de matchup (com peso 2.00 para same-role matchups)
+      let matchupScore = 0;
+      let matchupWeight = 0;
+      const matchupContributions = [];
+      
+      enemyEntries.forEach(({ champion: enemyChamp, role: enemyRole }) => {
+        if (!enemyChamp || !enemyRole) return;
+        
+        // Obter dados completos do matchup (não apenas delta) para verificar games
+        const matchupInfo = getMatchupPayload(championName);
+        if (!matchupInfo || !matchupInfo.roles) return;
+        const roleData = matchupInfo.roles[targetRole];
+        if (!roleData || !roleData.matchups) return;
+        const opponents = roleData.matchups[enemyRole];
+        if (!opponents) return;
+        const stats = resolveOpponentStats(opponents, enemyChamp);
+        if (!stats) return;
+        
+        const matchupDelta = safeNumber(stats.matchup_delta);
+        if (matchupDelta === null) return;
+        
+        // Aplicar filtro MIN_MATCHUP_GAMES
+        const games = safeNumber(stats.games_weighted ?? stats.games) || 0;
+        if (games < MIN_MATCHUP_GAMES) return;
+        
+        // Usar ROLE_WEIGHTS_MATCHUP para calcular peso baseado nas roles
+        const weight = getMatchupRoleWeight(targetRole, enemyRole);
+        // Ponderar pelo número de jogos (similar ao cálculo de sinergia)
+        const contribution = matchupDelta * games * weight;
+        matchupScore += contribution;
+        matchupWeight += games * weight;
+        
+        matchupContributions.push({
+          enemy: resolveChampionName(enemyChamp) || enemyChamp,
+          enemyRole: enemyRole,
+          championRole: targetRole,
+          delta: matchupDelta,
+          games: games,
+          weight: weight,
+          contribution: matchupDelta, // normalized contribution (just the delta)
+        });
+      });
+      
+      const avgMatchupDelta = matchupWeight > 0 ? matchupScore / matchupWeight : 0;
+      
+      // Combinar 50% sinergia + 50% matchup
+      const combinedScore = (avgSynergyDelta * 0.5) + (avgMatchupDelta * 0.5);
+      
+      // Adicionar à lista se tem dados suficientes
+      if (synergyWeight > 0 || matchupWeight > 0) {
+        recommendations.push({
+          champion: resolved,
+          role: targetRole,
+          synergyDelta: avgSynergyDelta,
+          matchupDelta: avgMatchupDelta,
+          combinedScore: combinedScore,
+          synergyWeight: synergyWeight,
+          matchupWeight: matchupWeight,
+          synergyContributions: synergyContributions,
+          matchupContributions: matchupContributions,
+        });
+      }
+    });
+  });
+  
+  // Ordenar por combined score e pegar top 2-3 (across all roles)
+  recommendations.sort((a, b) => {
+    // Primeiro por combined score
+    if (Math.abs(b.combinedScore - a.combinedScore) > 0.1) {
+      return b.combinedScore - a.combinedScore;
+    }
+    // Em caso de empate, priorizar quem tem mais dados
+    return (b.synergyWeight + b.matchupWeight) - (a.synergyWeight + a.matchupWeight);
+  });
+  
+  // Mostrar 2-3 recomendações no total (não por role)
+  const topRecommendations = recommendations.slice(0, 3);
+  
+  if (!topRecommendations.length) {
+    renderListEmptyState(recommendationsListEl, "Sem recomendações disponíveis.");
+    return;
+  }
+  
+  recommendationsListEl.innerHTML = "";
+  topRecommendations.forEach((rec) => {
+    recommendationsListEl.appendChild(renderRecommendationItem(rec));
+  });
+  // Don't call decorateChampionNames here since we're already creating decorated clickable elements
+  // decorateChampionNames(recommendationsListEl);
+}
+
+/**
+ * Renderiza um item de recomendação
+ */
+function renderRecommendationItem(rec) {
+  const li = document.createElement("li");
+  const content = document.createElement("div");
+  const title = document.createElement("strong");
+  // Mark as already decorated to prevent decorateChampionNames from interfering
+  title.dataset.iconsDecorated = "1";
+  // Make champion clickable to select for the recommended role
+  title.appendChild(createInlineChamp(rec.champion, ROLE_LABELS[rec.role], rec.role, true));
+  content.appendChild(title);
+  li.appendChild(content);
+  
+  const badge = document.createElement("span");
+  badge.className = getDeltaPillClass(rec.combinedScore);
+  badge.textContent = formatSigned(rec.combinedScore) ?? "--";
+  
+  // Add tooltip showing breakdown
+  const tooltipHtml = formatRecommendationTooltip(rec);
+  if (tooltipHtml) {
+    const show = (e) => {
+      const tip = ensureScoreTooltip();
+      tip.innerHTML = tooltipHtml;
+      tip.style.display = 'block';
+      tip.style.opacity = '1';
+      const rect = badge.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        const tw = tip.offsetWidth; const th = tip.offsetHeight;
+        let left = window.scrollX + rect.left + rect.width / 2 - tw / 2; const minPad = 8;
+        if (left < minPad) left = minPad;
+        if (left + tw > window.scrollX + document.documentElement.clientWidth - minPad) left = window.scrollX + document.documentElement.clientWidth - tw - minPad;
+        let topAbove = window.scrollY + rect.top - th - 8; let topBelow = window.scrollY + rect.bottom + 8; let top = topAbove;
+        const viewportTop = window.scrollY + minPad; const viewportBottom = window.scrollY + document.documentElement.clientHeight - minPad;
+        if (topAbove < viewportTop) { top = topBelow; if (top + th > viewportBottom) top = Math.max(viewportTop, viewportBottom - th); }
+        tip.style.left = `${Math.round(left)}px`;
+        tip.style.top = `${Math.round(top)}px`;
+      });
+    };
+    const hide = () => { hideScoreTooltip(); };
+    badge.addEventListener('mouseenter', show);
+    badge.addEventListener('mouseleave', hide);
+  }
+  
+  li.appendChild(badge);
+  return li;
 }
 
 // Retorna o payload de sinergia entre dois campeões considerando as roles selecionadas
@@ -1050,7 +1465,12 @@ function updateSelectedSynergyForTeam(teamEntries) {
     for (let j = i + 1; j < picks.length; j++) {
       const a = picks[i]; const b = picks[j];
       const rec = getPairSynergy(a.champion, a.role, b.champion, b.role);
-      if (rec) rows.push(rec);
+      if (rec) {
+        const games = safeNumber(rec.games);
+        if (games !== null && games >= MIN_SYNERGY_GAMES) {
+          rows.push(rec);
+        }
+      }
     }
   }
   if (!rows.length) { renderListEmptyState(selectedSynergyListEl, "Sem dados de sinergia relevantes entre os escolhidos."); return; }
@@ -1060,6 +1480,34 @@ function updateSelectedSynergyForTeam(teamEntries) {
   });
   selectedSynergyListEl.innerHTML = "";
   rows.forEach((entry) => selectedSynergyListEl.appendChild(renderSynergyItem(entry)));
+}
+
+function updateSelectedSynergyForEnemy(enemyEntries) {
+  if (!enemySelectedSynergyListEl) return;
+  if (!ExternalStats.loaded) { renderListEmptyState(enemySelectedSynergyListEl, "Carregando sinergias dos escolhidos..."); return; }
+  const picks = enemyEntries.filter((e) => e && e.champion && e.role);
+  if (picks.length < 2) { renderListEmptyState(enemySelectedSynergyListEl, "Selecione ao menos dois campeões para ver a sinergia entre eles."); return; }
+  const rows = [];
+  for (let i = 0; i < picks.length; i++) {
+    for (let j = i + 1; j < picks.length; j++) {
+      const a = picks[i]; const b = picks[j];
+      const rec = getPairSynergy(a.champion, a.role, b.champion, b.role);
+      if (rec) {
+        const games = safeNumber(rec.games);
+        if (games !== null && games >= MIN_SYNERGY_GAMES) {
+          rows.push(rec);
+        }
+      }
+    }
+  }
+  if (!rows.length) { renderListEmptyState(enemySelectedSynergyListEl, "Sem dados de sinergia relevantes entre os escolhidos."); return; }
+  rows.sort((x, y) => {
+    if ((y.delta ?? 0) !== (x.delta ?? 0)) return (y.delta ?? 0) - (x.delta ?? 0);
+    return (y.games ?? 0) - (x.games ?? 0);
+  });
+  enemySelectedSynergyListEl.innerHTML = "";
+  rows.forEach((entry) => enemySelectedSynergyListEl.appendChild(renderSynergyItem(entry)));
+  decorateChampionNames(enemySelectedSynergyListEl);
 }
 
 function getSynergyPayload(championName) {
@@ -1183,6 +1631,12 @@ function updateSynergyRecommendations(teamEntries) {
       .map((entry) => resolveChampionName(entry.champion) || entry.champion)
       .filter(Boolean)
   );
+  // Get banned champions and resolve their names
+  const banned = new Set(
+    Array.from(getGlobalBans())
+      .map((b) => resolveChampionName(b) || b)
+      .filter(Boolean)
+  );
   const presentRoles = new Set(teamEntries.map((e) => e.role).filter(Boolean));
   const ALL_ROLES = Object.keys(ROLE_LABELS);
   const missingRoles = ALL_ROLES.filter((r) => !presentRoles.has(r));
@@ -1246,7 +1700,7 @@ function updateSynergyRecommendations(teamEntries) {
       if (!laneMatches(partnerRole)) return;
       Object.entries(partners || {}).forEach(([partner, stats]) => {
         const partnerResolved = resolveChampionName(partner) || partner;
-        if (!stats || !partnerResolved || teamSet.has(partnerResolved)) return;
+        if (!stats || !partnerResolved || teamSet.has(partnerResolved) || banned.has(partnerResolved)) return;
         if (stats.self_role && stats.self_role !== assignedRole) return;
         const delta = safeNumber(stats.synergy_delta);
         // preferir campos ponderados quando disponíveis
@@ -1420,13 +1874,18 @@ function renderSynergyItem(entry) {
         title.appendChild(sep);
       }
     });
-    // separator then recommended champion
+    // separator then recommended champion (make it clickable)
     title.appendChild(document.createTextNode(' + '));
-    title.appendChild(createInlineChamp(entry.partner, ROLE_LABELS[entry.partnerRole]));
+    title.appendChild(createInlineChamp(entry.partner, ROLE_LABELS[entry.partnerRole], entry.partnerRole, true));
   } else {
-    title.appendChild(createInlineChamp(entry.source, ROLE_LABELS[entry.allyRole]));
+    // When not aggregate, make both champions clickable (they could be recommendations too)
+    // The source champion might already be selected, but make it clickable anyway
+    // The partner champion is the recommendation
+    const sourceChamp = createInlineChamp(entry.source, ROLE_LABELS[entry.allyRole], entry.allyRole, true);
+    title.appendChild(sourceChamp);
     title.appendChild(document.createTextNode(" + "));
-    title.appendChild(createInlineChamp(entry.partner, ROLE_LABELS[entry.partnerRole]));
+    const partnerChamp = createInlineChamp(entry.partner, ROLE_LABELS[entry.partnerRole], entry.partnerRole, true);
+    title.appendChild(partnerChamp);
   }
   content.appendChild(title);
   const meta = document.createElement("p");
@@ -1434,12 +1893,12 @@ function renderSynergyItem(entry) {
   const bits = [];
   // prepare formatted delta (used in badge) and meta components
   const formattedDelta = formatSigned(entry.delta);
-  // Quando uma lane está selecionada (filtro ativo), mostrar apenas jogos e WR
+  // Quando uma lane está selecionada (filtro ativo), mostrar estatísticas gerais do campeão na lane
   const laneFiltered = typeof activeSynergyLane !== 'undefined' && activeSynergyLane !== 'ALL';
   const formattedGames = formatGames(entry.games);
   let formattedWR = formatPercent(entry.winRate);
   if (laneFiltered) {
-    // show champion's general games and WR in the selected lane (not partner-specific)
+    // Mostrar estatísticas gerais do campeão na lane selecionada (de solo_stats, não ponderadas)
     const roleStats = getChampionRoleStats(entry.partner, activeSynergyLane);
     const roleGames = roleStats.games ?? entry.games;
     const roleWR = typeof roleStats.winRate === 'number' ? roleStats.winRate : entry.winRate;
@@ -1449,7 +1908,7 @@ function renderSynergyItem(entry) {
     if (formattedRoleWR) bits.push(`WR ${formattedRoleWR}`);
     // não incluir delta no meta quando filtrado por lane
   } else {
-    // comportamento padrão: jogos · WR · Δ
+    // comportamento padrão: jogos · WR · Δ (estatísticas específicas da sinergia)
     if (formattedGames) bits.push(formattedGames);
     if (formattedWR) bits.push(`WR ${formattedWR}`);
     if (formattedDelta) bits.push(`Δ ${formattedDelta}`);
@@ -1515,7 +1974,8 @@ function updateComboHighlights(teamPicks, enemyPicks, targetList = comboListEl, 
       const relevantSet = options.scope === "enemy" ? enemySet : teamSet;
       const hasAny = championNames.some((name) => relevantSet.has(name));
       const hasAll = championNames.every((name) => relevantSet.has(name));
-      const containsRelevant = options.scope === "enemy" ? hasAny : hasAll;
+      // Use hasAny for both team and enemy scope - show combos where any champion matches
+      const containsRelevant = hasAny;
       
       // Verifica conflitos (banido ou no outro time)
       const otherSide = options.scope === "enemy" ? teamSet : enemySet;
@@ -1572,7 +2032,6 @@ function renderComboItem(item, scope = "team") {
   if (formattedWR) bits.push(`WR ${formattedWR}`);
   const formattedGames = formatGames(item.games);
   if (formattedGames) bits.push(formattedGames);
-  bits.push(scope === "team" ? "Combina com seu time" : "Potencial do inimigo");
   meta.textContent = bits.join(" · ") || "Sem dados suficientes";
   content.appendChild(meta);
   li.appendChild(content);
@@ -1804,7 +2263,34 @@ function renderMatchupItem(row) {
   li.appendChild(content);
   const badge = document.createElement("span");
   badge.className = getDeltaPillClass(row.delta);
-  badge.textContent = row.delta > 2 ? "Favorável" : row.delta < -2 ? "Desfavorável" : "Equilibrado";
+  badge.textContent = formattedDelta ?? "--";
+  
+  // Add tooltip showing matchup details
+  const tooltipHtml = formatMatchupTooltip(row);
+  if (tooltipHtml) {
+    const show = (e) => {
+      const tip = ensureScoreTooltip();
+      tip.innerHTML = tooltipHtml;
+      tip.style.display = 'block';
+      tip.style.opacity = '1';
+      const rect = badge.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        const tw = tip.offsetWidth; const th = tip.offsetHeight;
+        let left = window.scrollX + rect.left + rect.width / 2 - tw / 2; const minPad = 8;
+        if (left < minPad) left = minPad;
+        if (left + tw > window.scrollX + document.documentElement.clientWidth - minPad) left = window.scrollX + document.documentElement.clientWidth - tw - minPad;
+        let topAbove = window.scrollY + rect.top - th - 8; let topBelow = window.scrollY + rect.bottom + 8; let top = topAbove;
+        const viewportTop = window.scrollY + minPad; const viewportBottom = window.scrollY + document.documentElement.clientHeight - minPad;
+        if (topAbove < viewportTop) { top = topBelow; if (top + th > viewportBottom) top = Math.max(viewportTop, viewportBottom - th); }
+        tip.style.left = `${Math.round(left)}px`;
+        tip.style.top = `${Math.round(top)}px`;
+      });
+    };
+    const hide = () => { hideScoreTooltip(); };
+    badge.addEventListener('mouseenter', show);
+    badge.addEventListener('mouseleave', hide);
+  }
+  
   li.appendChild(badge);
   return li;
 }
@@ -2355,16 +2841,20 @@ function refreshBanDisplays() {
   });
 }
 
-// Inicia carregamento do CSV assim que a pÃ¡gina abrir
-// Substitui caracteres de multiplicacao mal-decodificados por 'x'
+/**
+ * Sanitiza contagens e garante o símbolo × (multiplicação) correto
+ * Nota: tagcloud.js tem uma versão similar (sanitizeVisibleCounts2) que não é usada
+ */
 function sanitizeVisibleCounts() {
   document.querySelectorAll('.tag-cloud .pill, .champ-tags .pill').forEach((pill) => {
-    const s = pill.textContent;
-    const cleaned = s
-      .replace(/\\u00D7/g, '×') // × (times)
-      .replace(/Ã—/g, 'x')
-      .replace(/[^\x20-\x7E]-(\d+)/g, ' x$1');
-    if (s !== cleaned) pill.textContent = cleaned;
+    const original = pill.textContent;
+    const cleaned = original
+      .replace(/\u00D7/g, '×') // × (times) - corrigido: escape de unicode
+      .replace(/Ã×|Ã—/g, '×') // corrige encoding incorreto
+      .replace(/[^\x20-\x7E]-(\d+)/g, ' ×$1'); // corrige hífen mal formatado
+    if (original !== cleaned) {
+      pill.textContent = cleaned;
+    }
   });
 }
 
@@ -2485,7 +2975,77 @@ function ensureSelectIcon(sel) {
   icon.style.visibility = hasIcon ? 'visible' : 'hidden';
 }
 
-function createInlineChamp(name, roleLabel) {
+/**
+ * Helper function to select a champion for a specific role in My Team Composition
+ */
+function selectChampionForRole(championName, roleKey) {
+  if (!championName || !roleKey) return false;
+  
+  // Find the role select in the team panel
+  const teamPanel = document.querySelector('.panel-team');
+  if (!teamPanel) return false;
+  
+  // Find the list item with matching role
+  const roleKeyNormalized = normalizeRoleKey(roleKey);
+  const roleItem = Array.from(teamPanel.querySelectorAll('.role[data-role]')).find(
+    (el) => normalizeRoleKey(el.dataset.role) === roleKeyNormalized
+  );
+  if (!roleItem) return false;
+  
+  const listItem = roleItem.closest('li');
+  if (!listItem) return false;
+  
+  const select = listItem.querySelector('.role-select select');
+  if (!select) return false;
+  
+  // Resolve champion name in case there are variations
+  const resolvedName = resolveChampionName(championName) || championName;
+  
+  // Check if champion is available in the select options
+  const options = Array.from(select.options);
+  const championOption = options.find(opt => 
+    opt.value === championName || 
+    opt.value === resolvedName ||
+    opt.textContent === championName || 
+    opt.textContent === resolvedName
+  );
+  
+  if (!championOption) {
+    // Champion might not be in the list (could be banned or already selected)
+    // Try to refresh options first, then try again
+    refreshCompositionOptions();
+    
+    // After refresh, check again
+    const newOptions = Array.from(select.options);
+    const newChampionOption = newOptions.find(opt => 
+      opt.value === championName || 
+      opt.value === resolvedName ||
+      opt.textContent === championName || 
+      opt.textContent === resolvedName
+    );
+    
+    if (!newChampionOption) {
+      // Champion is not available (banned or already selected)
+      return false;
+    }
+    
+    select.value = newChampionOption.value;
+  } else {
+    select.value = championOption.value;
+  }
+  
+  // Trigger the change event to update tags and refresh composition
+  // This will call the existing event listeners
+  const changeEvent = new Event('change', { bubbles: true });
+  select.dispatchEvent(changeEvent);
+  
+  // Ensure tags are applied
+  applyChampionTagsToRow(listItem, select.value);
+  
+  return true;
+}
+
+function createInlineChamp(name, roleLabel, roleKey = null, clickable = false) {
   const displayName = roleLabel ? `${name} (${roleLabel})` : name;
   const span = document.createElement('span'); span.className = 'champ-inline';
   const ic = document.createElement('span'); ic.className = 'champ-icon'; const img = document.createElement('img'); setChampionIcon(img, name);
@@ -2493,6 +3053,28 @@ function createInlineChamp(name, roleLabel) {
   const t = document.createElement('span'); t.textContent = displayName;
   span.appendChild(ic);
   span.appendChild(t);
+  
+  // Make clickable if requested
+  if (clickable && roleKey) {
+    span.style.cursor = 'pointer';
+    span.title = `Clique para selecionar ${name} como ${roleLabel}`;
+    span.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (selectChampionForRole(name, roleKey)) {
+        // Visual feedback
+        span.style.opacity = '0.6';
+        setTimeout(() => { span.style.opacity = '1'; }, 200);
+      }
+    });
+    span.addEventListener('mouseenter', () => {
+      span.style.opacity = '0.8';
+    });
+    span.addEventListener('mouseleave', () => {
+      span.style.opacity = '1';
+    });
+  }
+  
   return span;
 }
 
