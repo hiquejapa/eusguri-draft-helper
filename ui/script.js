@@ -2135,6 +2135,9 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
             stats.early_win_rate_weighted ?? stats.early_win_rate ?? (stats.early && (stats.early.win_rate_weighted ?? stats.early.win_rate))
           );
           const games = safeNumber(stats.games_weighted ?? stats.games);
+          const egGames = safeNumber(stats.eg_games);
+          const egGoldDiff = safeNumber(stats.eg_gold_diff_15_weighted);
+          const egXpDiff = safeNumber(stats.eg_xp_diff_15_weighted);
           if (delta === null && winRate === null) return;
 
           const allyRoleResolved = stats.self_role || allyRoleKey || null;
@@ -2155,6 +2158,9 @@ function updateMatchupInsights(teamEntries, enemyEntries) {
             winRate,
             earlyWin,
             games,
+            egGames,
+            egGoldDiff,
+            egXpDiff,
             absDelta,
             matchesSelection,
             allySelectionRole: allySelectionRole || null,
@@ -2258,7 +2264,24 @@ function renderMatchupItem(row) {
   if (formattedGames) bits.push(formattedGames);
   const formattedDelta = formatSigned(row.delta);
   if (formattedDelta) bits.push(`Δ ${formattedDelta}`);
-  meta.textContent = bits.join(" · ") || "Amostra pequena";
+  
+  // Early game data (only show if we have early game data)
+  const earlyGameBits = [];
+  if (typeof row.egGames === 'number' && row.egGames > 0) {
+    if (typeof row.egGoldDiff === 'number') {
+      const goldSign = row.egGoldDiff > 0 ? '+' : '';
+      earlyGameBits.push(`Gold@15 ${goldSign}${integerFormatter.format(row.egGoldDiff)}`);
+    }
+    if (typeof row.egXpDiff === 'number') {
+      const xpSign = row.egXpDiff > 0 ? '+' : '';
+      earlyGameBits.push(`XP@15 ${xpSign}${integerFormatter.format(row.egXpDiff)}`);
+    }
+  }
+  
+  // Join main bits, then add early game stats with em dash and extra spacing
+  const mainText = bits.join(" · ");
+  const earlyText = earlyGameBits.join(" · ");
+  meta.textContent = earlyText ? `${mainText}\u00A0\u00A0—\u00A0\u00A0${earlyText}` : mainText || "Amostra pequena";
   content.appendChild(meta);
   li.appendChild(content);
   const badge = document.createElement("span");
@@ -2318,6 +2341,466 @@ function togglePill(pill) {
 
 document.querySelectorAll(".pill-row .pill").forEach((pill) => {
   pill.addEventListener("click", () => togglePill(pill));
+});
+
+// Database Report Modal
+const databaseReportBtn = document.getElementById("database-report-btn");
+const databaseReportModal = document.getElementById("database-report-modal");
+const databaseReportContent = document.getElementById("database-report-content");
+const closeDatabaseReportBtn = document.getElementById("close-database-report");
+
+let databaseReportData = null;
+let databaseReportCharts = [];
+
+function loadDatabaseReport() {
+  if (databaseReportData) {
+    renderDatabaseReport(databaseReportData);
+    return;
+  }
+  
+  databaseReportContent.innerHTML = '<div class="loading">Carregando dados...</div>';
+  
+  fetch("../data/database_report.json")
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to load database report");
+      return response.json();
+    })
+    .then(data => {
+      databaseReportData = data;
+      renderDatabaseReport(data);
+    })
+    .catch(error => {
+      console.error("Error loading database report:", error);
+      databaseReportContent.innerHTML = `<div style="text-align: center; color: var(--accent-red); padding: 2rem;">Erro ao carregar relatório: ${error.message}</div>`;
+    });
+}
+
+function renderDatabaseReport(data) {
+  // Ensure modal is visible
+  if (databaseReportModal) {
+    databaseReportModal.style.display = "flex";
+  }
+  
+  // Ensure we have the content element
+  if (!databaseReportContent) {
+    console.error("Database report content element not found");
+    return;
+  }
+  
+  // Destroy existing charts
+  databaseReportCharts.forEach(chart => chart.destroy());
+  databaseReportCharts = [];
+  
+  let html = '';
+  
+  // Database Info Section
+  html += '<div class="database-report-section">';
+  html += '<h3>Informações do Banco de Dados</h3>';
+  html += '<div class="database-report-stats">';
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Tamanho</div>
+    <div class="database-report-stat-value">${data.database_info.size_mb.toFixed(2)} MB</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Caminho</div>
+    <div class="database-report-stat-value" style="font-size: 0.9rem; word-break: break-all;">${data.database_info.path}</div>
+  </div>`;
+  html += '</div></div>';
+  
+  // Totals Section
+  html += '<div class="database-report-section">';
+  html += '<h3>Estatísticas Gerais</h3>';
+  html += '<div class="database-report-stats">';
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Partidas</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.totals.matches)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Bans</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.totals.bans)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Participantes</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.totals.participants)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Matchups</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.totals.matchups)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Sinergias</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.totals.synergies)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Jogadores Únicos</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.totals.distinct_players)}</div>
+  </div>`;
+  html += '</div></div>';
+  
+  // Elo Distribution Chart
+  html += '<div class="database-report-section">';
+  html += '<h3>Distribuição por Elo</h3>';
+  html += '<div class="database-report-chart-container large"><canvas id="elo-chart"></canvas></div>';
+  html += '</div>';
+  
+  // Patch Distribution Chart
+  html += '<div class="database-report-section">';
+  html += '<h3>Distribuição por Patch</h3>';
+  html += '<div class="database-report-chart-container large"><canvas id="patch-chart"></canvas></div>';
+  html += '</div>';
+  
+  // Top Champions Played
+  html += '<div class="database-report-section">';
+  html += '<h3>Top 10 Campeões Mais Jogados</h3>';
+  html += '<div class="database-report-chart-container"><canvas id="top-played-chart"></canvas></div>';
+  html += '</div>';
+  
+  // Top Champions Banned
+  html += '<div class="database-report-section">';
+  html += '<h3>Top 10 Campeões Mais Banidos</h3>';
+  html += '<div class="database-report-chart-container"><canvas id="top-banned-chart"></canvas></div>';
+  html += '</div>';
+  
+  // Quality Stats
+  html += '<div class="database-report-section">';
+  html += '<h3>Estatísticas de Qualidade</h3>';
+  html += '<div class="database-report-stats">';
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Duração Média</div>
+    <div class="database-report-stat-value">${data.quality_stats.average_duration_minutes.toFixed(2)} min</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Data Mais Antiga</div>
+    <div class="database-report-stat-value" style="font-size: 0.9rem;">${new Date(data.quality_stats.date_range.earliest).toLocaleDateString('pt-BR')}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Data Mais Recente</div>
+    <div class="database-report-stat-value" style="font-size: 0.9rem;">${new Date(data.quality_stats.date_range.latest).toLocaleDateString('pt-BR')}</div>
+  </div>`;
+  html += '</div></div>';
+  
+  // Early Game Stats
+  html += '<div class="database-report-section">';
+  html += '<h3>Estatísticas do Early Game</h3>';
+  html += '<div class="database-report-stats">';
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Partidas com Dados</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.early_game_stats.matches_with_data)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Diferença de Ouro (15 min)</div>
+    <div class="database-report-stat-value">${data.early_game_stats.average_gold_diff_15.toFixed(2)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Diferença de XP (15 min)</div>
+    <div class="database-report-stat-value">${data.early_game_stats.average_xp_diff_15.toFixed(2)}</div>
+  </div>`;
+  html += '</div></div>';
+  
+  // PUUID Database Stats
+  html += '<div class="database-report-section">';
+  html += '<h3>Banco de Dados de PUUIDs</h3>';
+  html += '<div class="database-report-stats">';
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Total</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.puuid_database.total)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Processados</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.puuid_database.processed)}</div>
+  </div>`;
+  html += `<div class="database-report-stat">
+    <div class="database-report-stat-label">Restantes</div>
+    <div class="database-report-stat-value">${integerFormatter.format(data.puuid_database.remaining)}</div>
+  </div>`;
+  html += '</div></div>';
+  
+  databaseReportContent.innerHTML = html;
+  
+  // Render charts after a small delay to ensure DOM is ready
+  setTimeout(() => {
+    if (databaseReportModal && databaseReportModal.style.display === "flex") {
+      renderCharts(data);
+    }
+  }, 100);
+}
+
+function renderCharts(data) {
+  // Ensure modal is still visible
+  if (!databaseReportModal || databaseReportModal.style.display !== "flex") {
+    return;
+  }
+  
+  // Check if Chart.js is available
+  if (typeof Chart === 'undefined') {
+    console.error("Chart.js is not loaded");
+    return;
+  }
+  
+  const chartColors = {
+    primary: '#3a82f7',
+    secondary: '#a46ff9',
+    success: '#3ecf8e',
+    warning: '#f6a344',
+    danger: '#f45c60',
+    info: '#51c2ff',
+  };
+  
+  // Elo Distribution Pie Chart
+  const eloCtx = document.getElementById('elo-chart');
+  if (eloCtx) {
+    const eloChart = new Chart(eloCtx, {
+      type: 'doughnut',
+      data: {
+        labels: data.elo_distribution.map(e => e.tier),
+        datasets: [{
+          data: data.elo_distribution.map(e => e.count),
+          backgroundColor: [
+            chartColors.primary,
+            chartColors.secondary,
+            chartColors.success,
+            chartColors.info,
+            chartColors.warning,
+            '#f45c60',
+            '#606889',
+            '#8f95b2',
+            '#ccd2f0',
+            '#f5f7ff'
+          ],
+          borderWidth: 2,
+          borderColor: '#1b1f2d'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              color: '#f5f7ff',
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const item = data.elo_distribution[context.dataIndex];
+                return `${label}: ${integerFormatter.format(value)} (${item.percentage.toFixed(2)}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+    databaseReportCharts.push(eloChart);
+  }
+  
+  // Patch Distribution Bar Chart
+  const patchCtx = document.getElementById('patch-chart');
+  if (patchCtx) {
+    const patchChart = new Chart(patchCtx, {
+      type: 'bar',
+      data: {
+        labels: data.patch_distribution.map(p => p.patch),
+        datasets: [{
+          label: 'Partidas',
+          data: data.patch_distribution.map(p => p.count),
+          backgroundColor: chartColors.primary,
+          borderColor: chartColors.primary,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const value = context.parsed.y || 0;
+                const item = data.patch_distribution[context.dataIndex];
+                return `${integerFormatter.format(value)} partidas (${item.percentage.toFixed(2)}%)`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: '#8f95b2'
+            },
+            grid: {
+              color: 'rgba(44, 50, 72, 0.5)'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#8f95b2'
+            },
+            grid: {
+              color: 'rgba(44, 50, 72, 0.5)'
+            }
+          }
+        }
+      }
+    });
+    databaseReportCharts.push(patchChart);
+  }
+  
+  // Top Champions Played Horizontal Bar Chart
+  const topPlayedCtx = document.getElementById('top-played-chart');
+  if (topPlayedCtx) {
+    const topPlayedChart = new Chart(topPlayedCtx, {
+      type: 'bar',
+      data: {
+        labels: data.top_champions_played.map(c => c.champion),
+        datasets: [{
+          label: 'Jogos',
+          data: data.top_champions_played.map(c => c.games),
+          backgroundColor: chartColors.success,
+          borderColor: chartColors.success,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${integerFormatter.format(context.parsed.x)} jogos`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              color: '#8f95b2'
+            },
+            grid: {
+              color: 'rgba(44, 50, 72, 0.5)'
+            }
+          },
+          y: {
+            ticks: {
+              color: '#8f95b2'
+            },
+            grid: {
+              color: 'rgba(44, 50, 72, 0.5)'
+            }
+          }
+        }
+      }
+    });
+    databaseReportCharts.push(topPlayedChart);
+  }
+  
+  // Top Champions Banned Horizontal Bar Chart
+  const topBannedCtx = document.getElementById('top-banned-chart');
+  if (topBannedCtx) {
+    const topBannedChart = new Chart(topBannedCtx, {
+      type: 'bar',
+      data: {
+        labels: data.top_champions_banned.map(c => c.champion),
+        datasets: [{
+          label: 'Bans',
+          data: data.top_champions_banned.map(c => c.bans),
+          backgroundColor: chartColors.danger,
+          borderColor: chartColors.danger,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${integerFormatter.format(context.parsed.x)} bans`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              color: '#8f95b2'
+            },
+            grid: {
+              color: 'rgba(44, 50, 72, 0.5)'
+            }
+          },
+          y: {
+            ticks: {
+              color: '#8f95b2'
+            },
+            grid: {
+              color: 'rgba(44, 50, 72, 0.5)'
+            }
+          }
+        }
+      }
+    });
+    databaseReportCharts.push(topBannedChart);
+  }
+}
+
+databaseReportBtn?.addEventListener("click", () => {
+  if (!databaseReportModal) {
+    console.error("Database report modal element not found");
+    return;
+  }
+  databaseReportModal.style.display = "flex";
+  // Ensure modal is on top
+  databaseReportModal.style.zIndex = "1000";
+  loadDatabaseReport();
+});
+
+closeDatabaseReportBtn?.addEventListener("click", () => {
+  databaseReportModal.style.display = "none";
+  // Destroy charts when closing
+  databaseReportCharts.forEach(chart => chart.destroy());
+  databaseReportCharts = [];
+});
+
+// Close modal when clicking outside
+databaseReportModal?.addEventListener("click", (e) => {
+  if (e.target === databaseReportModal) {
+    databaseReportModal.style.display = "none";
+    // Destroy charts when closing
+    databaseReportCharts.forEach(chart => chart.destroy());
+    databaseReportCharts = [];
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && databaseReportModal?.style.display === "flex") {
+    databaseReportModal.style.display = "none";
+    // Destroy charts when closing
+    databaseReportCharts.forEach(chart => chart.destroy());
+    databaseReportCharts = [];
+  }
 });
 
 resetBtn?.addEventListener("click", () => {

@@ -1144,3 +1144,136 @@ textarea {
   .tag-row, .champ-tags { gap: 0.4rem; }
   .list li { padding: 0.6rem; }
 }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 17, 26, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.modal-dialog {
+  background: var(--bg-800);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-100);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-300);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--bg-750);
+  color: var(--text-100);
+}
+
+.modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-body .loading {
+  text-align: center;
+  color: var(--text-500);
+  padding: 2rem;
+}
+
+.database-report-section {
+  margin-bottom: 2.5rem;
+}
+
+.database-report-section:last-child {
+  margin-bottom: 0;
+}
+
+.database-report-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: var(--text-100);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.database-report-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.database-report-stat {
+  background: var(--bg-750);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.database-report-stat-label {
+  font-size: 0.85rem;
+  color: var(--text-500);
+  margin-bottom: 0.5rem;
+}
+
+.database-report-stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-100);
+}
+
+.database-report-chart-container {
+  position: relative;
+  height: 300px;
+  margin-bottom: 1rem;
+}
+
+.database-report-chart-container.large {
+  height: 400px;
+}
+
+.database-report-chart-container.small {
+  height: 250px;
+}
