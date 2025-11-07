@@ -1,1036 +1,1036 @@
 {
   "bans": {
     "Gwen": {
-      "bans": 3194,
-      "bans_weighted": 4748.0,
-      "ban_rate": 5.3133,
-      "ban_rate_weighted": 5.5474
+      "bans": 3230,
+      "bans_weighted": 4807.0,
+      "ban_rate": 5.3357,
+      "ban_rate_weighted": 5.5828
     },
     "Zed": {
-      "bans": 27292,
-      "bans_weighted": 38216.0,
-      "ban_rate": 45.4012,
-      "ban_rate_weighted": 44.6501
+      "bans": 27477,
+      "bans_weighted": 38441.0,
+      "ban_rate": 45.3895,
+      "ban_rate_weighted": 44.6448
     },
     "Irelia": {
-      "bans": 9185,
-      "bans_weighted": 13061.0,
-      "ban_rate": 15.2796,
-      "ban_rate_weighted": 15.26
+      "bans": 9259,
+      "bans_weighted": 13148.0,
+      "ban_rate": 15.295,
+      "ban_rate_weighted": 15.2699
     },
     "Karma": {
-      "bans": 10127,
-      "bans_weighted": 14100.0,
-      "ban_rate": 16.8466,
-      "ban_rate_weighted": 16.4739
+      "bans": 10201,
+      "bans_weighted": 14174.0,
+      "ban_rate": 16.8511,
+      "ban_rate_weighted": 16.4615
     },
     "Riven": {
-      "bans": 5084,
-      "bans_weighted": 7099.0,
-      "ban_rate": 8.4574,
-      "ban_rate_weighted": 8.2942
+      "bans": 5103,
+      "bans_weighted": 7117.0,
+      "ban_rate": 8.4297,
+      "ban_rate_weighted": 8.2656
     },
     "Rengar": {
-      "bans": 26442,
-      "bans_weighted": 38459.0,
-      "ban_rate": 43.9872,
-      "ban_rate_weighted": 44.934
+      "bans": 26611,
+      "bans_weighted": 38631.0,
+      "ban_rate": 43.959,
+      "ban_rate_weighted": 44.8655
     },
     "Kassadin": {
-      "bans": 11349,
-      "bans_weighted": 15827.0,
-      "ban_rate": 18.8794,
-      "ban_rate_weighted": 18.4916
+      "bans": 11415,
+      "bans_weighted": 15886.0,
+      "ban_rate": 18.8565,
+      "ban_rate_weighted": 18.4498
     },
     "Jax": {
-      "bans": 13507,
-      "bans_weighted": 19697.0,
-      "ban_rate": 22.4693,
-      "ban_rate_weighted": 23.0132
+      "bans": 13586,
+      "bans_weighted": 19758.0,
+      "ban_rate": 22.4428,
+      "ban_rate_weighted": 22.9467
     },
     "Pyke": {
-      "bans": 19370,
-      "bans_weighted": 28162.0,
-      "ban_rate": 32.2226,
-      "ban_rate_weighted": 32.9034
+      "bans": 19513,
+      "bans_weighted": 28324.0,
+      "ban_rate": 32.2337,
+      "ban_rate_weighted": 32.8951
     },
     "Yorick": {
-      "bans": 5142,
-      "bans_weighted": 7212.0,
-      "ban_rate": 8.5539,
-      "ban_rate_weighted": 8.4262
+      "bans": 5182,
+      "bans_weighted": 7277.0,
+      "ban_rate": 8.5602,
+      "ban_rate_weighted": 8.4514
     },
     "Malphite": {
-      "bans": 5519,
-      "bans_weighted": 8214.0,
-      "ban_rate": 9.181,
-      "ban_rate_weighted": 9.5969
+      "bans": 5592,
+      "bans_weighted": 8334.0,
+      "ban_rate": 9.2375,
+      "ban_rate_weighted": 9.679
     },
     "Urgot": {
       "bans": 121,
       "bans_weighted": 172.0,
-      "ban_rate": 0.2013,
-      "ban_rate_weighted": 0.201
+      "ban_rate": 0.1999,
+      "ban_rate_weighted": 0.1998
     },
     "Sylas": {
-      "bans": 5528,
-      "bans_weighted": 7838.0,
-      "ban_rate": 9.196,
-      "ban_rate_weighted": 9.1576
+      "bans": 5562,
+      "bans_weighted": 7887.0,
+      "ban_rate": 9.1879,
+      "ban_rate_weighted": 9.1599
     },
     "Qiyana": {
-      "bans": 24208,
-      "bans_weighted": 34979.0,
-      "ban_rate": 40.2708,
-      "ban_rate_weighted": 40.8681
+      "bans": 24354,
+      "bans_weighted": 35154.0,
+      "ban_rate": 40.2306,
+      "ban_rate_weighted": 40.8274
     },
     "Ashe": {
-      "bans": 1925,
-      "bans_weighted": 2834.0,
-      "ban_rate": 3.2023,
-      "ban_rate_weighted": 3.3111
+      "bans": 1952,
+      "bans_weighted": 2878.0,
+      "ban_rate": 3.2245,
+      "ban_rate_weighted": 3.3425
     },
     "Karthus": {
-      "bans": 3484,
-      "bans_weighted": 4982.0,
-      "ban_rate": 5.7958,
-      "ban_rate_weighted": 5.8208
+      "bans": 3499,
+      "bans_weighted": 4991.0,
+      "ban_rate": 5.78,
+      "ban_rate_weighted": 5.7965
     },
     "Kayn": {
-      "bans": 9533,
-      "bans_weighted": 13271.0,
-      "ban_rate": 15.8585,
-      "ban_rate_weighted": 15.5053
+      "bans": 9587,
+      "bans_weighted": 13321.0,
+      "ban_rate": 15.8369,
+      "ban_rate_weighted": 15.4708
     },
     "Fiddlesticks": {
-      "bans": 660,
-      "bans_weighted": 918.0,
-      "ban_rate": 1.0979,
-      "ban_rate_weighted": 1.0726
+      "bans": 668,
+      "bans_weighted": 932.0,
+      "ban_rate": 1.1035,
+      "ban_rate_weighted": 1.0824
     },
     "Nautilus": {
-      "bans": 10363,
-      "bans_weighted": 14284.0,
-      "ban_rate": 17.2392,
-      "ban_rate_weighted": 16.6889
+      "bans": 10430,
+      "bans_weighted": 14345.0,
+      "ban_rate": 17.2294,
+      "ban_rate_weighted": 16.6601
     },
     "Kai'Sa": {
-      "bans": 3029,
-      "bans_weighted": 4694.0,
-      "ban_rate": 5.0388,
-      "ban_rate_weighted": 5.4843
+      "bans": 3059,
+      "bans_weighted": 4740.0,
+      "ban_rate": 5.0532,
+      "ban_rate_weighted": 5.505
     },
     "Lucian": {
-      "bans": 5868,
-      "bans_weighted": 8289.0,
-      "ban_rate": 9.7616,
-      "ban_rate_weighted": 9.6845
+      "bans": 5893,
+      "bans_weighted": 8309.0,
+      "ban_rate": 9.7347,
+      "ban_rate_weighted": 9.65
     },
     "Katarina": {
-      "bans": 9959,
-      "bans_weighted": 14943.0,
-      "ban_rate": 16.5671,
-      "ban_rate_weighted": 17.4588
+      "bans": 10038,
+      "bans_weighted": 15028.0,
+      "ban_rate": 16.5819,
+      "ban_rate_weighted": 17.4533
     },
     "Draven": {
-      "bans": 6587,
-      "bans_weighted": 9877.0,
-      "ban_rate": 10.9577,
-      "ban_rate_weighted": 11.5399
+      "bans": 6683,
+      "bans_weighted": 10025.0,
+      "ban_rate": 11.0397,
+      "ban_rate_weighted": 11.6429
     },
     "Kayle": {
-      "bans": 1634,
-      "bans_weighted": 2633.0,
-      "ban_rate": 2.7182,
-      "ban_rate_weighted": 3.0763
+      "bans": 1642,
+      "bans_weighted": 2646.0,
+      "ban_rate": 2.7124,
+      "ban_rate_weighted": 3.073
     },
     "Vladimir": {
-      "bans": 18678,
-      "bans_weighted": 27008.0,
-      "ban_rate": 31.0715,
-      "ban_rate_weighted": 31.5551
+      "bans": 18815,
+      "bans_weighted": 27195.0,
+      "ban_rate": 31.0807,
+      "ban_rate_weighted": 31.5839
     },
     "Yasuo": {
-      "bans": 17281,
-      "bans_weighted": 24181.0,
-      "ban_rate": 28.7475,
-      "ban_rate_weighted": 28.2521
+      "bans": 17379,
+      "bans_weighted": 24266.0,
+      "ban_rate": 28.7085,
+      "ban_rate_weighted": 28.1822
     },
     "Fiora": {
-      "bans": 8574,
-      "bans_weighted": 12212.0,
-      "ban_rate": 14.2631,
-      "ban_rate_weighted": 14.268
+      "bans": 8626,
+      "bans_weighted": 12269.0,
+      "ban_rate": 14.2494,
+      "ban_rate_weighted": 14.249
     },
     "Aphelios": {
-      "bans": 902,
-      "bans_weighted": 1297.0,
-      "ban_rate": 1.5005,
-      "ban_rate_weighted": 1.5154
+      "bans": 909,
+      "bans_weighted": 1307.0,
+      "ban_rate": 1.5016,
+      "ban_rate_weighted": 1.5179
     },
     "Master Yi": {
-      "bans": 26569,
-      "bans_weighted": 37565.0,
-      "ban_rate": 44.1984,
-      "ban_rate_weighted": 43.8895
+      "bans": 26760,
+      "bans_weighted": 37789.0,
+      "ban_rate": 44.2051,
+      "ban_rate_weighted": 43.8876
     },
     "Mel": {
-      "bans": 14274,
-      "bans_weighted": 21017.0,
-      "ban_rate": 23.7453,
-      "ban_rate_weighted": 24.5554
+      "bans": 14408,
+      "bans_weighted": 21203.0,
+      "ban_rate": 23.8007,
+      "ban_rate_weighted": 24.6249
     },
     "Lulu": {
-      "bans": 8326,
-      "bans_weighted": 11348.0,
-      "ban_rate": 13.8506,
-      "ban_rate_weighted": 13.2586
+      "bans": 8404,
+      "bans_weighted": 11444.0,
+      "ban_rate": 13.8826,
+      "ban_rate_weighted": 13.2909
     },
     "Wukong": {
-      "bans": 2991,
-      "bans_weighted": 4308.0,
-      "ban_rate": 4.9756,
-      "ban_rate_weighted": 5.0333
+      "bans": 3004,
+      "bans_weighted": 4318.0,
+      "ban_rate": 4.9623,
+      "ban_rate_weighted": 5.0149
     },
     "Nidalee": {
-      "bans": 433,
+      "bans": 434,
       "bans_weighted": 587.0,
-      "ban_rate": 0.7203,
-      "ban_rate_weighted": 0.6858
+      "ban_rate": 0.7169,
+      "ban_rate_weighted": 0.6817
     },
     "Lux": {
-      "bans": 2224,
-      "bans_weighted": 2906.0,
-      "ban_rate": 3.6997,
-      "ban_rate_weighted": 3.3953
+      "bans": 2235,
+      "bans_weighted": 2913.0,
+      "ban_rate": 3.692,
+      "ban_rate_weighted": 3.3831
     },
     "Renekton": {
-      "bans": 4953,
-      "bans_weighted": 6956.0,
-      "ban_rate": 8.2395,
-      "ban_rate_weighted": 8.1271
+      "bans": 4981,
+      "bans_weighted": 6992.0,
+      "ban_rate": 8.2282,
+      "ban_rate_weighted": 8.1204
     },
     "Poppy": {
-      "bans": 3331,
-      "bans_weighted": 4881.0,
-      "ban_rate": 5.5412,
-      "ban_rate_weighted": 5.7028
+      "bans": 3343,
+      "bans_weighted": 4895.0,
+      "ban_rate": 5.5223,
+      "ban_rate_weighted": 5.685
     },
     "Akali": {
-      "bans": 7070,
-      "bans_weighted": 10075.0,
-      "ban_rate": 11.7612,
-      "ban_rate_weighted": 11.7712
+      "bans": 7142,
+      "bans_weighted": 10163.0,
+      "ban_rate": 11.7979,
+      "ban_rate_weighted": 11.8032
     },
     "Nami": {
-      "bans": 2032,
-      "bans_weighted": 2846.0,
-      "ban_rate": 3.3803,
-      "ban_rate_weighted": 3.3252
+      "bans": 2046,
+      "bans_weighted": 2868.0,
+      "ban_rate": 3.3798,
+      "ban_rate_weighted": 3.3309
     },
     "LeBlanc": {
-      "bans": 11938,
-      "bans_weighted": 17567.0,
-      "ban_rate": 19.8593,
-      "ban_rate_weighted": 20.5246
+      "bans": 12017,
+      "bans_weighted": 17664.0,
+      "ban_rate": 19.851,
+      "ban_rate_weighted": 20.5147
     },
     "Ambessa": {
-      "bans": 7484,
-      "bans_weighted": 10561.0,
-      "ban_rate": 12.4499,
-      "ban_rate_weighted": 12.3391
+      "bans": 7535,
+      "bans_weighted": 10622.0,
+      "ban_rate": 12.4471,
+      "ban_rate_weighted": 12.3362
     },
     "Aurora": {
-      "bans": 6032,
-      "bans_weighted": 8663.0,
-      "ban_rate": 10.0344,
-      "ban_rate_weighted": 10.1215
+      "bans": 6065,
+      "bans_weighted": 8694.0,
+      "ban_rate": 10.0188,
+      "ban_rate_weighted": 10.0971
     },
     "Bel'Veth": {
-      "bans": 1003,
-      "bans_weighted": 1448.0,
-      "ban_rate": 1.6685,
-      "ban_rate_weighted": 1.6918
+      "bans": 1011,
+      "bans_weighted": 1459.0,
+      "ban_rate": 1.6701,
+      "ban_rate_weighted": 1.6945
     },
     "Bardo": {
-      "bans": 1730,
-      "bans_weighted": 2618.0,
-      "ban_rate": 2.8779,
-      "ban_rate_weighted": 3.0588
+      "bans": 1746,
+      "bans_weighted": 2644.0,
+      "ban_rate": 2.8842,
+      "ban_rate_weighted": 3.0707
     },
     "Talon": {
-      "bans": 8339,
-      "bans_weighted": 11892.0,
-      "ban_rate": 13.8722,
-      "ban_rate_weighted": 13.8941
+      "bans": 8406,
+      "bans_weighted": 11994.0,
+      "ban_rate": 13.886,
+      "ban_rate_weighted": 13.9297
     },
     "Quinn": {
-      "bans": 4157,
-      "bans_weighted": 6363.0,
-      "ban_rate": 6.9153,
-      "ban_rate_weighted": 7.4343
+      "bans": 4200,
+      "bans_weighted": 6421.0,
+      "ban_rate": 6.938,
+      "ban_rate_weighted": 7.4573
     },
     "Sivir": {
-      "bans": 2731,
-      "bans_weighted": 3658.0,
-      "ban_rate": 4.5431,
-      "ban_rate_weighted": 4.2739
+      "bans": 2744,
+      "bans_weighted": 3670.0,
+      "ban_rate": 4.5328,
+      "ban_rate_weighted": 4.2623
     },
     "Jayce": {
-      "bans": 4059,
-      "bans_weighted": 5577.0,
-      "ban_rate": 6.7523,
-      "ban_rate_weighted": 6.5159
+      "bans": 4081,
+      "bans_weighted": 5599.0,
+      "ban_rate": 6.7414,
+      "ban_rate_weighted": 6.5026
     },
     "Mordekaiser": {
-      "bans": 1906,
-      "bans_weighted": 2477.0,
-      "ban_rate": 3.1707,
-      "ban_rate_weighted": 2.894
+      "bans": 1917,
+      "bans_weighted": 2493.0,
+      "ban_rate": 3.1667,
+      "ban_rate_weighted": 2.8953
     },
     "Kha'Zix": {
-      "bans": 2018,
-      "bans_weighted": 2836.0,
-      "ban_rate": 3.357,
-      "ban_rate_weighted": 3.3135
+      "bans": 2031,
+      "bans_weighted": 2851.0,
+      "ban_rate": 3.355,
+      "ban_rate_weighted": 3.3111
     },
     "Hwei": {
-      "bans": 1122,
-      "bans_weighted": 1515.0,
-      "ban_rate": 1.8665,
-      "ban_rate_weighted": 1.7701
+      "bans": 1126,
+      "bans_weighted": 1521.0,
+      "ban_rate": 1.8601,
+      "ban_rate_weighted": 1.7665
     },
     "Pantheon": {
-      "bans": 1687,
-      "bans_weighted": 2207.0,
-      "ban_rate": 2.8064,
-      "ban_rate_weighted": 2.5786
+      "bans": 1693,
+      "bans_weighted": 2212.0,
+      "ban_rate": 2.7967,
+      "ban_rate_weighted": 2.569
     },
     "Volibear": {
-      "bans": 2568,
-      "bans_weighted": 3138.0,
-      "ban_rate": 4.272,
-      "ban_rate_weighted": 3.6663
+      "bans": 2576,
+      "bans_weighted": 3139.0,
+      "ban_rate": 4.2553,
+      "ban_rate_weighted": 3.6456
     },
     "Leona": {
-      "bans": 789,
-      "bans_weighted": 1060.0,
-      "ban_rate": 1.3125,
-      "ban_rate_weighted": 1.2385
+      "bans": 795,
+      "bans_weighted": 1070.0,
+      "ban_rate": 1.3133,
+      "ban_rate_weighted": 1.2427
     },
     "Ekko": {
-      "bans": 4716,
-      "bans_weighted": 6765.0,
-      "ban_rate": 7.8452,
-      "ban_rate_weighted": 7.904
+      "bans": 4732,
+      "bans_weighted": 6782.0,
+      "ban_rate": 7.8168,
+      "ban_rate_weighted": 7.8765
     },
     "Vayne": {
-      "bans": 1932,
-      "bans_weighted": 2693.0,
-      "ban_rate": 3.2139,
-      "ban_rate_weighted": 3.1464
+      "bans": 1948,
+      "bans_weighted": 2719.0,
+      "ban_rate": 3.2179,
+      "ban_rate_weighted": 3.1578
     },
     "Morgana": {
-      "bans": 3761,
-      "bans_weighted": 5671.0,
-      "ban_rate": 6.2566,
-      "ban_rate_weighted": 6.6258
+      "bans": 3788,
+      "bans_weighted": 5699.0,
+      "ban_rate": 6.2574,
+      "ban_rate_weighted": 6.6187
     },
     "Camille": {
-      "bans": 544,
-      "bans_weighted": 806.0,
-      "ban_rate": 0.905,
-      "ban_rate_weighted": 0.9417
+      "bans": 547,
+      "bans_weighted": 811.0,
+      "ban_rate": 0.9036,
+      "ban_rate_weighted": 0.9419
     },
     "Evelynn": {
-      "bans": 2238,
-      "bans_weighted": 3281.0,
-      "ban_rate": 3.723,
-      "ban_rate_weighted": 3.8334
+      "bans": 2262,
+      "bans_weighted": 3321.0,
+      "ban_rate": 3.7366,
+      "ban_rate_weighted": 3.857
     },
     "Aatrox": {
-      "bans": 4222,
-      "bans_weighted": 6059.0,
-      "ban_rate": 7.0234,
-      "ban_rate_weighted": 7.0791
+      "bans": 4251,
+      "bans_weighted": 6090.0,
+      "ban_rate": 7.0223,
+      "ban_rate_weighted": 7.0728
     },
     "Soraka": {
-      "bans": 5697,
-      "bans_weighted": 8078.0,
-      "ban_rate": 9.4772,
-      "ban_rate_weighted": 9.438
+      "bans": 5734,
+      "bans_weighted": 8105.0,
+      "ban_rate": 9.472,
+      "ban_rate_weighted": 9.413
     },
     "Braum": {
-      "bans": 1335,
-      "bans_weighted": 1834.0,
-      "ban_rate": 2.2208,
-      "ban_rate_weighted": 2.1428
+      "bans": 1350,
+      "bans_weighted": 1851.0,
+      "ban_rate": 2.2301,
+      "ban_rate_weighted": 2.1497
     },
     "K'Sante": {
-      "bans": 744,
-      "bans_weighted": 1073.0,
-      "ban_rate": 1.2377,
-      "ban_rate_weighted": 1.2537
+      "bans": 747,
+      "bans_weighted": 1077.0,
+      "ban_rate": 1.234,
+      "ban_rate_weighted": 1.2508
     },
     "Sona": {
-      "bans": 4379,
-      "bans_weighted": 6387.0,
-      "ban_rate": 7.2846,
-      "ban_rate_weighted": 7.4623
+      "bans": 4402,
+      "bans_weighted": 6404.0,
+      "ban_rate": 7.2717,
+      "ban_rate_weighted": 7.4375
     },
     "Shaco": {
-      "bans": 11000,
-      "bans_weighted": 15969.0,
-      "ban_rate": 18.2989,
-      "ban_rate_weighted": 18.6576
+      "bans": 11068,
+      "bans_weighted": 16051.0,
+      "ban_rate": 18.2833,
+      "ban_rate_weighted": 18.6414
     },
     "Galio": {
-      "bans": 859,
-      "bans_weighted": 1164.0,
-      "ban_rate": 1.429,
-      "ban_rate_weighted": 1.36
+      "bans": 864,
+      "bans_weighted": 1166.0,
+      "ban_rate": 1.4272,
+      "ban_rate_weighted": 1.3542
     },
     "Blitzcrank": {
-      "bans": 2414,
-      "bans_weighted": 3423.0,
-      "ban_rate": 4.0158,
-      "ban_rate_weighted": 3.9993
+      "bans": 2425,
+      "bans_weighted": 3430.0,
+      "ban_rate": 4.0059,
+      "ban_rate_weighted": 3.9836
     },
     "Darius": {
-      "bans": 8223,
-      "bans_weighted": 11493.0,
-      "ban_rate": 13.6792,
-      "ban_rate_weighted": 13.428
+      "bans": 8283,
+      "bans_weighted": 11571.0,
+      "ban_rate": 13.6828,
+      "ban_rate_weighted": 13.4384
     },
     "Janna": {
-      "bans": 897,
+      "bans": 900,
       "bans_weighted": 1320.0,
-      "ban_rate": 1.4922,
-      "ban_rate_weighted": 1.5422
+      "ban_rate": 1.4867,
+      "ban_rate_weighted": 1.533
     },
     "Milio": {
-      "bans": 5295,
-      "bans_weighted": 7396.0,
-      "ban_rate": 8.8084,
-      "ban_rate_weighted": 8.6412
+      "bans": 5345,
+      "bans_weighted": 7468.0,
+      "ban_rate": 8.8295,
+      "ban_rate_weighted": 8.6732
     },
     "Lee Sin": {
-      "bans": 8299,
-      "bans_weighted": 12308.0,
-      "ban_rate": 13.8057,
-      "ban_rate_weighted": 14.3802
+      "bans": 8369,
+      "bans_weighted": 12407.0,
+      "ban_rate": 13.8248,
+      "ban_rate_weighted": 14.4093
     },
     "Ziggs": {
-      "bans": 453,
-      "bans_weighted": 671.0,
-      "ban_rate": 0.7536,
-      "ban_rate_weighted": 0.784
+      "bans": 458,
+      "bans_weighted": 676.0,
+      "ban_rate": 0.7566,
+      "ban_rate_weighted": 0.7851
     },
     "Miss Fortune": {
-      "bans": 278,
-      "bans_weighted": 365.0,
-      "ban_rate": 0.4625,
-      "ban_rate_weighted": 0.4265
+      "bans": 287,
+      "bans_weighted": 381.0,
+      "ban_rate": 0.4741,
+      "ban_rate_weighted": 0.4425
     },
     "Viego": {
-      "bans": 1853,
-      "bans_weighted": 2427.0,
+      "bans": 1866,
+      "bans_weighted": 2432.0,
       "ban_rate": 3.0825,
-      "ban_rate_weighted": 2.8356
+      "ban_rate_weighted": 2.8245
     },
     "Azir": {
-      "bans": 313,
-      "bans_weighted": 439.0,
-      "ban_rate": 0.5207,
-      "ban_rate_weighted": 0.5129
+      "bans": 317,
+      "bans_weighted": 446.0,
+      "ban_rate": 0.5237,
+      "ban_rate_weighted": 0.518
     },
     "Twitch": {
-      "bans": 1887,
-      "bans_weighted": 2603.0,
-      "ban_rate": 3.1391,
-      "ban_rate_weighted": 3.0412
+      "bans": 1902,
+      "bans_weighted": 2627.0,
+      "ban_rate": 3.1419,
+      "ban_rate_weighted": 3.051
     },
     "Akshan": {
-      "bans": 1504,
-      "bans_weighted": 2000.0,
-      "ban_rate": 2.502,
-      "ban_rate_weighted": 2.3367
+      "bans": 1510,
+      "bans_weighted": 2004.0,
+      "ban_rate": 2.4944,
+      "ban_rate_weighted": 2.3274
     },
     "Nilah": {
-      "bans": 1230,
-      "bans_weighted": 1737.0,
-      "ban_rate": 2.0461,
-      "ban_rate_weighted": 2.0294
+      "bans": 1241,
+      "bans_weighted": 1758.0,
+      "ban_rate": 2.05,
+      "ban_rate_weighted": 2.0417
     },
     "Kennen": {
-      "bans": 1319,
-      "bans_weighted": 1947.0,
-      "ban_rate": 2.1942,
-      "ban_rate_weighted": 2.2748
+      "bans": 1327,
+      "bans_weighted": 1950.0,
+      "ban_rate": 2.1921,
+      "ban_rate_weighted": 2.2647
     },
     "Yone": {
-      "bans": 2341,
-      "bans_weighted": 3318.0,
-      "ban_rate": 3.8943,
-      "ban_rate_weighted": 3.8766
+      "bans": 2356,
+      "bans_weighted": 3342.0,
+      "ban_rate": 3.8919,
+      "ban_rate_weighted": 3.8814
     },
     "Orianna": {
-      "bans": 1546,
-      "bans_weighted": 2343.0,
-      "ban_rate": 2.5718,
-      "ban_rate_weighted": 2.7375
+      "bans": 1550,
+      "bans_weighted": 2346.0,
+      "ban_rate": 2.5605,
+      "ban_rate_weighted": 2.7246
     },
     "Gangplank": {
-      "bans": 1260,
-      "bans_weighted": 1713.0,
-      "ban_rate": 2.0961,
-      "ban_rate_weighted": 2.0014
+      "bans": 1272,
+      "bans_weighted": 1729.0,
+      "ban_rate": 2.1012,
+      "ban_rate_weighted": 2.008
     },
     "Seraphine": {
       "bans": 402,
       "bans_weighted": 583.0,
-      "ban_rate": 0.6687,
-      "ban_rate_weighted": 0.6812
+      "ban_rate": 0.6641,
+      "ban_rate_weighted": 0.6771
     },
     "Graves": {
-      "bans": 678,
-      "bans_weighted": 1285.0,
-      "ban_rate": 1.1279,
-      "ban_rate_weighted": 1.5013
+      "bans": 688,
+      "bans_weighted": 1304.0,
+      "ban_rate": 1.1365,
+      "ban_rate_weighted": 1.5144
     },
     "Anivia": {
-      "bans": 994,
-      "bans_weighted": 1453.0,
-      "ban_rate": 1.6536,
-      "ban_rate_weighted": 1.6976
+      "bans": 1003,
+      "bans_weighted": 1467.0,
+      "ban_rate": 1.6569,
+      "ban_rate_weighted": 1.7038
     },
     "Sion": {
-      "bans": 295,
-      "bans_weighted": 470.0,
-      "ban_rate": 0.4907,
-      "ban_rate_weighted": 0.5491
+      "bans": 301,
+      "bans_weighted": 479.0,
+      "ban_rate": 0.4972,
+      "ban_rate_weighted": 0.5563
     },
     "Ezreal": {
-      "bans": 3777,
-      "bans_weighted": 5285.0,
-      "ban_rate": 6.2832,
-      "ban_rate_weighted": 6.1748
+      "bans": 3787,
+      "bans_weighted": 5286.0,
+      "ban_rate": 6.2558,
+      "ban_rate_weighted": 6.1391
     },
     "Alistar": {
-      "bans": 1588,
-      "bans_weighted": 2167.0,
-      "ban_rate": 2.6417,
-      "ban_rate_weighted": 2.5318
+      "bans": 1595,
+      "bans_weighted": 2175.0,
+      "ban_rate": 2.6348,
+      "ban_rate_weighted": 2.526
     },
     "Jarvan IV": {
-      "bans": 819,
-      "bans_weighted": 1218.0,
-      "ban_rate": 1.3624,
-      "ban_rate_weighted": 1.4231
+      "bans": 828,
+      "bans_weighted": 1233.0,
+      "ban_rate": 1.3678,
+      "ban_rate_weighted": 1.432
     },
     "Dr. Mundo": {
-      "bans": 471,
-      "bans_weighted": 693.0,
-      "ban_rate": 0.7835,
-      "ban_rate_weighted": 0.8097
+      "bans": 476,
+      "bans_weighted": 699.0,
+      "ban_rate": 0.7863,
+      "ban_rate_weighted": 0.8118
     },
     "Rammus": {
-      "bans": 2731,
-      "bans_weighted": 3951.0,
-      "ban_rate": 4.5431,
-      "ban_rate_weighted": 4.6162
+      "bans": 2752,
+      "bans_weighted": 3984.0,
+      "ban_rate": 4.5461,
+      "ban_rate_weighted": 4.627
     },
     "Elise": {
-      "bans": 547,
-      "bans_weighted": 746.0,
-      "ban_rate": 0.91,
-      "ban_rate_weighted": 0.8716
+      "bans": 552,
+      "bans_weighted": 755.0,
+      "ban_rate": 0.9119,
+      "ban_rate_weighted": 0.8768
     },
     "Malzahar": {
-      "bans": 1104,
-      "bans_weighted": 1581.0,
-      "ban_rate": 1.8365,
-      "ban_rate_weighted": 1.8472
+      "bans": 1115,
+      "bans_weighted": 1598.0,
+      "ban_rate": 1.8419,
+      "ban_rate_weighted": 1.8559
     },
     "Naafiri": {
-      "bans": 2664,
-      "bans_weighted": 3543.0,
-      "ban_rate": 4.4317,
-      "ban_rate_weighted": 4.1395
+      "bans": 2687,
+      "bans_weighted": 3565.0,
+      "ban_rate": 4.4387,
+      "ban_rate_weighted": 4.1403
     },
     "Udyr": {
-      "bans": 4756,
-      "bans_weighted": 6654.0,
-      "ban_rate": 7.9118,
-      "ban_rate_weighted": 7.7743
+      "bans": 4786,
+      "bans_weighted": 6674.0,
+      "ban_rate": 7.906,
+      "ban_rate_weighted": 7.7511
     },
     "Yunara": {
-      "bans": 9525,
-      "bans_weighted": 11444.0,
-      "ban_rate": 15.8452,
-      "ban_rate_weighted": 13.3707
+      "bans": 9571,
+      "bans_weighted": 11515.0,
+      "ban_rate": 15.8104,
+      "ban_rate_weighted": 13.3734
     },
     "Zac": {
-      "bans": 1064,
-      "bans_weighted": 1440.0,
-      "ban_rate": 1.77,
-      "ban_rate_weighted": 1.6824
+      "bans": 1071,
+      "bans_weighted": 1449.0,
+      "ban_rate": 1.7692,
+      "ban_rate_weighted": 1.6828
     },
     "Samira": {
-      "bans": 1407,
-      "bans_weighted": 1897.0,
-      "ban_rate": 2.3406,
-      "ban_rate_weighted": 2.2164
+      "bans": 1414,
+      "bans_weighted": 1906.0,
+      "ban_rate": 2.3358,
+      "ban_rate_weighted": 2.2136
     },
     "Caitlyn": {
-      "bans": 6263,
-      "bans_weighted": 9349.0,
-      "ban_rate": 10.4187,
-      "ban_rate_weighted": 10.923
+      "bans": 6327,
+      "bans_weighted": 9444.0,
+      "ban_rate": 10.4516,
+      "ban_rate_weighted": 10.9681
     },
     "Syndra": {
-      "bans": 867,
-      "bans_weighted": 1229.0,
-      "ban_rate": 1.4423,
-      "ban_rate_weighted": 1.4359
+      "bans": 869,
+      "bans_weighted": 1224.0,
+      "ban_rate": 1.4355,
+      "ban_rate_weighted": 1.4215
     },
     "Jinx": {
-      "bans": 1389,
-      "bans_weighted": 2104.0,
-      "ban_rate": 2.3106,
-      "ban_rate_weighted": 2.4582
+      "bans": 1394,
+      "bans_weighted": 2096.0,
+      "ban_rate": 2.3028,
+      "ban_rate_weighted": 2.4343
     },
     "Lissandra": {
-      "bans": 147,
-      "bans_weighted": 202.0,
-      "ban_rate": 0.2445,
-      "ban_rate_weighted": 0.236
+      "bans": 150,
+      "bans_weighted": 208.0,
+      "ban_rate": 0.2478,
+      "ban_rate_weighted": 0.2416
     },
     "Shen": {
-      "bans": 284,
-      "bans_weighted": 389.0,
+      "bans": 286,
+      "bans_weighted": 390.0,
       "ban_rate": 0.4724,
-      "ban_rate_weighted": 0.4545
+      "ban_rate_weighted": 0.4529
     },
     "Yuumi": {
-      "bans": 1318,
-      "bans_weighted": 2026.0,
-      "ban_rate": 2.1925,
-      "ban_rate_weighted": 2.3671
+      "bans": 1335,
+      "bans_weighted": 2047.0,
+      "ban_rate": 2.2053,
+      "ban_rate_weighted": 2.3774
     },
     "Zilean": {
-      "bans": 1050,
-      "bans_weighted": 1593.0,
-      "ban_rate": 1.7467,
-      "ban_rate_weighted": 1.8612
+      "bans": 1066,
+      "bans_weighted": 1620.0,
+      "ban_rate": 1.7609,
+      "ban_rate_weighted": 1.8814
     },
     "Thresh": {
-      "bans": 1656,
-      "bans_weighted": 2310.0,
-      "ban_rate": 2.7548,
-      "ban_rate_weighted": 2.6989
+      "bans": 1673,
+      "bans_weighted": 2340.0,
+      "ban_rate": 2.7636,
+      "ban_rate_weighted": 2.7176
     },
     "Vel'Koz": {
       "bans": 137,
       "bans_weighted": 190.0,
-      "ban_rate": 0.2279,
-      "ban_rate_weighted": 0.222
+      "ban_rate": 0.2263,
+      "ban_rate_weighted": 0.2207
     },
     "Smolder": {
-      "bans": 690,
+      "bans": 693,
       "bans_weighted": 878.0,
-      "ban_rate": 1.1478,
-      "ban_rate_weighted": 1.0258
+      "ban_rate": 1.1448,
+      "ban_rate_weighted": 1.0197
     },
     "Xin Zhao": {
-      "bans": 1539,
-      "bans_weighted": 2065.0,
-      "ban_rate": 2.5602,
-      "ban_rate_weighted": 2.4127
+      "bans": 1549,
+      "bans_weighted": 2078.0,
+      "ban_rate": 2.5588,
+      "ban_rate_weighted": 2.4134
     },
     "Kindred": {
-      "bans": 927,
-      "bans_weighted": 1279.0,
-      "ban_rate": 1.5421,
-      "ban_rate_weighted": 1.4943
+      "bans": 930,
+      "bans_weighted": 1277.0,
+      "ban_rate": 1.5363,
+      "ban_rate_weighted": 1.4831
     },
     "Ivern": {
-      "bans": 425,
-      "bans_weighted": 597.0,
+      "bans": 428,
+      "bans_weighted": 600.0,
       "ban_rate": 0.707,
-      "ban_rate_weighted": 0.6975
+      "ban_rate_weighted": 0.6968
     },
     "Teemo": {
-      "bans": 1008,
-      "bans_weighted": 1392.0,
-      "ban_rate": 1.6768,
-      "ban_rate_weighted": 1.6264
+      "bans": 1010,
+      "bans_weighted": 1387.0,
+      "ban_rate": 1.6684,
+      "ban_rate_weighted": 1.6108
     },
     "Rell": {
-      "bans": 1726,
-      "bans_weighted": 2233.0,
-      "ban_rate": 2.8713,
-      "ban_rate_weighted": 2.6089
+      "bans": 1737,
+      "bans_weighted": 2252.0,
+      "ban_rate": 2.8694,
+      "ban_rate_weighted": 2.6154
     },
     "Skarner": {
-      "bans": 532,
-      "bans_weighted": 741.0,
-      "ban_rate": 0.885,
-      "ban_rate_weighted": 0.8658
+      "bans": 535,
+      "bans_weighted": 739.0,
+      "ban_rate": 0.8838,
+      "ban_rate_weighted": 0.8583
     },
     "Trundle": {
-      "bans": 524,
-      "bans_weighted": 708.0,
-      "ban_rate": 0.8717,
-      "ban_rate_weighted": 0.8272
+      "bans": 532,
+      "bans_weighted": 722.0,
+      "ban_rate": 0.8788,
+      "ban_rate_weighted": 0.8385
     },
     "Kog'Maw": {
-      "bans": 747,
-      "bans_weighted": 1007.0,
-      "ban_rate": 1.2427,
-      "ban_rate_weighted": 1.1765
+      "bans": 753,
+      "bans_weighted": 1017.0,
+      "ban_rate": 1.2439,
+      "ban_rate_weighted": 1.1811
     },
     "Olaf": {
-      "bans": 619,
-      "bans_weighted": 949.0,
-      "ban_rate": 1.0297,
-      "ban_rate_weighted": 1.1088
+      "bans": 627,
+      "bans_weighted": 962.0,
+      "ban_rate": 1.0357,
+      "ban_rate_weighted": 1.1173
     },
     "Taliyah": {
-      "bans": 652,
-      "bans_weighted": 909.0,
-      "ban_rate": 1.0846,
-      "ban_rate_weighted": 1.062
+      "bans": 657,
+      "bans_weighted": 914.0,
+      "ban_rate": 1.0853,
+      "ban_rate_weighted": 1.0615
     },
     "Ornn": {
-      "bans": 61,
-      "bans_weighted": 86.0,
-      "ban_rate": 0.1015,
-      "ban_rate_weighted": 0.1005
+      "bans": 62,
+      "bans_weighted": 87.0,
+      "ban_rate": 0.1024,
+      "ban_rate_weighted": 0.101
     },
     "Fizz": {
-      "bans": 715,
-      "bans_weighted": 989.0,
-      "ban_rate": 1.1894,
-      "ban_rate_weighted": 1.1555
+      "bans": 722,
+      "bans_weighted": 1002.0,
+      "ban_rate": 1.1927,
+      "ban_rate_weighted": 1.1637
     },
     "Cassiopeia": {
-      "bans": 843,
-      "bans_weighted": 1111.0,
-      "ban_rate": 1.4024,
-      "ban_rate_weighted": 1.298
+      "bans": 849,
+      "bans_weighted": 1115.0,
+      "ban_rate": 1.4025,
+      "ban_rate_weighted": 1.2949
     },
     "Varus": {
-      "bans": 1084,
-      "bans_weighted": 1353.0,
-      "ban_rate": 1.8033,
-      "ban_rate_weighted": 1.5808
+      "bans": 1088,
+      "bans_weighted": 1358.0,
+      "ban_rate": 1.7973,
+      "ban_rate_weighted": 1.5772
     },
     "Hecarim": {
-      "bans": 2805,
-      "bans_weighted": 3714.0,
-      "ban_rate": 4.6662,
-      "ban_rate_weighted": 4.3393
+      "bans": 2818,
+      "bans_weighted": 3730.0,
+      "ban_rate": 4.6551,
+      "ban_rate_weighted": 4.332
     },
     "Briar": {
-      "bans": 771,
-      "bans_weighted": 1099.0,
-      "ban_rate": 1.2826,
-      "ban_rate_weighted": 1.284
+      "bans": 777,
+      "bans_weighted": 1109.0,
+      "ban_rate": 1.2835,
+      "ban_rate_weighted": 1.288
     },
     "Corki": {
-      "bans": 960,
-      "bans_weighted": 1481.0,
-      "ban_rate": 1.597,
-      "ban_rate_weighted": 1.7303
+      "bans": 964,
+      "bans_weighted": 1486.0,
+      "ban_rate": 1.5924,
+      "ban_rate_weighted": 1.7258
     },
     "Nasus": {
-      "bans": 689,
+      "bans": 690,
       "bans_weighted": 842.0,
-      "ban_rate": 1.1462,
-      "ban_rate_weighted": 0.9838
-    },
-    "Aurelion Sol": {
-      "bans": 266,
-      "bans_weighted": 413.0,
-      "ban_rate": 0.4425,
-      "ban_rate_weighted": 0.4825
-    },
-    "Neeko": {
-      "bans": 1225,
-      "bans_weighted": 1975.0,
-      "ban_rate": 2.0378,
-      "ban_rate_weighted": 2.3075
-    },
-    "Nocturne": {
-      "bans": 486,
-      "bans_weighted": 644.0,
-      "ban_rate": 0.8085,
-      "ban_rate_weighted": 0.7524
-    },
-    "Zoe": {
-      "bans": 1357,
-      "bans_weighted": 2060.0,
-      "ban_rate": 2.2574,
-      "ban_rate_weighted": 2.4068
-    },
-    "Singed": {
-      "bans": 233,
-      "bans_weighted": 320.0,
-      "ban_rate": 0.3876,
-      "ban_rate_weighted": 0.3739
-    },
-    "Garen": {
-      "bans": 733,
-      "bans_weighted": 1207.0,
-      "ban_rate": 1.2194,
-      "ban_rate_weighted": 1.4102
-    },
-    "Warwick": {
-      "bans": 351,
-      "bans_weighted": 458.0,
-      "ban_rate": 0.5839,
-      "ban_rate_weighted": 0.5351
-    },
-    "Diana": {
-      "bans": 1254,
-      "bans_weighted": 1892.0,
-      "ban_rate": 2.0861,
-      "ban_rate_weighted": 2.2105
-    },
-    "Gragas": {
-      "bans": 726,
-      "bans_weighted": 935.0,
-      "ban_rate": 1.2077,
-      "ban_rate_weighted": 1.0924
-    },
-    "Senna": {
-      "bans": 613,
-      "bans_weighted": 837.0,
-      "ban_rate": 1.0197,
+      "ban_rate": 1.1398,
       "ban_rate_weighted": 0.9779
     },
+    "Aurelion Sol": {
+      "bans": 268,
+      "bans_weighted": 417.0,
+      "ban_rate": 0.4427,
+      "ban_rate_weighted": 0.4843
+    },
+    "Neeko": {
+      "bans": 1241,
+      "bans_weighted": 1999.0,
+      "ban_rate": 2.05,
+      "ban_rate_weighted": 2.3216
+    },
+    "Nocturne": {
+      "bans": 491,
+      "bans_weighted": 653.0,
+      "ban_rate": 0.8111,
+      "ban_rate_weighted": 0.7584
+    },
+    "Zoe": {
+      "bans": 1362,
+      "bans_weighted": 2066.0,
+      "ban_rate": 2.2499,
+      "ban_rate_weighted": 2.3994
+    },
+    "Singed": {
+      "bans": 239,
+      "bans_weighted": 332.0,
+      "ban_rate": 0.3948,
+      "ban_rate_weighted": 0.3856
+    },
+    "Garen": {
+      "bans": 740,
+      "bans_weighted": 1217.0,
+      "ban_rate": 1.2224,
+      "ban_rate_weighted": 1.4134
+    },
+    "Warwick": {
+      "bans": 352,
+      "bans_weighted": 459.0,
+      "ban_rate": 0.5815,
+      "ban_rate_weighted": 0.5331
+    },
+    "Diana": {
+      "bans": 1265,
+      "bans_weighted": 1900.0,
+      "ban_rate": 2.0897,
+      "ban_rate_weighted": 2.2066
+    },
+    "Gragas": {
+      "bans": 728,
+      "bans_weighted": 934.0,
+      "ban_rate": 1.2026,
+      "ban_rate_weighted": 1.0847
+    },
+    "Senna": {
+      "bans": 614,
+      "bans_weighted": 839.0,
+      "ban_rate": 1.0143,
+      "ban_rate_weighted": 0.9744
+    },
     "Ahri": {
-      "bans": 1121,
-      "bans_weighted": 1546.0,
-      "ban_rate": 1.8648,
-      "ban_rate_weighted": 1.8063
+      "bans": 1127,
+      "bans_weighted": 1553.0,
+      "ban_rate": 1.8617,
+      "ban_rate_weighted": 1.8036
     },
     "Lillia": {
-      "bans": 785,
-      "bans_weighted": 1039.0,
-      "ban_rate": 1.3059,
-      "ban_rate_weighted": 1.2139
+      "bans": 793,
+      "bans_weighted": 1054.0,
+      "ban_rate": 1.31,
+      "ban_rate_weighted": 1.2241
     },
     "Rek'Sai": {
-      "bans": 372,
-      "bans_weighted": 502.0,
-      "ban_rate": 0.6188,
-      "ban_rate_weighted": 0.5865
+      "bans": 375,
+      "bans_weighted": 504.0,
+      "ban_rate": 0.6195,
+      "ban_rate_weighted": 0.5853
     },
     "Annie": {
       "bans": 186,
-      "bans_weighted": 256.0,
-      "ban_rate": 0.3094,
-      "ban_rate_weighted": 0.2991
+      "bans_weighted": 255.0,
+      "ban_rate": 0.3073,
+      "ban_rate_weighted": 0.2962
     },
     "Tryndamere": {
-      "bans": 249,
+      "bans": 250,
       "bans_weighted": 319.0,
-      "ban_rate": 0.4142,
-      "ban_rate_weighted": 0.3727
+      "ban_rate": 0.413,
+      "ban_rate_weighted": 0.3705
     },
     "Rumble": {
       "bans": 442,
-      "bans_weighted": 627.0,
-      "ban_rate": 0.7353,
-      "ban_rate_weighted": 0.7326
+      "bans_weighted": 623.0,
+      "ban_rate": 0.7301,
+      "ban_rate_weighted": 0.7235
     },
     "Vex": {
-      "bans": 527,
-      "bans_weighted": 727.0,
-      "ban_rate": 0.8767,
-      "ban_rate_weighted": 0.8494
+      "bans": 533,
+      "bans_weighted": 736.0,
+      "ban_rate": 0.8805,
+      "ban_rate_weighted": 0.8548
     },
     "Shyvana": {
       "bans": 72,
       "bans_weighted": 116.0,
-      "ban_rate": 0.1198,
-      "ban_rate_weighted": 0.1355
+      "ban_rate": 0.1189,
+      "ban_rate_weighted": 0.1347
     },
     "Zyra": {
-      "bans": 547,
-      "bans_weighted": 795.0,
-      "ban_rate": 0.91,
-      "ban_rate_weighted": 0.9288
+      "bans": 549,
+      "bans_weighted": 797.0,
+      "ban_rate": 0.9069,
+      "ban_rate_weighted": 0.9256
     },
     "Sett": {
-      "bans": 584,
-      "bans_weighted": 786.0,
-      "ban_rate": 0.9715,
-      "ban_rate_weighted": 0.9183
+      "bans": 587,
+      "bans_weighted": 787.0,
+      "ban_rate": 0.9697,
+      "ban_rate_weighted": 0.914
     },
     "Xerath": {
-      "bans": 312,
-      "bans_weighted": 447.0,
-      "ban_rate": 0.519,
-      "ban_rate_weighted": 0.5223
+      "bans": 313,
+      "bans_weighted": 448.0,
+      "ban_rate": 0.517,
+      "ban_rate_weighted": 0.5203
     },
     "Zeri": {
-      "bans": 135,
-      "bans_weighted": 153.0,
-      "ban_rate": 0.2246,
-      "ban_rate_weighted": 0.1788
+      "bans": 136,
+      "bans_weighted": 155.0,
+      "ban_rate": 0.2247,
+      "ban_rate_weighted": 0.18
     },
     "Viktor": {
-      "bans": 714,
-      "bans_weighted": 937.0,
-      "ban_rate": 1.1878,
-      "ban_rate_weighted": 1.0948
+      "bans": 717,
+      "bans_weighted": 939.0,
+      "ban_rate": 1.1844,
+      "ban_rate_weighted": 1.0905
     },
     "Brand": {
       "bans": 143,
       "bans_weighted": 200.0,
-      "ban_rate": 0.2379,
-      "ban_rate_weighted": 0.2337
+      "ban_rate": 0.2362,
+      "ban_rate_weighted": 0.2323
     },
     "Illaoi": {
-      "bans": 468,
-      "bans_weighted": 657.0,
-      "ban_rate": 0.7785,
-      "ban_rate_weighted": 0.7676
+      "bans": 472,
+      "bans_weighted": 661.0,
+      "ban_rate": 0.7797,
+      "ban_rate_weighted": 0.7677
     },
     "Heimerdinger": {
       "bans": 126,
       "bans_weighted": 195.0,
-      "ban_rate": 0.2096,
-      "ban_rate_weighted": 0.2278
+      "ban_rate": 0.2081,
+      "ban_rate_weighted": 0.2265
     },
     "Vi": {
-      "bans": 271,
-      "bans_weighted": 375.0,
-      "ban_rate": 0.4508,
-      "ban_rate_weighted": 0.4381
+      "bans": 273,
+      "bans_weighted": 379.0,
+      "ban_rate": 0.451,
+      "ban_rate_weighted": 0.4402
     },
     "Kled": {
-      "bans": 201,
-      "bans_weighted": 280.0,
-      "ban_rate": 0.3344,
-      "ban_rate_weighted": 0.3271
+      "bans": 205,
+      "bans_weighted": 287.0,
+      "ban_rate": 0.3386,
+      "ban_rate_weighted": 0.3333
     },
     "Gnar": {
-      "bans": 349,
-      "bans_weighted": 431.0,
-      "ban_rate": 0.5806,
-      "ban_rate_weighted": 0.5036
+      "bans": 350,
+      "bans_weighted": 432.0,
+      "ban_rate": 0.5782,
+      "ban_rate_weighted": 0.5017
     },
     "Nunu e Willump": {
-      "bans": 396,
-      "bans_weighted": 584.0,
-      "ban_rate": 0.6588,
-      "ban_rate_weighted": 0.6823
+      "bans": 399,
+      "bans_weighted": 588.0,
+      "ban_rate": 0.6591,
+      "ban_rate_weighted": 0.6829
     },
     "Ryze": {
-      "bans": 1096,
-      "bans_weighted": 1798.0,
-      "ban_rate": 1.8232,
-      "ban_rate_weighted": 2.1007
+      "bans": 1101,
+      "bans_weighted": 1801.0,
+      "ban_rate": 1.8188,
+      "ban_rate_weighted": 2.0917
     },
     "Veigar": {
       "bans": 120,
       "bans_weighted": 176.0,
-      "ban_rate": 0.1996,
-      "ban_rate_weighted": 0.2056
+      "ban_rate": 0.1982,
+      "ban_rate_weighted": 0.2044
     },
     "Xayah": {
-      "bans": 300,
+      "bans": 301,
       "bans_weighted": 381.0,
-      "ban_rate": 0.4991,
-      "ban_rate_weighted": 0.4451
+      "ban_rate": 0.4972,
+      "ban_rate_weighted": 0.4425
     },
     "Sejuani": {
       "bans": 46,
       "bans_weighted": 63.0,
-      "ban_rate": 0.0765,
-      "ban_rate_weighted": 0.0736
+      "ban_rate": 0.076,
+      "ban_rate_weighted": 0.0732
     },
     "Cho'Gath": {
       "bans": 368,
-      "bans_weighted": 594.0,
-      "ban_rate": 0.6122,
-      "ban_rate_weighted": 0.694
+      "bans_weighted": 587.0,
+      "ban_rate": 0.6079,
+      "ban_rate_weighted": 0.6817
     },
     "Swain": {
-      "bans": 125,
-      "bans_weighted": 194.0,
-      "ban_rate": 0.2079,
-      "ban_rate_weighted": 0.2267
+      "bans": 126,
+      "bans_weighted": 195.0,
+      "ban_rate": 0.2081,
+      "ban_rate_weighted": 0.2265
     },
     "Jhin": {
       "bans": 273,
       "bans_weighted": 346.0,
-      "ban_rate": 0.4541,
-      "ban_rate_weighted": 0.4043
+      "ban_rate": 0.451,
+      "ban_rate_weighted": 0.4018
     },
     "Tristana": {
-      "bans": 208,
-      "bans_weighted": 254.0,
-      "ban_rate": 0.346,
-      "ban_rate_weighted": 0.2968
+      "bans": 211,
+      "bans_weighted": 257.0,
+      "ban_rate": 0.3486,
+      "ban_rate_weighted": 0.2985
     },
     "Taric": {
       "bans": 85,
       "bans_weighted": 147.0,
-      "ban_rate": 0.1414,
-      "ban_rate_weighted": 0.1717
+      "ban_rate": 0.1404,
+      "ban_rate_weighted": 0.1707
     },
     "Kalista": {
-      "bans": 297,
-      "bans_weighted": 418.0,
-      "ban_rate": 0.4941,
-      "ban_rate_weighted": 0.4884
+      "bans": 301,
+      "bans_weighted": 424.0,
+      "ban_rate": 0.4972,
+      "ban_rate_weighted": 0.4924
     },
     "Rakan": {
-      "bans": 238,
-      "bans_weighted": 333.0,
-      "ban_rate": 0.3959,
-      "ban_rate_weighted": 0.3891
+      "bans": 239,
+      "bans_weighted": 334.0,
+      "ban_rate": 0.3948,
+      "ban_rate_weighted": 0.3879
     },
     "Tahm Kench": {
       "bans": 61,
-      "bans_weighted": 91.0,
-      "ban_rate": 0.1015,
-      "ban_rate_weighted": 0.1063
+      "bans_weighted": 89.0,
+      "ban_rate": 0.1008,
+      "ban_rate_weighted": 0.1034
     },
     "Amumu": {
       "bans": 131,
       "bans_weighted": 177.0,
-      "ban_rate": 0.2179,
-      "ban_rate_weighted": 0.2068
+      "ban_rate": 0.2164,
+      "ban_rate_weighted": 0.2056
     },
     "Renata Glasc": {
-      "bans": 40,
-      "bans_weighted": 53.0,
-      "ban_rate": 0.0665,
-      "ban_rate_weighted": 0.0619
+      "bans": 41,
+      "bans_weighted": 55.0,
+      "ban_rate": 0.0677,
+      "ban_rate_weighted": 0.0639
     },
     "Twisted Fate": {
       "bans": 72,
       "bans_weighted": 98.0,
-      "ban_rate": 0.1198,
-      "ban_rate_weighted": 0.1145
+      "ban_rate": 0.1189,
+      "ban_rate_weighted": 0.1138
     },
     "Maokai": {
       "bans": 23,
       "bans_weighted": 33.0,
-      "ban_rate": 0.0383,
-      "ban_rate_weighted": 0.0386
+      "ban_rate": 0.038,
+      "ban_rate_weighted": 0.0383
     }
   },
   "_metadata": {
-    "recent_window_start": "2025-10-07T19:45:33.122000+00:00",
-    "previous_window_start": "2025-09-07T19:45:33.122000+00:00",
-    "latest_match_timestamp": "2025-11-06T19:45:33.122000+00:00",
+    "recent_window_start": "2025-10-08T01:03:06.175000+00:00",
+    "previous_window_start": "2025-09-08T01:03:06.175000+00:00",
+    "latest_match_timestamp": "2025-11-07T01:03:06.175000+00:00",
     "weights": {
       "recent_days": 30,
       "recent_weight": 2.0,
