@@ -2393,20 +2393,6 @@ function renderDatabaseReport(data) {
   
   let html = '';
   
-  // Database Info Section
-  html += '<div class="database-report-section">';
-  html += '<h3>Informações do Banco de Dados</h3>';
-  html += '<div class="database-report-stats">';
-  html += `<div class="database-report-stat">
-    <div class="database-report-stat-label">Tamanho</div>
-    <div class="database-report-stat-value">${data.database_info.size_mb.toFixed(2)} MB</div>
-  </div>`;
-  html += `<div class="database-report-stat">
-    <div class="database-report-stat-label">Caminho</div>
-    <div class="database-report-stat-value" style="font-size: 0.9rem; word-break: break-all;">${data.database_info.path}</div>
-  </div>`;
-  html += '</div></div>';
-  
   // Totals Section
   html += '<div class="database-report-section">';
   html += '<h3>Estatísticas Gerais</h3>';
@@ -2515,6 +2501,11 @@ function renderDatabaseReport(data) {
   </div>`;
   html += '</div></div>';
   
+  // File size footer
+  html += '<div class="database-report-footer">';
+  html += `Tamanho do arquivo: ${data.database_info.size_mb.toFixed(2)} MB`;
+  html += '</div>';
+  
   databaseReportContent.innerHTML = html;
   
   // Render charts after a small delay to ensure DOM is ready
@@ -2601,13 +2592,15 @@ function renderCharts(data) {
   // Patch Distribution Bar Chart
   const patchCtx = document.getElementById('patch-chart');
   if (patchCtx) {
+    // Reverse the patch distribution array so newer patches appear on the right
+    const reversedPatchData = [...data.patch_distribution].reverse();
     const patchChart = new Chart(patchCtx, {
       type: 'bar',
       data: {
-        labels: data.patch_distribution.map(p => p.patch),
+        labels: reversedPatchData.map(p => p.patch),
         datasets: [{
           label: 'Partidas',
-          data: data.patch_distribution.map(p => p.count),
+          data: reversedPatchData.map(p => p.count),
           backgroundColor: chartColors.primary,
           borderColor: chartColors.primary,
           borderWidth: 1
@@ -2624,7 +2617,7 @@ function renderCharts(data) {
             callbacks: {
               label: function(context) {
                 const value = context.parsed.y || 0;
-                const item = data.patch_distribution[context.dataIndex];
+                const item = reversedPatchData[context.dataIndex];
                 return `${integerFormatter.format(value)} partidas (${item.percentage.toFixed(2)}%)`;
               }
             }
@@ -3044,7 +3037,7 @@ function populateBanSelects() {
       ph.value = '';
       ph.disabled = true;
       ph.selected = true;
-      ph.textContent = 'Selecione os Bans';
+      ph.textContent = '--';
       sel.appendChild(ph);
       champions.forEach((name) => {
         const opt = document.createElement('option');
@@ -3143,7 +3136,7 @@ function refreshCompositionOptions() {
     const sameSide = isTeam ? teamPicks : enemyPicks;
     sameSide.forEach((n) => { if (n !== current) exclude.add(n); });
     const allowed = champions.filter((name) => !exclude.has(name) || name === current);
-    const ph = document.createElement('option'); ph.value=''; ph.disabled=true; ph.textContent='Selecione um Campe\u00E3o';
+    const ph = document.createElement('option'); ph.value=''; ph.disabled=true; ph.textContent='--';
     const tmp = document.createElement('select'); tmp.appendChild(ph);
     allowed.forEach((n)=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; tmp.appendChild(o); });
     sel.innerHTML = tmp.innerHTML;
@@ -3170,7 +3163,7 @@ function refreshCompositionForBans() {
     ph.value = '';
     ph.disabled = true;
     ph.selected = !current || !allowed.includes(current);
-    ph.textContent = 'Selecione um Campe\u00E3o';
+    ph.textContent = '--';
     newSel.appendChild(ph);
     allowed.forEach((name) => {
       const o = document.createElement('option');

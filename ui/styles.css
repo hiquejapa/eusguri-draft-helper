@@ -23,28 +23,27 @@
   --native-height: 1080px;
   
   /* Vertical dimensions - fixed pixels for 1080p native */
-  --panel-height: 1900px;                 /* altura total da coluna */
+  --panel-height: 2000px;                 /* altura total da coluna */
   --panel-team-card-height: 3200px;       /* padrão da coluna Meu Time */
-  --panel-team-bans-height: 231px;       /* card específico */
-  --panel-team-composition-height: 550px;
-  --panel-team-tags-height: 200px;
-  --panel-team-sinergias-height: 780px;
-  --synergy-recommendations-height: 300px; /* "Recomendações" acima de Sinergias */
-  --synergy-primary-height: 759px;       /* "Sinergias" central */
-  --synergy-secondary-height: 710px;     /* "Matchups" central */
+  --panel-team-bans-height: 245px;       /* card específico */
+  --panel-team-composition-height: 600px;
+  --panel-team-tags-height: 192px;
+  --panel-team-sinergias-height: 800px;
+  --synergy-recommendations-height: 325px; /* "Recomendações" acima de Sinergias */
+  --synergy-primary-height: 775px;       /* "Sinergias" central */
+  --synergy-secondary-height: 745px;     /* "Matchups" central */
   --panel-enemy-card-height: 3200px;      /* padrão da coluna Inimigo */
-  --panel-enemy-bans-height: 231px;
-  --panel-enemy-composition-height: 550px;
-  --panel-enemy-tags-height: 200px;
-  --panel-enemy-combos-height: 780px;
+  --panel-enemy-bans-height: 245px;
+  --panel-enemy-composition-height: 600px;
+  --panel-enemy-tags-height: 192px;
+  --panel-enemy-combos-height: 800px;
   
   font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-900);
   color: var(--text-100);
   
-  /* Base font size scales with viewport width for horizontal scaling */
-  /* At 1920px width: 16px, scales proportionally */
-  font-size: clamp(14px, 0.833vw, 20px);
+  /* Base font size stays fixed - content doesn't scale */
+  font-size: 16px;
 }
 
 *,
@@ -59,6 +58,8 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-900);
+  /* Default: allow horizontal scroll for smaller screens */
+  overflow-x: auto;
 }
 
 .app-header,
@@ -66,7 +67,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* Horizontal padding scales with viewport width */
   padding: 1rem clamp(1rem, 2.08vw, 2rem);
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(27, 31, 45, 0.95), rgba(27, 31, 45, 0.7));
@@ -74,6 +74,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
+  /* Ensure header/footer span full width */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-actions { 
@@ -265,17 +268,19 @@ body.floating-tooltip-enabled label[data-tooltip]::before {
 .app-grid {
   flex: 1;
   display: grid;
-  /* Use percentages so column widths are predictable: sides larger, middle smaller */
+  /* Base layout for 1080p (1920px) */
   grid-template-columns: 35.5% 28% 35.5%;
   grid-template-rows: 1fr;
-  /* Gap between columns - scales with viewport width */
-  gap: clamp(0.5rem, 0.78vw, 0.75rem);
-  padding: 1.5rem clamp(1rem, 2.08vw, 2rem) 2.5rem;
+  gap: 0.75rem;
+  padding: 1.5rem 2rem 2.5rem;
   overflow: hidden;
   height: var(--panel-height);
   max-height: var(--panel-height);
-  /* Allow children to manage their own overflow */
   min-height: 0;
+  margin: 0 auto;
+  width: 100%;
+  /* Minimum width: lock to 1080p size */
+  min-width: 1920px;
 }
 
 .panel {
@@ -350,38 +355,33 @@ body.floating-tooltip-enabled label[data-tooltip]::before {
   overflow: hidden;
   min-height: 0;
 }
-.card.card-scroll {
-  height: var(--panel-scroll-height, auto);
-}
-.panel-team .card.card-scroll {
-  height: var(--panel-team-card-height, var(--panel-scroll-height, auto));
-}
+
+/* Team panel card heights */
 .panel-team .card.card-scroll[data-panel="bans"] {
-  height: var(--panel-team-bans-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-team-bans-height);
 }
 .panel-team .card.card-scroll[data-panel="composition"] {
-  height: var(--panel-team-composition-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-team-composition-height);
 }
 .panel-team .card.card-scroll[data-panel="tags"] {
-  height: var(--panel-team-tags-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-team-tags-height);
 }
 .panel-team .card.card-scroll[data-panel="sinergias"] {
-  height: var(--panel-team-sinergias-height, var(--panel-team-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-team-sinergias-height);
 }
-.panel-enemy .card.card-scroll {
-  height: var(--panel-enemy-card-height, var(--panel-scroll-height, auto));
-}
+
+/* Enemy panel card heights */
 .panel-enemy .card.card-scroll[data-panel="bans"] {
-  height: var(--panel-enemy-bans-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-enemy-bans-height);
 }
 .panel-enemy .card.card-scroll[data-panel="composition"] {
-  height: var(--panel-enemy-composition-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-enemy-composition-height);
 }
 .panel-enemy .card.card-scroll[data-panel="tags"] {
-  height: var(--panel-enemy-tags-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-enemy-tags-height);
 }
 .panel-enemy .card.card-scroll[data-panel="combos"] {
-  height: var(--panel-enemy-combos-height, var(--panel-enemy-card-height, var(--panel-scroll-height, auto)));
+  height: var(--panel-enemy-combos-height);
 }
 .card.card-scroll .card-body {
   flex: 1 1 auto;
@@ -430,10 +430,12 @@ body.floating-tooltip-enabled label[data-tooltip]::before {
 .panel-synergy .card.card-scroll[data-panel="recommendations"] {
   height: var(--synergy-recommendations-height);
 }
+
 /* Sinergias: card que contém #synergy-list */
 .panel-synergy .card.card-scroll:has(#synergy-list) {
   height: var(--synergy-primary-height);
 }
+
 /* Matchups: card que contém #matchup-list */
 .panel-synergy .card.card-scroll:has(#matchup-list) {
   height: var(--synergy-secondary-height);
@@ -582,11 +584,6 @@ body.floating-tooltip-enabled label[data-tooltip]::before {
   overflow: visible; /* allow children to overflow grid cells */
 }
 
-@media (max-width: 640px) {
-  .ban-group {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 
 /* Specific override to ensure ban groups always render as a 3-column grid
    in normal desktop layouts. Using higher-specificity selector and
@@ -616,19 +613,6 @@ body.floating-tooltip-enabled label[data-tooltip]::before {
 .ban-group .field:nth-child(4) { grid-column: 2 !important; }
 .ban-group .field:nth-child(5) { grid-column: 4 !important; }
 
-@media (max-width: 640px) {
-  /* On small screens, fall back to 2 columns and natural flow */
-  .card-body.ban-group,
-  .card-body.grid.ban-group { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-  .ban-group .field:nth-child(1),
-  .ban-group .field:nth-child(2),
-  .ban-group .field:nth-child(3),
-  .ban-group .field:nth-child(4),
-  .ban-group .field:nth-child(5) {
-    grid-column: auto !important;
-    justify-self: stretch !important;
-  }
-}
 
 .ban-group .field {
   align-items: flex-start;
@@ -642,14 +626,6 @@ body.floating-tooltip-enabled label[data-tooltip]::before {
   height: auto;
 }
 
-@media (max-width: 960px) {
-  /* On narrower viewports revert selects to full width of their cell */
-  .ban-group .field { max-width: none; justify-self: stretch; }
-  .ban-group select { width: 100%; }
-  .card.card-scroll[data-panel="bans"] .card-body { overflow-x: auto !important; }
-  /* remove any visual overlap on small screens */
-  .ban-group .field { transform: none !important; }
-}
 
 /* Shift fields to bring dropdowns closer together */
 .ban-group .field:nth-child(2) {
@@ -665,10 +641,6 @@ body.floating-tooltip-enabled label[data-tooltip]::before {
   transform: translateX(-65px);
 }
 
-@media (max-width: 640px) {
-  /* ensure no overlap on very small screens */
-  .ban-group .field:not(:first-child) { transform: none !important; }
-}
 
 .ban-rate {
   font-size: 0.75rem;
@@ -854,6 +826,7 @@ textarea {
   display: flex;
   flex-direction: column;
   min-height: 50px;
+  gap: 0.2rem; /* Vertical spacing between tag groups */
 }
 
 /* Em tag-cloud, mantenha a cor das categorias; sÃ³ neutralize quando nÃ£o houver categoria definida */
@@ -864,8 +837,29 @@ textarea {
   cursor: default;
 }
 
-.tag-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.2rem; width: 100%; }
-.tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%; margin-bottom: 2px; }
+.tag-group { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 0.2rem; /* Horizontal spacing between pills when in row mode */
+  margin-bottom: 0rem !important; /* Spacing is handled by parent gap */
+  width: 100%; 
+}
+
+/* When tag-group contains tag-rows, change to column layout with vertical spacing */
+.tag-group:has(> .tag-row) {
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  gap: 0.1rem !important; /* Vertical spacing between tag rows */
+}
+
+.tag-row { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 0.2rem; /* Horizontal spacing between pills in a row */
+  width: 100%; 
+  margin-bottom: 0 !important; /* Spacing is handled by parent gap */
+  margin-top: 0 !important;
+}
 
 .list {
   list-style: none;
@@ -1024,45 +1018,142 @@ textarea {
   font-size: 0.75rem;
 }
 
-@media (max-width: 1400px) {
-  .app-grid {
-    grid-template-columns: 1.2fr 1fr;
+/* For screens smaller than 1920px: lock to 1080p size with horizontal scroll */
+@media (max-width: 1919px) {
+  /* Reset all height variables to fixed 1080p values */
+  :root {
+    --panel-height: 2000px;
+    --panel-team-card-height: 3200px;
+    --panel-team-bans-height: 245px;
+    --panel-team-composition-height: 600px;
+    --panel-team-tags-height: 192px;
+    --panel-team-sinergias-height: 800px;
+    --synergy-recommendations-height: 325px;
+    --synergy-primary-height: 775px;
+    --synergy-secondary-height: 745px;
+    --panel-enemy-card-height: 3200px;
+    --panel-enemy-bans-height: 245px;
+    --panel-enemy-composition-height: 600px;
+    --panel-enemy-tags-height: 192px;
+    --panel-enemy-combos-height: 800px;
   }
-  .panel-synergy {
-    grid-column: span 2;
+  
+  html {
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+  
+  body {
+    min-width: 1920px;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .app-header,
+  .app-footer {
+    min-width: 1920px;
+    width: 100%;
+  }
+  
+  .app-grid {
+    min-width: 1920px;
+    width: 1920px;
+    max-width: 1920px;
+    /* Maintain exact 1080p layout */
+    grid-template-columns: 35.5% 28% 35.5%;
+    padding: 1.5rem 2rem 2.5rem;
+    gap: 0.75rem;
+    height: var(--panel-height);
+    max-height: var(--panel-height);
+  }
+  
+  /* Ensure all cards maintain fixed 1080p heights (except on mobile) */
+  .panel-team .card.card-scroll[data-panel="bans"] {
+    height: var(--panel-team-bans-height) !important;
+  }
+  .panel-team .card.card-scroll[data-panel="composition"] {
+    height: var(--panel-team-composition-height) !important;
+  }
+  .panel-team .card.card-scroll[data-panel="tags"] {
+    height: var(--panel-team-tags-height) !important;
+  }
+  .panel-team .card.card-scroll[data-panel="sinergias"] {
+    height: var(--panel-team-sinergias-height) !important;
+  }
+  .panel-enemy .card.card-scroll[data-panel="bans"] {
+    height: var(--panel-enemy-bans-height) !important;
+  }
+  .panel-enemy .card.card-scroll[data-panel="composition"] {
+    height: var(--panel-enemy-composition-height) !important;
+  }
+  .panel-enemy .card.card-scroll[data-panel="tags"] {
+    height: var(--panel-enemy-tags-height) !important;
+  }
+  .panel-enemy .card.card-scroll[data-panel="combos"] {
+    height: var(--panel-enemy-combos-height) !important;
+  }
+  .panel-synergy .card.card-scroll[data-panel="recommendations"] {
+    height: var(--synergy-recommendations-height) !important;
+  }
+  .panel-synergy .card.card-scroll:has(#synergy-list) {
+    height: var(--synergy-primary-height) !important;
+  }
+  .panel-synergy .card.card-scroll:has(#matchup-list) {
+    height: var(--synergy-secondary-height) !important;
   }
 }
 
-@media (max-width: 960px) {
+/* For screens 1920px and larger: scale height proportionally to width */
+@media (min-width: 1920px) {
+  :root {
+    /* Calculate scale factor based on viewport width relative to 1920px */
+    /* At 1920px: scale = 1.0, at 2560px: scale ≈ 1.33, at 3840px: scale = 2.0 */
+    --width-scale: min(calc(100vw / 1920px), 2.5);
+    
+    /* Scale only heights to maintain aspect ratio, content stays same size */
+    --panel-height: calc(1900px * var(--width-scale));
+    --panel-team-card-height: calc(3200px * var(--width-scale));
+    --panel-team-bans-height: calc(231px * var(--width-scale));
+    --panel-team-composition-height: calc(550px * var(--width-scale));
+    /* Keep these panels at 1080p size to prevent being too large when empty or too small when filled */
+    --panel-team-tags-height: 192px;          /* Tags da Composição - Meu Time */
+    --panel-team-sinergias-height: 780px;     /* Top Sinergias - Meu Time */
+    --panel-enemy-tags-height: 192px;         /* Tags da Composição - Inimigo */
+    --panel-enemy-combos-height: 780px;       /* Próximos Picks - Inimigo */
+    
+    /* Synergy panel heights: keep at 1080p size regardless of screen size */
+    /* This prevents them from being too large when empty or too small when filled */
+    /* They maintain the same size as in 1080p, providing consistent UX */
+    --synergy-recommendations-height: 325px;
+    --synergy-primary-height: 760px;
+    --synergy-secondary-height: 745px;
+    
+    --panel-enemy-card-height: calc(3200px * var(--width-scale));
+    --panel-enemy-bans-height: calc(231px * var(--width-scale));
+    --panel-enemy-composition-height: calc(550px * var(--width-scale));
+  }
+  
   .app-grid {
-    grid-template-columns: 1fr;
-    height: auto;
-    max-height: none;
+    /* Scale width proportionally but limit max width */
+    max-width: min(100vw, calc(1920px * 2.5));
+    /* Maintain exact same column proportions as 1080p */
+    grid-template-columns: 35.5% 28% 35.5%;
+    /* Keep padding and gap same size - only heights scale */
+    padding: 1.5rem clamp(1rem, 2.08vw, 2rem) 2.5rem;
+    gap: 0.75rem;
+    /* Height scales automatically via --panel-height variable */
+    height: var(--panel-height);
+    max-height: var(--panel-height);
+    min-width: auto;
   }
-  .panel {
-    order: var(--order, 0);
-    height: auto;
-    overflow: visible;
-  }
-  .card.card-scroll {
-    height: auto;
-    max-height: none;
-  }
-  .panel-team .card.card-scroll,
-  .panel-enemy .card.card-scroll {
-    height: auto;
-  }
-  .panel-synergy .card.card-scroll:first-of-type,
-  .panel-synergy .card.card-scroll:last-of-type {
-    height: auto;
-  }
-  .panel-synergy {
-    --order: 3;
-  }
-  .panel-enemy {
-    --order: 2;
+  
+  /* Header and footer padding stays same size - only scale visually if needed */
+  .app-header,
+  .app-footer {
+    padding: 1rem clamp(1rem, 2.08vw, 2rem);
   }
 }
+
 
 /* Mirror and center panel titles */
 .panel-team .panel-title { text-align: left; }
@@ -1081,14 +1172,25 @@ textarea {
 /* Overrides para agrupamento e cores mais fortes das categorias */
 .tag-cloud { 
   flex-wrap: nowrap; /* override default wrap */
+  gap: 0.1rem; /* Vertical spacing between tag groups */
 }
 
 .tag-group { 
-  width: 100%; 
+  width: 100%;
+  margin-bottom: 0; /* Spacing is handled by tag-cloud gap */
+}
+
+/* When tag-group contains tag-rows, ensure column layout with proper gap */
+.tag-group:has(> .tag-row) {
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  gap: 0.1rem !important; /* Vertical spacing between tag rows */
 }
 
 .tag-row { 
-  width: 100%; 
+  width: 100%;
+  margin-bottom: 0 !important; /* Spacing is handled by tag-group gap */
+  margin-top: 0 !important;
 }
 
 /* Cores por categoria (CSV) - versão final com cores mais fortes */
@@ -1114,36 +1216,21 @@ textarea {
   display: flex; 
   flex-wrap: wrap; 
   gap: 0.5rem; 
-  margin-top: 0.5rem; 
+  margin-top: 0rem; 
 }
 .role-select > .select-with-icon { width: auto; flex: 0 0 auto; }
 .role-select select { 
-  /* Min width scales with viewport: 180px at 1920px width */
-  min-width: clamp(140px, 9.375vw, 180px); 
+  /* Smaller size for composition dropdowns */
+  min-width: 140px;
+  max-width: 160px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
 }
 .role-select .champ-tags { margin-top: 0; flex: 1 1 auto; gap: 0.35rem; }
 .role-select .champ-tags .pill { padding: 0.22rem 0.45rem; font-size: 0.72rem; }
 
-/* Densidade otimizada para 1080p - mantém valores fixos para altura */
-/* Nota: Ajustes de densidade agora são controlados pelo font-size base que escala horizontalmente */
-@media (max-height: 1080px) and (min-width: 1200px) {
-  /* Ajustes de densidade vertical mantidos, horizontais já escalam */
-  html, body { font-size: clamp(14px, 0.833vw, 15px); }
-  .app-header, .app-footer { padding: 0.6rem clamp(0.75rem, 1.56vw, 1.2rem); }
-  .logo { font-size: 0.95rem; }
-  .app-grid { gap: clamp(0.5rem, 0.78vw, 0.75rem); padding: 1.5rem clamp(1rem, 2.08vw, 2rem) 2.5rem; }
-  .panel-title { font-size: 1rem; }
-  .card-header { padding: 0.75rem clamp(0.7rem, 0.94vw, 0.9rem) 0.5rem; }
-  .card-body { padding: 0.75rem clamp(0.7rem, 0.94vw, 0.9rem); gap: 0.5rem; }
-  .role-list { gap: 0.75rem; }
-  .role-list li { padding: 0.6rem; }
-  .field { gap: 0.3rem; font-size: 0.82rem; }
-  select, textarea { padding: 0.4rem clamp(0.45rem, 0.625vw, 0.6rem); font-size: 0.85rem; }
-  textarea { min-height: 120px; }
-  .pill { padding: 0.25rem 0.5rem; font-size: 0.72rem; line-height: 1.05; }
-  .tag-row, .champ-tags { gap: 0.4rem; }
-  .list li { padding: 0.6rem; }
-}
+/* Content sizing stays consistent - only window heights scale on larger screens */
+/* Font sizes and internal padding remain the same across all resolutions */
 
 /* Modal Styles */
 .modal-overlay {
@@ -1276,4 +1363,13 @@ textarea {
 
 .database-report-chart-container.small {
   height: 250px;
+}
+
+.database-report-footer {
+  text-align: right;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-500);
+  font-size: 0.9rem;
 }
