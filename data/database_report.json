@@ -1,56 +1,56 @@
 {
   "database_info": {
     "path": "D:\\data_download\\data\\lol_analysis_with_bans.db",
-    "size_mb": 1195.68
+    "size_mb": 1219.33
   },
   "totals": {
-    "matches": 94838,
-    "bans": 881021,
-    "participants": 948380,
-    "matchups": 473463,
-    "synergies": 1896760,
-    "distinct_players": 77521
+    "matches": 96698,
+    "bans": 898306,
+    "participants": 966980,
+    "matchups": 482744,
+    "synergies": 1933960,
+    "distinct_players": 78046
   },
   "elo_distribution": [
     {
       "tier": "CHALLENGER",
       "count": 4116,
-      "percentage": 4.34
+      "percentage": 4.26
     },
     {
       "tier": "GRANDMASTER",
-      "count": 9333,
-      "percentage": 9.84
+      "count": 9346,
+      "percentage": 9.67
     },
     {
       "tier": "MASTER",
-      "count": 49639,
-      "percentage": 52.34
+      "count": 50404,
+      "percentage": 52.13
     },
     {
       "tier": "DIAMOND",
-      "count": 23629,
-      "percentage": 24.92
+      "count": 24624,
+      "percentage": 25.46
     },
     {
       "tier": "EMERALD",
-      "count": 3559,
-      "percentage": 3.75
+      "count": 3645,
+      "percentage": 3.77
     },
     {
       "tier": "PLATINUM",
       "count": 1863,
-      "percentage": 1.96
+      "percentage": 1.93
     },
     {
       "tier": "GOLD",
-      "count": 1921,
-      "percentage": 2.03
+      "count": 1922,
+      "percentage": 1.99
     },
     {
       "tier": "SILVER",
       "count": 518,
-      "percentage": 0.55
+      "percentage": 0.54
     },
     {
       "tier": "BRONZE",
@@ -66,141 +66,141 @@
   "patch_distribution": [
     {
       "patch": "15.22",
-      "count": 3895,
-      "percentage": 4.11
+      "count": 4107,
+      "percentage": 4.25
     },
     {
       "patch": "15.21",
-      "count": 17286,
-      "percentage": 18.23
+      "count": 17764,
+      "percentage": 18.37
     },
     {
       "patch": "15.20",
-      "count": 19844,
-      "percentage": 20.92
+      "count": 20301,
+      "percentage": 20.99
     },
     {
       "patch": "15.19",
-      "count": 20509,
-      "percentage": 21.63
+      "count": 20851,
+      "percentage": 21.56
     },
     {
       "patch": "15.18",
-      "count": 21608,
-      "percentage": 22.78
+      "count": 21979,
+      "percentage": 22.73
     },
     {
       "patch": "15.17",
       "count": 10386,
-      "percentage": 10.95
+      "percentage": 10.74
     },
     {
       "patch": "15.16",
       "count": 1310,
-      "percentage": 1.38
+      "percentage": 1.35
     }
   ],
   "top_champions_played": [
     {
       "champion": "Kaisa",
-      "games": 21676
+      "games": 22155
     },
     {
       "champion": "Nami",
-      "games": 18877
+      "games": 19228
     },
     {
       "champion": "Sylas",
-      "games": 14183
+      "games": 14470
     },
     {
       "champion": "Karma",
-      "games": 13823
+      "games": 14107
     },
     {
       "champion": "Zed",
-      "games": 13380
+      "games": 13688
     },
     {
       "champion": "Lucian",
-      "games": 12408
+      "games": 12641
     },
     {
       "champion": "Jinx",
-      "games": 11905
+      "games": 12163
     },
     {
       "champion": "Yasuo",
-      "games": 11853
+      "games": 12099
     },
     {
       "champion": "Ezreal",
-      "games": 11671
+      "games": 11906
     },
     {
-      "champion": "Sona",
-      "games": 11620
+      "champion": "Lulu",
+      "games": 11828
     }
   ],
   "top_champions_banned": [
     {
       "champion": "Zed",
-      "bans": 42160
+      "bans": 42980
     },
     {
       "champion": "Master Yi",
-      "bans": 42056
+      "bans": 42894
     },
     {
       "champion": "Rengar",
-      "bans": 36058
+      "bans": 36543
     },
     {
       "champion": "Qiyana",
-      "bans": 32541
+      "bans": 32970
     },
     {
       "champion": "Vladimir",
-      "bans": 28952
+      "bans": 29595
     },
     {
       "champion": "Yasuo",
-      "bans": 28709
+      "bans": 29249
     },
     {
       "champion": "Pyke",
-      "bans": 27776
+      "bans": 28164
     },
     {
       "champion": "Mel",
-      "bans": 24443
+      "bans": 24943
     },
     {
       "champion": "Jax",
-      "bans": 20715
+      "bans": 21090
     },
     {
       "champion": "Shaco",
-      "bans": 19106
+      "bans": 19380
     }
   ],
   "quality_stats": {
-    "average_duration_seconds": 1614.79,
-    "average_duration_minutes": 26.91,
+    "average_duration_seconds": 1614.93,
+    "average_duration_minutes": 26.92,
     "date_range": {
       "earliest": "2025-08-22T12:00:34.967000+00:00",
-      "latest": "2025-11-09T23:05:29.630000+00:00"
+      "latest": "2025-11-10T03:34:17.950000+00:00"
     }
   },
   "early_game_stats": {
-    "matches_with_data": 85660,
-    "average_gold_diff_15": 202.11,
-    "average_xp_diff_15": 87.76
+    "matches_with_data": 87515,
+    "average_gold_diff_15": 201.38,
+    "average_xp_diff_15": 87.34
   },
   "puuid_database": {
-    "total": 230114,
-    "processed": 2932,
-    "remaining": 227182
+    "total": 230410,
+    "processed": 3034,
+    "remaining": 227376
   },
-  "generated_at": "2025-11-10T00:10:54.831047+00:00"
+  "generated_at": "2025-11-10T05:10:45.624425+00:00"
 }
